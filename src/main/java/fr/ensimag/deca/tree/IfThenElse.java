@@ -12,8 +12,8 @@ import org.apache.commons.lang.Validate;
 /**
  * Full if/else if/else statement.
  *
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl06
+ * @date 01/01/2025
  */
 public class IfThenElse extends AbstractInst {
     

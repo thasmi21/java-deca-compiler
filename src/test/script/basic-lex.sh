@@ -1,7 +1,7 @@
 #! /bin/sh
 
-# Auteur : @AUTHOR@
-# Version initiale : @DATE@
+# Auteur : gl06
+# Version initiale : 01/01/2025
 
 # Base pour un script de test de la lexicographie.
 # On teste un fichier valide et un fichier invalide.

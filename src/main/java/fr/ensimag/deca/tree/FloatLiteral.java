@@ -12,8 +12,8 @@ import org.apache.commons.lang.Validate;
 /**
  * Single precision, floating-point literal
  *
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl06
+ * @date 01/01/2025
  */
 public class FloatLiteral extends AbstractExpr {
 

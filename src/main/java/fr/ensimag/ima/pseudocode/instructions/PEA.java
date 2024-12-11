@@ -5,7 +5,7 @@ import fr.ensimag.ima.pseudocode.UnaryInstruction;
 
 /**
  * @author Ensimag
- * @date @DATE@
+ * @date 01/01/2025
  */
 public class PEA extends UnaryInstruction {
 

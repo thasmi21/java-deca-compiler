@@ -5,8 +5,8 @@ import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.instructions.WNL;
 
 /**
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl06
+ * @date 01/01/2025
  */
 public class Println extends AbstractPrint {
 

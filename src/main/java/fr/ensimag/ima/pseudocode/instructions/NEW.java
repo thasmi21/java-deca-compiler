@@ -7,7 +7,7 @@ import fr.ensimag.ima.pseudocode.ImmediateInteger;
 
 /**
  * @author Ensimag
- * @date @DATE@
+ * @date 01/01/2025
  */
 public class NEW extends BinaryInstructionDValToReg {
 
