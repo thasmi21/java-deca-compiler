@@ -24,18 +24,18 @@ WS :    ( ' '
         }
     ;
 
-OBRACE : '{' {skip();};
+OBRACE : '{' ;
 
 PRINTLN : 'println';
 
 COMMENT : '/' .? '*/'
     { skip(); };
 
-OPARENT : '(' { skip();};
+OPARENT : '(' ;
 
-CPARENT : ')' {skip();};
+CPARENT : ')' ;
 
-CBRACE : '}' {skip();};
+CBRACE : '}' ;
 
-SEMI : ';' {skip();};
+SEMI : ';' ;
 
