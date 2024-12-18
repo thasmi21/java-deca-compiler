@@ -19,7 +19,6 @@ options {
     // parser if the lexer changes.
     //
     tokenVocab = DecaLexer;
-
 }
 
 // which packages should be imported?

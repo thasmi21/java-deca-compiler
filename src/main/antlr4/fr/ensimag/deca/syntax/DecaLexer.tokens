@@ -1,0 +1,15 @@
+WS=1
+OBRACE=2
+PRINTLN=3
+COMMENT=4
+OPARENT=5
+CPARENT=6
+CBRACE=7
+SEMI=8
+STRING=9
+'{'=2
+'println'=3
+'('=5
+')'=6
+'}'=7
+';'=8
