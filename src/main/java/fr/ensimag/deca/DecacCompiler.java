@@ -140,6 +140,13 @@ public class DecacCompiler {
         String destFile = null;
         // A FAIRE: calculer le nom du fichier .ass à partir du nom du
         // A FAIRE: fichier .deca.
+        if (sourceFile.endsWith(".deca")) {
+            // Remplacer l'extension .deca par .ass
+            destFile = sourceFile.substring(0, sourceFile.length() - 5) + ".ass";
+        } else {
+            // Gérer le cas où le fichier n'a pas l'extension attendue
+            System.err.println("Erreur : le fichier source n'a pas l'extension .deca");
+        }
         PrintStream err = System.err;
         PrintStream out = System.out;
         LOG.debug("Compiling file " + sourceFile + " to assembly file " + destFile);

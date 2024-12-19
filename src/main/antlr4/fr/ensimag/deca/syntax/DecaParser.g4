@@ -19,6 +19,7 @@ options {
     // parser if the lexer changes.
     //
     tokenVocab = DecaLexer;
+
 }
 
 // which packages should be imported?
@@ -116,6 +117,7 @@ inst returns[AbstractInst tree]
     | PRINTLN OPARENT list_expr CPARENT SEMI {
             assert($list_expr.tree != null);
             $tree=new Println(false,$list_expr.tree);
+            setLocation($tree, $PRINTLN);
         }
     | PRINTX OPARENT list_expr CPARENT SEMI {
             assert($list_expr.tree != null);
@@ -360,7 +362,10 @@ literal returns[AbstractExpr tree]
     | fd=FLOAT {
         }
     | STRING {
-        $tree= new StringLiteral($STRING.text);
+        String letexte = $STRING.text.substring(1, $STRING.text.length() - 1);
+        String texte_f = letexte.replace("\\\"", "\"").replace("\\\\", "\\");
+        $tree= new StringLiteral(texte_f);
+        setLocation($tree, $STRING);
         }
     | TRUE {
         }
@@ -380,13 +385,17 @@ ident returns[AbstractIdentifier tree]
 /****     Class related rules     ****/
 
 list_classes returns[ListDeclClass tree]
+    @init   {
+            $tree= new ListDeclClass();
+            }
     :
       (c1=class_decl {
+        $tree.add($c1.tree);
         }
       )*
     ;
 
-class_decl
+class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
         }
     ;

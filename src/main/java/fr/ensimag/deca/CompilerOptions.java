@@ -67,7 +67,17 @@ public class CompilerOptions {
             logger.info("Java assertions disabled");
         }
 
-        throw new UnsupportedOperationException("not yet implemented");
+        //placement du fichier source
+        //on va de manière incremental sans gèrer toutes les options pour l'intant
+        String chemin = args[0];
+        File fichier = new File(chemin);
+        if(fichier.exists() && fichier.isFile()){
+            sourceFiles.add(fichier);
+        }else{
+            System.out.println("Entrer un nom de fichier correct!");
+        }
+
+        //throw new UnsupportedOperationException("not yet implemented");
     }
 
     protected void displayUsage() {

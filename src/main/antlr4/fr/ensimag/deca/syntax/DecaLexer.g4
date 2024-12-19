@@ -15,7 +15,7 @@ options {
                 // A FAIRE : Règle bidon qui reconnait tous les caractères.
                 // A FAIRE : Il faut la supprimer et la remplacer par les vraies règles.
 
-fragment STRING_CAR: ~('"' | '\\' );
+fragment STRING_CAR: ~ ('"' | '\\' );
 
 WS :    ( ' '
         | '\t'
@@ -30,8 +30,11 @@ OBRACE : '{' ;
 
 PRINTLN : 'println';
 
-COMMENT : '/*' .*? '*/'
-    { skip(); };
+COMMENT : ('/*' .*? '*/'
+          | '//' ~[\r\n]*
+          ){
+          skip();
+           };
 
 OPARENT : '(' ;
 
@@ -41,4 +44,5 @@ CBRACE : '}' ;
 
 SEMI : ';' ;
 
-STRING : '"' ('\\"' | '\\\\' | STRING_CAR)* '"';
+STRING : '"' (STRING_CAR | '\\"' | '\\\\')* '"';
+
