@@ -1,0 +1,10 @@
+//programme deca avec une assignation avec partie gauche non lvalue
+
+{
+ a>b = 5;
+}
+//sortie attendu: bad_synt2.deca:
+// on ne peut la partie gauche n'est pas une lvalue:
+/*
+    bad_synt2.deca:5:1: left-hand side of assignment is not an lvalue
+*/

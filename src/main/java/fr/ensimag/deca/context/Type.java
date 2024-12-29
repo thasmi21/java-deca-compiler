@@ -44,6 +44,10 @@ public abstract class Type {
         return false;
     }
 
+    public boolean isArray(){
+        return false;
+    };
+
     public boolean isFloat() {
         return false;
     }
@@ -61,6 +65,10 @@ public abstract class Type {
     }
 
     public boolean isNull() {
+        return false;
+    }
+
+    public boolean isSubTypeOf(Type otherType) {
         return false;
     }
 

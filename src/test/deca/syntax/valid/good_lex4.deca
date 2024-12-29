@@ -1,0 +1,9 @@
+//programme deca pour bien vérifier
+//que le lexer sait reconaitre un programme deca avec un 'main' vide
+
+
+//doit pas planter
+/*sortie attendu:
+   good_lex4.deca:
+   RIEN
+*/

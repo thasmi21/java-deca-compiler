@@ -1,0 +1,10 @@
+//programme deca avec une instruction sans ';'
+
+{
+ x = 5
+}
+//sortie attendu: bad_synt3.deca:
+/*
+    bad_synt3.deca:5:0: no viable alternative at input '}'
+    (faudrait qu'on reformate le message d'erreur)
+*/

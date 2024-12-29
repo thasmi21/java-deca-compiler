@@ -1,0 +1,19 @@
+//programme ne devant pas correctement parser
+
+{
+int x = 5f;
+}
+//sortie attendu:
+/*
+    doit parser 5 à part et f à part:
+
+    OBRACE: [@0,47:47='{',<15>,3:0]
+    IDENT: [@1,49:51='int',<29>,4:0]
+    IDENT: [@2,53:53='x',<29>,4:4]
+    EQUALS: [@3,55:55='=',<32>,4:6]
+    INT: [@4,57:57='5',<30>,4:8]
+    IDENT: [@5,58:58='f',<29>,4:9]
+    SEMI: [@6,59:59=';',<26>,4:10]
+    CBRACE: [@7,61:61='}',<25>,5:0]
+
+*/

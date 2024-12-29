@@ -1,0 +1,7 @@
+//programme deca avec  utilisation d'un vocabulaire
+//incorrect (ici un emojii)
+
+{
+😊;
+}
+//sortie attendu: bad_lexer1.deca:5:0: token non reconnu

@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
-    
+    private EnvironmentType envType = new EnvironmentType(this);
     /**
      * Portable newline character.
      */
@@ -48,6 +48,10 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.source = source;
+    }
+
+    public EnvironmentType getEnvironmentType() {
+        return envType;
     }
 
     /**
@@ -126,8 +130,7 @@ public class DecacCompiler {
     public final SymbolTable symbolTable = new SymbolTable();
 
     public Symbol createSymbol(String name) {
-        return null; // A FAIRE: remplacer par la ligne en commentaire ci-dessous
-        // return symbolTable.create(name);
+        return SymbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
     }
 
     /**

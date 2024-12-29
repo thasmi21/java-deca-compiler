@@ -39,7 +39,13 @@ public abstract class AbstractPrint extends AbstractInst {
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        for (AbstractExpr expressions : arguments.getList()){
+            Type typeExpr = expressions.verifyExpr(compiler, localEnv, currentClass);
+            if(!(typeExpr.isFloat() || typeExpr.isInt() || typeExpr.isString())) {
+                throw new ContextualError("A l'intérieur du print, il faut un int, float ou string ! Type reçu : "+ typeExpr, getLocation());
+            }
+        }
+        // il faut verifier si ce qui est à l'intérieur du print est de type int, float ou string
     }
 
     @Override

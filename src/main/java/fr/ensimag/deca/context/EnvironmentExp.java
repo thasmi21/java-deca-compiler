@@ -1,6 +1,11 @@
 package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.deca.tree.Location;
+
+import javax.print.attribute.HashPrintJobAttributeSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Dictionary associating identifier's ExpDefinition to their names.
@@ -23,11 +28,15 @@ public class EnvironmentExp {
     // A FAIRE : implémenter la structure de donnée représentant un
     // environnement (association nom -> définition, avec possibilité
     // d'empilement).
-
+    Map<Symbol, ExpDefinition> localEnv = new HashMap<>();
     EnvironmentExp parentEnvironment;
     
     public EnvironmentExp(EnvironmentExp parentEnvironment) {
         this.parentEnvironment = parentEnvironment;
+    }
+
+    public Map<Symbol, ExpDefinition> getLocalEnv() {
+        return localEnv;
     }
 
     public static class DoubleDefException extends Exception {
@@ -39,7 +48,14 @@ public class EnvironmentExp {
      * symbol is undefined.
      */
     public ExpDefinition get(Symbol key) {
-        throw new UnsupportedOperationException("not yet implemented");
+        // Problème, ici on ne regarde que dans l'environnement courant, mais si il n'est pas présent dedans il faudrait
+        // regarder dans les environnements parents je crois
+        if (localEnv.containsKey(key)) {
+            return localEnv.get(key);
+        }
+        //Il n' a pas encore le cas ou il y a empilement d'environnements (il faudrait créer une liste chaînée d'envs)
+        //cas ou il n'y a qu'un seul environnement
+        return null;
     }
 
     /**
@@ -58,7 +74,10 @@ public class EnvironmentExp {
      *
      */
     public void declare(Symbol name, ExpDefinition def) throws DoubleDefException {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(localEnv.containsKey(name)) {
+            throw new DoubleDefException();
+        }
+        localEnv.put(name, def);
     }
 
 }

@@ -1,0 +1,14 @@
+//programme deca pour bien vérifier que l'analyseur connait les nombres
+
+{
+//quand on met float devant le x, ça ne marche pas, à voir
+// pour le y, il reconnait un StringLittéral au lieu d'un int (à voir aussi)
+ x = 0x5af.bp-5f;
+ y = 5;
+}
+
+//doit reconnaitre le type float  pour le '0x5af.bp-5f'
+/*sortie attendu:
+   good_synt1.deca: doit sortie un noeud float avec la valeur (45.490234)
+   // à revoir encore
+*/

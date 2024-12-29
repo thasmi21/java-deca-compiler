@@ -16,7 +16,7 @@ import java.util.Map;
  * @date 01/01/2025
  */
 public class SymbolTable {
-    private Map<String, Symbol> map = new HashMap<String, Symbol>();
+    private static Map<String, Symbol> map = new HashMap<String, Symbol>();
 
     /**
      * Create or reuse a symbol.
@@ -24,8 +24,19 @@ public class SymbolTable {
      * If a symbol already exists with the same name in this table, then return
      * this Symbol. Otherwise, create a new Symbol and add it to the table.
      */
-    public Symbol create(String name) {
-        throw new UnsupportedOperationException("Symbol creation");
+    public static Symbol create(String name) {
+
+        if(map.containsKey(name)){
+            //System.out.println("Reusing symbol "+name);  // Debugging
+            return map.get(name);
+        }
+        else {
+            Symbol newSymbol = new Symbol(name);
+            map.put(name, newSymbol);
+            //System.out.println(newSymbol);
+            return newSymbol;
+        }
+
     }
 
     public static class Symbol {
@@ -36,6 +47,7 @@ public class SymbolTable {
             super();
             this.name = name;
         }
+
 
         public String getName() {
             return name;

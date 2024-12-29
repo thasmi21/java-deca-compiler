@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
  */
 public class Program extends AbstractProgram {
     private static final Logger LOG = Logger.getLogger(Program.class);
-    
     public Program(ListDeclClass classes, AbstractMain main) {
         Validate.notNull(classes);
         Validate.notNull(main);
@@ -35,9 +34,11 @@ public class Program extends AbstractProgram {
     @Override
     public void verifyProgram(DecacCompiler compiler) throws ContextualError {
         LOG.debug("verify program: start");
+        //getClasses().verifyListClass(compiler);
+        main.verifyMain(compiler);
         //decommenter la ligne au dessus par Victor
         //throw new UnsupportedOperationException("not yet implemented");
-        // LOG.debug("verify program: end");
+        LOG.debug("verify program: end");
     }
 
     @Override

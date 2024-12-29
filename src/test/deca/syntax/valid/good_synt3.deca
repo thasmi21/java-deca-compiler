@@ -1,0 +1,12 @@
+//programme deca pour bien vérifier
+//que le lexer sait reconaitre un programme deca avec un 'main' vide
+
+
+//doit pas planter
+/*sortie attendu:
+   good_synt3.deca:
+                    > [10, 0] Program
+                       +> ListDeclClass [List with 0 elements]
+                       `> EmptyMain
+
+*/

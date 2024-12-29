@@ -1,6 +1,6 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -83,7 +83,13 @@ public abstract class AbstractExpr extends AbstractInst {
             EnvironmentExp localEnv, ClassDefinition currentClass, 
             Type expectedType)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        Type type = this.verifyExpr(compiler, localEnv, currentClass);
+        if(expectedType.sameType(type)) {
+            return this;
+        }
+        else{
+            throw new ContextualError("Types"+type+" et "+expectedType+" incompatibles !", getLocation());
+        }
     }
     
     
@@ -91,11 +97,20 @@ public abstract class AbstractExpr extends AbstractInst {
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
+
+        // Vérification : une expression de type void ne peut pas être utilisée comme instruction
+        if (exprType.isVoid()) {
+            throw new ContextualError(
+                    "Une expression de type void ne peut pas être utilisée comme instruction.",
+                    this.getLocation()
+            );
+        }
+
     }
 
     /**
-     * Verify the expression as a condition, i.e. check that the type is
+     * Verify the expression as a condition, i.e., check that the type is
      * boolean.
      *
      * @param localEnv
@@ -106,7 +121,10 @@ public abstract class AbstractExpr extends AbstractInst {
      */
     void verifyCondition(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        Type t = this.verifyExpr(compiler, localEnv, currentClass);
+        if (!t.isBoolean()) {
+            throw new ContextualError("La condition doit être un boolean!", this.getLocation());
+        }
     }
 
     /**

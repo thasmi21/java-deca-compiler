@@ -1,12 +1,11 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
+
+import fr.ensimag.deca.tools.SymbolTable;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -31,11 +30,23 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     protected void verifyDeclVar(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass)
-            throws ContextualError {
+            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+        Type t = this.type.verifyType(compiler);
+        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
+        if (t.isVoid()) {
+              throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
+        }
+        initialization.verifyInitialization(compiler,t, localEnv, currentClass);
+        try {
+            localEnv.declare(this.varName.getName(), varDef);
+        } catch(EnvironmentExp.DoubleDefException e) {
+            throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+        }
+        this.varName.setDefinition(varDef);
+        this.varName.setType(t);
     }
 
-    
+
     @Override
     public void decompile(IndentPrintStream s) {
         throw new UnsupportedOperationException("not yet implemented");

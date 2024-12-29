@@ -1,0 +1,7 @@
+//programme deca avec  un mauvais nom de variable
+
+{
+>a = 5;
+}
+//sortie attendu: bad_synt1.deca:
+// ne doit pas accepter le symbole '>' dans le nom d'une variable

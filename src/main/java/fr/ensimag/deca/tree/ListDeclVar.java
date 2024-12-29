@@ -5,6 +5,7 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.deca.tools.SymbolTable;
 
 /**
  * List of declarations (e.g. int x; float y,z).
@@ -31,8 +32,11 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
      * @param currentClass 
      *          corresponds to "class" attribute (null in the main bloc).
      */    
-    void verifyListDeclVariable(DecacCompiler compiler, EnvironmentExp localEnv,
+    void verifyListDeclVar(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+                for(AbstractDeclVar declVar : this.getList()){
+                    declVar.verifyDeclVar(compiler, localEnv, currentClass);
+        }
     }
 
 
