@@ -7,9 +7,9 @@ import org.apache.commons.lang.Validate;
 import java.io.PrintStream;
 
 public class Array extends AbstractExpr{
-    final private int size;
+    private final int size;
     private AbstractExpr[] coefficients;
-    final private AbstractIdentifier type;
+    private final AbstractIdentifier type;
 
     // pour des aimport org.apache.commons.lang.Validate;ssignations du type tab = new int[]
     public Array(int size, AbstractIdentifier type) {
