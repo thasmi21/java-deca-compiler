@@ -1,13 +1,16 @@
 package fr.ensimag.deca.context;
 
-import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.deca.tree.AbstractIdentifier;
 
 public class ArrayType extends Type{
     private Type dataType;
-    private int dimension;
+    private final int dimensions;
 
-    public ArrayType(SymbolTable.Symbol name) {
-        super(name);
+    public ArrayType(Symbol fullSymbol, Type dataType, int dimensions) {
+        super(fullSymbol);
+        this.dataType = dataType;
+        this.dimensions = dimensions;
     }
 
     public Type getDataType() {
@@ -15,6 +18,10 @@ public class ArrayType extends Type{
     }
     public void setDataType(Type dataType) {
         this.dataType = dataType;
+    }
+
+    public int getDimensions() {
+        return dimensions;
     }
 
     @Override

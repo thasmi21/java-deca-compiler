@@ -32,6 +32,11 @@ public class DeclVar extends AbstractDeclVar {
     protected void verifyDeclVar(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type t = this.type.verifyType(compiler);
+        int dim = t.getDimensions();
+//        String typeBefore =
+////        if(dim !=0){
+////            new ArrayType(t, dim,);
+////        }
         VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
         if (t.isVoid()) {
               throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());

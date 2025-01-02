@@ -77,7 +77,6 @@ OPARENT : '(' ;
 CPARENT : ')' ;
 
 OCROCHET : '[';
-
 CCROCHET : ']';
 
 CBRACE : '}' ;
@@ -91,7 +90,8 @@ STRING : '"' (STRING_CAR | '\\"' | '\\\\')* '"';
 fragment LETTER : [a-zA-Z] ;
 fragment DIGIT : [0-9] ;
 fragment POSITIVE_DIGIT : '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9';
-IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )* ;
+IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )*;
+IDENTARRAY : IDENT (OCROCHET CCROCHET)+ ;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;

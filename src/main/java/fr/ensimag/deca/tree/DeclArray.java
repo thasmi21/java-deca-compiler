@@ -12,7 +12,7 @@ import org.apache.commons.lang.Validate;
  * @author gl06
  * @date 01/01/2025
  */
-public class DeclArray extends AbstractDeclArray {
+public class DeclArray extends AbstractDeclVar {
 
 
     final private AbstractIdentifier type;
@@ -39,10 +39,11 @@ public class DeclArray extends AbstractDeclArray {
         this.type = type;
         this.varName = varName;
         this.initialization = initialization;
+        System.out.println(size);
     }
 
     @Override
-    protected void verifyDeclArray(DecacCompiler compiler,
+    protected void verifyDeclVar(DecacCompiler compiler,
                                  EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type t = this.type.verifyType(compiler);
         VariableDefinition varDef = new VariableDefinition(t, this.getLocation());

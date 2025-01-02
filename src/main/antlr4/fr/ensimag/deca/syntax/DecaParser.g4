@@ -75,10 +75,9 @@ list_decl returns[ListDeclVar tree]
 
 decl_var_set[ListDeclVar l]
     : (type list_decl_var[$l,$type.tree] SEMI
-    |  type OCROCHET INT CCROCHET list_decl_array[$l,$type.tree] SEMI
-    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
-    |  type list_decl_array[$l,$type.tree] OCROCHET INT CCROCHET SEMI
-    |  type list_decl_array[$l,$type.tree] OCROCHET CCROCHET SEMI
+//    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
+//    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
+//    |  type list_decl_array[$l,$type.tree] OCROCHET CCROCHET SEMI
     )
     ;
 
@@ -502,12 +501,12 @@ literal returns[AbstractExpr tree]
 
 ident returns[AbstractIdentifier tree]
     :
-     IDENT OCROCHET CCROCHET {
-             $tree = new Identifier(SymbolTable.create($IDENT.text+$OCROCHET.text+$CCROCHET.text));
-             setLocation($tree, $IDENT);
+     IDENTARRAY {
+             $tree = new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
+             setLocation($tree, $IDENTARRAY);
            }
      |
-     IDENT  {
+     IDENT {
         $tree = new Identifier(SymbolTable.create($IDENT.text));
         setLocation($tree,$IDENT);
         }

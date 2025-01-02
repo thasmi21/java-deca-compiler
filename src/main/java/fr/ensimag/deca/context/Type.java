@@ -31,6 +31,9 @@ public abstract class Type {
         return name;
     }
 
+    public int getDimensions(){
+        return 0;
+    }
     @Override
     public String toString() {
         return getName().toString();
