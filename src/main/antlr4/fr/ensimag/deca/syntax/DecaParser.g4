@@ -488,7 +488,8 @@ ident returns[AbstractIdentifier tree]
 identarray returns[AbstractIdentifier tree]
     :
     IDTARRAY{
-        $tree=new
+        $tree=new ArrayIdf(SymbolTable.create($IDTARRAY.text));
+        setLocation($tree, $IDTARRAY);
     }
     ;
 

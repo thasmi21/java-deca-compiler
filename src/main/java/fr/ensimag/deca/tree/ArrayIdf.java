@@ -20,6 +20,7 @@ public class ArrayIdf extends Identifier {
 
     public ArrayIdf(Symbol name) {
         super(name);
+        taille = new ArrayList<Integer>();
         dimensions = 0;
         boolean entreCrochet = false;
         String nbr="";
@@ -27,10 +28,10 @@ public class ArrayIdf extends Identifier {
             if (caractere == ']') {
                 entreCrochet = false;
                 taille.add(parseInt(nbr));
-                nbr="";
+                nbr = "";
             }
-            if(entreCrochet) {
-                nbr+=caractere;
+            if (entreCrochet) {
+                nbr += caractere;
             }
             if (caractere == '[') {
                 entreCrochet = true;
