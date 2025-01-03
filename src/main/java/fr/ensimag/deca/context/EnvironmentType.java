@@ -66,6 +66,18 @@ public class EnvironmentType {
         envTypes.put(s, typeDef);
     }
 
+    // Méthode qui sert a debugger
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("EnvironmentType contains the following keys:\n");
+
+        for (Symbol symbol : envTypes.keySet()) {
+            sb.append(" - ").append(symbol.getName()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
     public final VoidType    VOID;
     public final IntType     INT;
     public final FloatType   FLOAT;

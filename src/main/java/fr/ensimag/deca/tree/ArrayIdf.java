@@ -68,7 +68,7 @@ public class ArrayIdf extends Identifier {
         return "Array" + super.prettyPrintNode();
     }
 
-    private String extractBaseType(String fullName) {
+    public static String extractBaseType(String fullName) {
         int bracketIndex = fullName.indexOf('[');
         if (bracketIndex == -1) {
             return fullName; // Pas de crochets, le type est directement le type de base
