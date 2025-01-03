@@ -74,36 +74,9 @@ list_decl returns[ListDeclVar tree]
     ;
 
 decl_var_set[ListDeclVar l]
-    : (type list_decl_var[$l,$type.tree] SEMI
-//    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
-//    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
-//    |  type list_decl_array[$l,$type.tree] OCROCHET CCROCHET SEMI
-    )
+    : type list_decl_var[$l,$type.tree] SEMI
     ;
 
-list_decl_array[ListDeclVar l, AbstractIdentifier t]
-    :dv1=decl_array[$t]{
-    $l.add($dv1.tree);
-            } (COMMA dv2=decl_array[$t] {
-                $l.add($dv2.tree);
-            }
-            )*
-    ;
-
-decl_array [AbstractIdentifier t] returns[AbstractDeclVar tree]
-    @init{
-    }
-    : i=ident
-    (EQUALS e=expr {
-                $tree = new DeclVar($t, $i.tree, new Initialization($e.tree)) ;
-                setLocation($tree, $EQUALS);
-            }
-         | {
-                $tree = new DeclVar($t, $i.tree, new NoInitialization()) ;
-                setLocation($tree, $i.start);
-            }
-         )
-    ;
 
 list_decl_var[ListDeclVar l, AbstractIdentifier t]
     : dv1=decl_var[$t] {
@@ -445,9 +418,9 @@ primary_expr returns[AbstractExpr tree]
             $tree=$ident.tree;
             setLocation($tree,$NEW);
         }
-    | NEW ident OCROCHET INT CCROCHET {
-            assert($ident.tree !=null);
-            $tree = new Array(Integer.parseInt($INT.text), $ident.tree);
+    | NEW i=identarray {
+            assert($i.tree !=null);
+            $tree=$i.tree;
             setLocation($tree, $NEW);
     }
     | cast=OPARENT type CPARENT OPARENT expr CPARENT {
@@ -510,9 +483,15 @@ ident returns[AbstractIdentifier tree]
         $tree = new Identifier(SymbolTable.create($IDENT.text));
         setLocation($tree,$IDENT);
         }
-
-
     ;
+
+identarray returns[AbstractIdentifier tree]
+    :
+    IDTARRAY{
+        $tree=new
+    }
+    ;
+
 
 /****     Class related rules     ****/
 
