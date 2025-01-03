@@ -35,6 +35,13 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             else{
                 type=typeRight;
             }
+            //Pour ajouter l'enrichissement Convfloat
+            if(!typeLeft.isFloat()){
+                setLeftOperand(new ConvFloat(getLeftOperand()));
+            }
+            if(!typeRight.isFloat()){
+                setRightOperand(new ConvFloat(getRightOperand()));
+            }
         }
         else {
             this.setType(compiler.environmentType.INT);

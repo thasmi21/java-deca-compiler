@@ -163,6 +163,8 @@ public class Identifier extends AbstractIdentifier {
         if (def == null) {
             throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
         }
+        this.setDefinition(def);
+        this.setType(def.getType());
         return def.getType();
     }
 
