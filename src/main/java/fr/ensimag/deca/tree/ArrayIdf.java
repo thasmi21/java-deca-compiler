@@ -46,7 +46,7 @@ public class ArrayIdf extends Identifier {
 
         String fullName = getName().getName();
         String baseName = WithoutBrackets(fullName);
-
+        ArrayList<Type> T=new ArrayList<>();
         // Vérifie que le type de base (sans crochets) est défini
         Symbol baseSymbol = compiler.createSymbol(baseName);
         TypeDefinition baseTypeDef = env.defOfType(baseSymbol);
@@ -60,9 +60,10 @@ public class ArrayIdf extends Identifier {
         // Construction progressive des types tableaux
         for (int i = 0; i < dimensions; i++) {
             Symbol arraySymbol = compiler.createSymbol(fullName);
+            T.add(currentType);
             currentType = new ArrayType(arraySymbol, currentType, i + 1);
         }
-        array = new Array(taille,currentType);
+        this.array = new Array(taille,T);
         // Associez le dernier type tableau à l'identifiant
         setDefinition(new TypeDefinition(currentType, getLocation()));
         return currentType;

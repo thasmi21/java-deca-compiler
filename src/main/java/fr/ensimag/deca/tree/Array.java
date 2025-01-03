@@ -12,7 +12,7 @@ import static java.lang.System.arraycopy;
 public class Array extends AbstractExpr{
     private final int size;
     private AbstractExpr[] coefficients;
-    private final Type type;
+    private Type type;
 
 
 
@@ -29,31 +29,32 @@ public class Array extends AbstractExpr{
         this.coefficients = new AbstractExpr[size];
     }
 
-    public Array(ArrayList<Integer> sizes, Type type) {
-        Validate.notNull(type);
+    public Array(ArrayList<Integer> sizes, ArrayList<Type> types) {
+        Validate.notNull(types);
         Validate.notNull(sizes);
-        this.type = type;
+        Type type = types.get(types.size()-1);
+        Validate.notNull(type);
         int size = sizes.get(0);
         if(sizes.size()!=1){
             sizes.remove(0);
+            types.remove(types.size()-1);
             if(size <= 0 ){
                 throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
             }
             this.size = size;
             this.coefficients = new AbstractExpr[size];
             for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(sizes, type);
+                this.coefficients[i]= new Array(sizes, types);
             }
         }
         else{
-            int size2 = sizes.get(0);
             if(size <= 0 ){
                 throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
             }
             this.size = size;
             this.coefficients = new AbstractExpr[size];
             for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(size2, type);
+                this.coefficients[i]= new Array(size, type);
             }
         }
     }
