@@ -2,6 +2,8 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 
 /**
  * Assignment, i.e. lvalue = expr.
@@ -50,5 +52,18 @@ public class Assign extends AbstractBinaryExpr {
     protected String getOperatorName() {
         return "=";
     }
+
+    @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        getRightOperand().codeGenExpr(compiler);
+
+        //compiler.addInstruction(new STORE(Register.R1, getLeftOperand().getLocation()));
+    }
+
+    @Override
+    public void codeGenExpr(DecacCompiler compiler) {
+        //TODO
+    }
+
 
 }

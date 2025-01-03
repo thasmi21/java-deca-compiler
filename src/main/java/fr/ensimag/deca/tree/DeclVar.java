@@ -6,6 +6,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -44,6 +45,14 @@ public class DeclVar extends AbstractDeclVar {
         }
         this.varName.setDefinition(varDef);
         this.varName.setType(t);
+    }
+
+    @Override
+    public void codeGenDeclVar(DecacCompiler compiler) {
+        // On a déjà réservé dans la class mère la place nécessaire dans la pile avec ADDSP
+
+        // Maintenant on doit Enregistrer l'emplacement
+        setLocation();
     }
 
 

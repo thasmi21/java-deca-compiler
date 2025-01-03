@@ -1,0 +1,11 @@
+// Petit proggrame pour tester l'utilisation de println
+//
+// Resutats:
+//      Petit test
+//
+// Historique:
+//      cree le 02/01/2025
+
+{
+        println("Petit test");
+}
