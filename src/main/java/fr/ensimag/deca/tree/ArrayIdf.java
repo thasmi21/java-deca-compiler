@@ -16,7 +16,7 @@ import static java.lang.Integer.parseInt;
 public class ArrayIdf extends Identifier {
     private int dimensions;
     private ArrayList<Integer> taille;
-
+    private AbstractExpr array;
 
     public ArrayIdf(Symbol name) {
         super(name);
@@ -45,22 +45,40 @@ public class ArrayIdf extends Identifier {
         EnvironmentType env = compiler.getEnvironmentType();
 
         String fullName = getName().getName();
-        String baseName = extractBaseType(fullName);
+        String baseName = WithoutBrackets(fullName);
 
-        // Vérifiez que le type de base (sans crochets) est défini
+        // Vérifie que le type de base (sans crochets) est défini
         Symbol baseSymbol = compiler.createSymbol(baseName);
         TypeDefinition baseTypeDef = env.defOfType(baseSymbol);
         if (baseTypeDef == null) {
             throw new ContextualError("Base type '" + baseName + "' is not defined", getLocation());
         }
 
-        // Construisez un type tableau avec les dimensions spécifiées
-        Type baseType = baseTypeDef.getType();
-        Symbol fullSymbol = compiler.createSymbol(fullName); // Créez le symbole complet
-        Type arrayType = new ArrayType(fullSymbol, baseType, dimensions);
-        // Associez le type tableau à l'identifiant
-        setDefinition(new TypeDefinition(arrayType, getLocation()));
-        return arrayType;
+        // Récupération du type de base
+        Type currentType = baseTypeDef.getType();
+
+        // Construction progressive des types tableaux
+        for (int i = 0; i < dimensions; i++) {
+            Symbol arraySymbol = compiler.createSymbol(fullName);
+            currentType = new ArrayType(arraySymbol, currentType, i + 1);
+        }
+        array = new Array(taille,currentType);
+        // Associez le dernier type tableau à l'identifiant
+        setDefinition(new TypeDefinition(currentType, getLocation()));
+        return currentType;
+    }
+
+    public String getNameWithoutBrackets() {
+        String fullName = getName().getName();
+        return WithoutBrackets(fullName);
+    }
+
+    public String WithoutBrackets(String fullName) {
+        int bracketIndex = fullName.indexOf('[');
+        if (bracketIndex == -1) {
+            return fullName; // Pas de crochets, le type est directement le type de base
+        }
+        return fullName.substring(0, bracketIndex);
     }
 
     @Override
