@@ -11,7 +11,7 @@ public class Array extends AbstractExpr{
     private AbstractExpr[] coefficients;
     private final AbstractIdentifier type;
 
-    // pour des aimport org.apache.commons.lang.Validate;ssignations du type tab = new int[]
+    // pour des assignations du type tab = new int[]
     public Array(int size, AbstractIdentifier type) {
         //mettre le type comme ça ? Ou alors créer une classe ArrayType qui extends Type
         Validate.notNull(type);
@@ -64,7 +64,6 @@ public class Array extends AbstractExpr{
 
     @Override
     public void decompile(IndentPrintStream s) {
-
     }
 
     @Override

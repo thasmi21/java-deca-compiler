@@ -15,9 +15,9 @@ import org.apache.commons.lang.Validate;
 public class DeclVar extends AbstractDeclVar {
 
     
-    final private AbstractIdentifier type;
-    final private AbstractIdentifier varName;
-    final private AbstractInitialization initialization;
+    final protected AbstractIdentifier type;
+    final protected AbstractIdentifier varName;
+    final protected AbstractInitialization initialization;
 
     public DeclVar(AbstractIdentifier type, AbstractIdentifier varName, AbstractInitialization initialization) {
         Validate.notNull(type);
@@ -28,15 +28,22 @@ public class DeclVar extends AbstractDeclVar {
         this.initialization = initialization;
     }
 
+    public AbstractIdentifier getType() {
+        return this.type;
+    }
+
+    public AbstractIdentifier getVarName() {
+        return this.varName;
+    }
+
+    public AbstractInitialization getInitialization() {
+        return this.initialization;
+    }
+
     @Override
     protected void verifyDeclVar(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type t = this.type.verifyType(compiler);
-        int dim = t.getDimensions();
-//        String typeBefore =
-////        if(dim !=0){
-////            new ArrayType(t, dim,);
-////        }
         VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
         if (t.isVoid()) {
               throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());

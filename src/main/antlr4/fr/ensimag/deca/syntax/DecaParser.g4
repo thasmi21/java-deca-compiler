@@ -73,8 +73,10 @@ list_decl returns[ListDeclVar tree]
     : decl_var_set[$tree]*
     ;
 
+
 decl_var_set[ListDeclVar l]
     : type list_decl_var[$l,$type.tree] SEMI
+    | type_array list_decl_array[$l,$type_array.tree] SEMI
     ;
 
 
@@ -82,6 +84,15 @@ list_decl_var[ListDeclVar l, AbstractIdentifier t]
     : dv1=decl_var[$t] {
         $l.add($dv1.tree);
         } (COMMA dv2=decl_var[$t] {
+            $l.add($dv2.tree);
+        }
+      )*
+    ;
+
+list_decl_array[ListDeclVar l, AbstractIdentifier t]
+    : dv1=decl_array[$t] {
+        $l.add($dv1.tree);
+        } (COMMA dv2=decl_array[$t] {
             $l.add($dv2.tree);
         }
       )*
@@ -97,6 +108,21 @@ decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
         }
      | {
             $tree = new DeclVar($t, $i.tree, new NoInitialization()) ;
+            setLocation($tree, $i.start);
+        }
+     )
+    ;
+
+decl_array[AbstractIdentifier t] returns[AbstractDeclVar tree]
+    @ init {
+    }
+    : i=identarray_without_int
+      (EQUALS e=expr {
+            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
+            setLocation($tree, $EQUALS);
+        }
+     | {
+            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
             setLocation($tree, $i.start);
         }
      )
@@ -434,6 +460,13 @@ primary_expr returns[AbstractExpr tree]
         }
     ;
 
+type_array returns[AbstractIdentifier tree]
+    : i=identarray_without_int {
+            assert($i.tree != null);
+            $tree=$i.tree;
+        }
+    ;
+
 type returns[AbstractIdentifier tree]
     : ident {
             assert($ident.tree != null);
@@ -474,15 +507,18 @@ literal returns[AbstractExpr tree]
 
 ident returns[AbstractIdentifier tree]
     :
-     IDENTARRAY {
-             $tree = new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
-             setLocation($tree, $IDENTARRAY);
-           }
-     |
      IDENT {
         $tree = new Identifier(SymbolTable.create($IDENT.text));
         setLocation($tree,$IDENT);
         }
+    ;
+
+identarray_without_int returns[AbstractIdentifier tree]
+    :
+    IDENTARRAY{
+        $tree=new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
+        setLocation($tree, $IDENTARRAY);
+    }
     ;
 
 identarray returns[AbstractIdentifier tree]

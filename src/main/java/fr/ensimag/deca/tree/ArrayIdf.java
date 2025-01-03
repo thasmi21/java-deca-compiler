@@ -40,13 +40,6 @@ public class ArrayIdf extends Identifier {
         }
     }
 
-    // j'ai envie de mettre un deuxieme constructeur pour "new int[]" mais pour ça il faut l'attribut name mais il
-    // vaut null dans ce cas. Peut être extends Identifier est une mauvaise idée.
-
-//    public int getSize() {
-//        return size;
-//    }
-
     @Override
     public Type verifyType(DecacCompiler compiler) throws ContextualError {
         EnvironmentType env = compiler.getEnvironmentType();

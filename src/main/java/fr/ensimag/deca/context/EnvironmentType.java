@@ -42,7 +42,6 @@ public class EnvironmentType {
         Symbol stringSymb = compiler.createSymbol("string");
         STRING = new StringType(stringSymb);
         // not added to envTypes, it's not visible for the user.
-        
     }
 
     public Map<Symbol, TypeDefinition> getEnvTypes() {
@@ -52,6 +51,19 @@ public class EnvironmentType {
     public TypeDefinition defOfType(Symbol s) {
 
         return envTypes.get(s);
+    }
+
+    /**
+     * Ajoute un type dynamique dans l'environnement.
+     * @param s Le symbole du type
+     * @param typeDef La définition du type
+     * @throws IllegalArgumentException si le type existe déjà
+     */
+    public void setTypeDefinition(Symbol s, TypeDefinition typeDef) {
+        if (envTypes.containsKey(s)) {
+            throw new IllegalArgumentException("Le type '" + s.getName() + "' est déjà défini dans l'environnement.");
+        }
+        envTypes.put(s, typeDef);
     }
 
     public final VoidType    VOID;
