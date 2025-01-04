@@ -519,6 +519,11 @@ identarray_without_int returns[AbstractIdentifier tree]
         $tree=new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
         setLocation($tree, $IDENTARRAY);
     }
+    |
+    IDENT{
+        $tree=new ArrayIdentifier(SymbolTable.create($IDENT.text));
+        setLocation($tree, $IDENT);
+    }
     ;
 
 identarray returns[AbstractIdentifier tree]
