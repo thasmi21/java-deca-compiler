@@ -26,7 +26,7 @@ public class Main extends AbstractMain {
     }
 
     @Override
-    protected void verifyMain(DecacCompiler compiler) throws ContextualError, EnvironmentExp.DoubleDefException {
+    protected void verifyMain(DecacCompiler compiler) throws ContextualError {
         EnvironmentExp localEnv = new EnvironmentExp(null);
         LOG.debug("verify Main: start");
         declVariables.verifyListDeclVar(compiler,localEnv, null);

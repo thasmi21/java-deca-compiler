@@ -17,7 +17,7 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+            ClassDefinition currentClass) throws ContextualError {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         if(!(typeLeft.isInt() || typeLeft.isFloat()) || !(typeRight.isInt() || typeRight.isFloat()) ) {

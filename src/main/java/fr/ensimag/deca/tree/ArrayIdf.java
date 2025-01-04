@@ -68,6 +68,7 @@ public class ArrayIdf extends Identifier {
         }
         // Associez le dernier type tableau à l'identifiant
         setDefinition(new TypeDefinition(currentType, getLocation()));
+        setType(currentType);
         return currentType;
     }
 
@@ -104,9 +105,10 @@ public class ArrayIdf extends Identifier {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-                           ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+                           ClassDefinition currentClass) throws ContextualError {
         //System.out.println("hola");
         Type t = verifyType(compiler);
+        //System.out.println(getType());
         String nameString= getName().getName();
         String nameStringWithoutInt = removeIntegers(nameString);
         ExpDefinition def = localEnv.get(compiler.createSymbol(nameStringWithoutInt));
@@ -118,7 +120,11 @@ public class ArrayIdf extends Identifier {
         if (typeDef != null) {
             ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
             // Ajoute la définition du type dans `localEnv`
-            localEnv.declare(getName(), newDef);
+            try {
+                localEnv.declare(getName(), newDef);
+            } catch(EnvironmentExp.DoubleDefException e) {
+                throw new ContextualError("La variable "+getName()+" est déjà définie !",this.getLocation());
+            }
             return typeDef.getType();
         }
 
@@ -129,9 +135,4 @@ public class ArrayIdf extends Identifier {
     public static String removeIntegers(String input) {
         return input.replaceAll("\\d", ""); // Remplace tous les chiffres par une chaîne vide
     }
-
-//    @Override
-//    String prettyPrintNode() {
-//        return "Array (" + getName() + ")";
-//    }
 }

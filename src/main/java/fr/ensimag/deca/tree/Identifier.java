@@ -162,7 +162,7 @@ public class  Identifier extends AbstractIdentifier {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+            ClassDefinition currentClass) throws ContextualError {
         ExpDefinition def = localEnv.get(name);
         if (def != null) {
             return def.getType();
@@ -172,7 +172,11 @@ public class  Identifier extends AbstractIdentifier {
         if (typeDef != null) {
             ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
             // Ajoute la définition du type dans `localEnv`
-            localEnv.declare(name, newDef);
+            try {
+                localEnv.declare(getName(), newDef);
+            } catch(EnvironmentExp.DoubleDefException e) {
+                throw new ContextualError("La variable "+getName()+" est déjà définie !",this.getLocation());
+            }
             return typeDef.getType();
         }
 

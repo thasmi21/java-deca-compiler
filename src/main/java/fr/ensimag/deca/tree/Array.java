@@ -85,7 +85,7 @@ public class Array extends AbstractExpr{
 
     // Je vérifie que tous les coefficients du tableau sont du bon type
     @Override
-    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type typeArray= this.type;
         if (!(typeArray instanceof Type)) {
             throw new ContextualError("L'expression n'est pas un tableau valide.", getLocation());

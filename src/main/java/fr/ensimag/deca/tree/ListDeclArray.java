@@ -28,7 +28,7 @@ public class ListDeclArray extends ListDeclVar {
      */
     @Override
     void verifyListDeclVar(DecacCompiler compiler, EnvironmentExp localEnv,
-                           ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+                           ClassDefinition currentClass) throws ContextualError {
         for(AbstractDeclVar declArray : this.getList()){
             if (declArray instanceof DeclArray) {
                 declArray.verifyDeclVar(compiler, localEnv, currentClass);

@@ -33,7 +33,7 @@ public class Program extends AbstractProgram {
     private AbstractMain main;
 
     @Override
-    public void verifyProgram(DecacCompiler compiler) throws ContextualError, EnvironmentExp.DoubleDefException {
+    public void verifyProgram(DecacCompiler compiler) throws ContextualError {
         LOG.debug("verify program: start");
         //getClasses().verifyListClass(compiler);
         main.verifyMain(compiler);

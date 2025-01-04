@@ -66,7 +66,7 @@ public abstract class AbstractExpr extends AbstractInst {
      */
     public abstract Type verifyExpr(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass)
-            throws ContextualError, EnvironmentExp.DoubleDefException;
+            throws ContextualError;
 
     /**
      * Verify the expression in right hand-side of (implicit) assignments 
@@ -82,7 +82,7 @@ public abstract class AbstractExpr extends AbstractInst {
     public AbstractExpr verifyRValue(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, 
             Type expectedType)
-            throws ContextualError, EnvironmentExp.DoubleDefException {
+            throws ContextualError {
         Type type = this.verifyExpr(compiler, localEnv, currentClass);
         if(expectedType.sameType(type)) {
             return this;
@@ -96,7 +96,7 @@ public abstract class AbstractExpr extends AbstractInst {
     @Override
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
-            throws ContextualError, EnvironmentExp.DoubleDefException {
+            throws ContextualError {
         Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
 
         // Vérification : une expression de type void ne peut pas être utilisée comme instruction
@@ -120,7 +120,7 @@ public abstract class AbstractExpr extends AbstractInst {
      *            the main program.
      */
     void verifyCondition(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+            ClassDefinition currentClass) throws ContextualError {
         Type t = this.verifyExpr(compiler, localEnv, currentClass);
         if (!t.isBoolean()) {
             throw new ContextualError("La condition doit être un boolean!", this.getLocation());
