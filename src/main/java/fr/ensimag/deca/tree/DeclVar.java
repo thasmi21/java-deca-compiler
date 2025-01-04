@@ -1,5 +1,6 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.MemoryOperand;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
@@ -51,10 +52,20 @@ public class DeclVar extends AbstractDeclVar {
     public void codeGenDeclVar(DecacCompiler compiler) {
         // On a déjà réservé dans la class mère la place nécessaire dans la pile avec ADDSP
 
-        // Maintenant on doit Enregistrer l'emplacement
-        setLocation();
+        // Maintenant on doit Enregistrer l'emplacement de la variable
+        // this.memoryLocation = new MemoryOperand(compiler.getNextGlobalOffset());
     }
 
+    // On crée un attribut qui représente l'emplacement mémoire associé à la variable
+//    private MemoryOperand memoryLocation;
+//
+//    public MemoryOperand getMemoryLocation() {
+//        return memoryLocation;
+//    }
+//
+//    public void setMemoryLocation(MemoryOperand memoryLocation) {
+//        this.memoryLocation = memoryLocation;
+//    }
 
     @Override
     public void decompile(IndentPrintStream s) {

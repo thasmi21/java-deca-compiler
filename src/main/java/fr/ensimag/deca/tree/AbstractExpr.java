@@ -133,6 +133,7 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
+        // compiler.addInstruction(new WSTR());
         throw new UnsupportedOperationException("not yet implemented");
     }
 

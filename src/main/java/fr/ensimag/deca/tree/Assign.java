@@ -57,7 +57,8 @@ public class Assign extends AbstractBinaryExpr {
     public void codeGenInst(DecacCompiler compiler) {
         getRightOperand().codeGenExpr(compiler);
 
-        //compiler.addInstruction(new STORE(Register.R1, getLeftOperand().getLocation()));
+        // On prend un registre libre
+        //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
     }
 
     @Override

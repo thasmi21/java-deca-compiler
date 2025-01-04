@@ -46,7 +46,10 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
     void codeGenListDeclVar(DecacCompiler compiler) {
         // On commence par faire de la place dans la pile,
         // autant qu'il y a de variables définies
-        compiler.addInstruction(new ADDSP(getList().size()));
+        int taille_pile = getList().size();
+        if (taille_pile > 0) {
+            compiler.addInstruction(new ADDSP(taille_pile));
+        }
 
         // Pour chaque variable on va appeler une nouvelle méthode de genCode
         for (AbstractDeclVar declVar : this.getList()){
