@@ -26,7 +26,7 @@ public abstract class AbstractInst extends Tree {
      *          corresponds to the "return" attribute (void in the main bloc).
      */    
     protected abstract void verifyInst(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass, Type returnType) throws ContextualError;
+            EnvironmentExp localEnv, ClassDefinition currentClass, Type returnType) throws ContextualError, EnvironmentExp.DoubleDefException;
 
     /**
      * Generate assembly code for the instruction.

@@ -42,7 +42,7 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     protected void verifyDeclVar(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         Type t = this.type.verifyType(compiler);
         VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
         if (t.isVoid()) {

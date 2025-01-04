@@ -2,6 +2,7 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
+import fr.ensimag.deca.context.EnvironmentExp;
 
 /**
  * Main block of a Deca program.
@@ -17,5 +18,5 @@ public abstract class AbstractMain extends Tree {
     /**
      * Implements non-terminal "main" of [SyntaxeContextuelle] in pass 3 
      */
-    protected abstract void verifyMain(DecacCompiler compiler) throws ContextualError;
+    protected abstract void verifyMain(DecacCompiler compiler) throws ContextualError, EnvironmentExp.DoubleDefException;
 }

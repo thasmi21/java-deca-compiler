@@ -38,7 +38,7 @@ public abstract class AbstractPrint extends AbstractInst {
     @Override
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
-            throws ContextualError {
+            throws ContextualError, EnvironmentExp.DoubleDefException {
         for (AbstractExpr expressions : arguments.getList()){
             Type typeExpr = expressions.verifyExpr(compiler, localEnv, currentClass);
             if(!(typeExpr.isFloat() || typeExpr.isInt() || typeExpr.isString())) {

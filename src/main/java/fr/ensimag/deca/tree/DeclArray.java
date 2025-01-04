@@ -33,7 +33,7 @@ public class DeclArray extends DeclVar {
 
     @Override
     protected void verifyDeclVar(DecacCompiler compiler,
-                                 EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+                                 EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         EnvironmentType env = compiler.getEnvironmentType();
         //Vérification du type de base
         Type identType = this.getType().verifyType(compiler);

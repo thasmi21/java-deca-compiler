@@ -1,13 +1,10 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentType;
-import fr.ensimag.deca.context.Type;
-import fr.ensimag.deca.context.ArrayType;
-import fr.ensimag.deca.context.TypeDefinition;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
@@ -59,7 +56,7 @@ public class ArrayIdf extends Identifier {
 
         // Construction progressive des types tableaux
         for (int i = 0; i < dimensions; i++) {
-            Symbol arraySymbol = compiler.createSymbol(fullName);
+            Symbol arraySymbol = compiler.createSymbol(removeIntegers(fullName));
             T.add(currentType);
             currentType = new ArrayType(arraySymbol, currentType, i + 1);
         }
@@ -74,11 +71,6 @@ public class ArrayIdf extends Identifier {
         return currentType;
     }
 
-    public String getNameWithoutBrackets() {
-        String fullName = getName().getName();
-        return WithoutBrackets(fullName);
-    }
-
     public String WithoutBrackets(String fullName) {
         int bracketIndex = fullName.indexOf('[');
         if (bracketIndex == -1) {
@@ -89,7 +81,7 @@ public class ArrayIdf extends Identifier {
 
     @Override
     String prettyPrintNode() {
-        return "Array" + super.prettyPrintNode();
+        return "IdfArray" + super.prettyPrintNode();
     }
 
     public static String extractBaseType(String fullName) {
@@ -109,4 +101,37 @@ public class ArrayIdf extends Identifier {
         }
         return count; // Chaque "[" correspond à une dimension
     }
+
+    @Override
+    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
+                           ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
+        //System.out.println("hola");
+        Type t = verifyType(compiler);
+        String nameString= getName().getName();
+        String nameStringWithoutInt = removeIntegers(nameString);
+        ExpDefinition def = localEnv.get(compiler.createSymbol(nameStringWithoutInt));
+        if (def != null) {
+            return def.getType();
+        }
+        // 🔹 2️⃣ Vérifier si c'est un type connu dans `env_types`
+        TypeDefinition typeDef = compiler.getEnvironmentType().defOfType(compiler.createSymbol(nameStringWithoutInt));
+        if (typeDef != null) {
+            ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
+            // Ajoute la définition du type dans `localEnv`
+            localEnv.declare(getName(), newDef);
+            return typeDef.getType();
+        }
+
+        // 🔹 3️⃣ Si l'identifiant n'est trouvé ni dans `localEnv` ni dans `env_types`, lever une erreur
+        throw new ContextualError("Identifier '" + getName().getName() + "' is not defined", getLocation());
+    }
+
+    public static String removeIntegers(String input) {
+        return input.replaceAll("\\d", ""); // Remplace tous les chiffres par une chaîne vide
+    }
+
+//    @Override
+//    String prettyPrintNode() {
+//        return "Array (" + getName() + ")";
+//    }
 }

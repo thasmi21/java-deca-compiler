@@ -18,7 +18,7 @@ public class UnaryMinus extends AbstractUnaryExpr {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         AbstractExpr operand = getOperand();
         Type operandType = operand.verifyExpr(compiler, localEnv, currentClass);
         if (!operandType.isInt() || !operandType.isFloat()) {

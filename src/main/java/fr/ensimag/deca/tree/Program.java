@@ -2,6 +2,7 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
+import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.instructions.*;
 import java.io.PrintStream;
@@ -32,7 +33,7 @@ public class Program extends AbstractProgram {
     private AbstractMain main;
 
     @Override
-    public void verifyProgram(DecacCompiler compiler) throws ContextualError {
+    public void verifyProgram(DecacCompiler compiler) throws ContextualError, EnvironmentExp.DoubleDefException {
         LOG.debug("verify program: start");
         //getClasses().verifyListClass(compiler);
         main.verifyMain(compiler);

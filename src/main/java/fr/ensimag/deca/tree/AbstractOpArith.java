@@ -20,7 +20,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         Type type;

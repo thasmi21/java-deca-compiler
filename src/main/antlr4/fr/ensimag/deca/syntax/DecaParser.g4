@@ -230,11 +230,13 @@ expr returns[AbstractExpr tree]
     ;
 
 assign_expr returns[AbstractExpr tree]
+
     : e=or_expr (
         /* condition: expression e must be a "LVALUE" */ {
             if (! ($e.tree instanceof AbstractLValue)) {
                 throw new InvalidLValue(this, $ctx);
             }
+
             assert($e.tree != null);
             $tree = $e.tree;
         }
@@ -421,7 +423,6 @@ primary_expr returns[AbstractExpr tree]
     : ident {
             assert($ident.tree != null);
             $tree = $ident.tree;
-
         }
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);

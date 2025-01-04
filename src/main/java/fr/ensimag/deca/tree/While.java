@@ -42,7 +42,7 @@ public class While extends AbstractInst {
     @Override
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
-            throws ContextualError {
+            throws ContextualError, EnvironmentExp.DoubleDefException {
         this.condition.verifyCondition(compiler,localEnv,currentClass);
         this.body.verifyListInst(compiler,localEnv,currentClass,returnType);
     }

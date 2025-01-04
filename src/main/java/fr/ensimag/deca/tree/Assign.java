@@ -24,7 +24,7 @@ public class Assign extends AbstractBinaryExpr {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         if (typeRight.sameType(typeLeft) || ((typeLeft.isFloat() && typeRight.isInt() || typeLeft.isInt()) && (typeRight.isFloat()))) {
@@ -45,7 +45,7 @@ public class Assign extends AbstractBinaryExpr {
 
         @Override
         public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
-                ClassDefinition currentClass, Type returnType) throws ContextualError {
+                ClassDefinition currentClass, Type returnType) throws ContextualError, EnvironmentExp.DoubleDefException {
             // Vérifie le type de l'affectation
             Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
             Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);

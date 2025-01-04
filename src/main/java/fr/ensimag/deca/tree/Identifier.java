@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  * @author gl06
  * @date 01/01/2025
  */
-public class Identifier extends AbstractIdentifier {
+public class  Identifier extends AbstractIdentifier {
     
     @Override
     protected void checkDecoration() {
@@ -151,6 +151,10 @@ public class Identifier extends AbstractIdentifier {
 
     private Symbol name;
 
+    public void setName(Symbol name) {
+        this.name = name;
+    }
+
     public Identifier(Symbol name) {
         Validate.notNull(name);
         this.name = name;
@@ -158,12 +162,22 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+            ClassDefinition currentClass) throws ContextualError, EnvironmentExp.DoubleDefException {
         ExpDefinition def = localEnv.get(name);
-        if (def == null) {
-            throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
+        if (def != null) {
+            return def.getType();
         }
-        return def.getType();
+        // 🔹 2️⃣ Vérifier si c'est un type connu dans `env_types`
+        TypeDefinition typeDef = compiler.getEnvironmentType().defOfType(name);
+        if (typeDef != null) {
+            ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
+            // Ajoute la définition du type dans `localEnv`
+            localEnv.declare(name, newDef);
+            return typeDef.getType();
+        }
+
+        // 🔹 3️⃣ Si l'identifiant n'est trouvé ni dans `localEnv` ni dans `env_types`, lever une erreur
+        throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
     }
 
     /**

@@ -1,5 +1,6 @@
 package fr.ensimag.deca;
 
+import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
@@ -191,7 +192,7 @@ public class DecacCompiler {
      */
     private boolean doCompile(String sourceName, String destName,
             PrintStream out, PrintStream err)
-            throws DecacFatalError, LocationException {
+            throws DecacFatalError, LocationException, EnvironmentExp.DoubleDefException {
         AbstractProgram prog = doLexingAndParsing(sourceName, err);
 
         if (prog == null) {
