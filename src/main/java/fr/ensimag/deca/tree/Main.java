@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.codegen.GenDeclVar;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
@@ -17,12 +18,16 @@ public class Main extends AbstractMain {
     
     private ListDeclVar declVariables;
     private ListInst insts;
+
+    //par Victor pour essayer un truc
+    //private EnvironmentExp localEnv;
     public Main(ListDeclVar declVariables,
             ListInst insts) {
         Validate.notNull(declVariables);
         Validate.notNull(insts);
         this.declVariables = declVariables;
         this.insts = insts;
+        //this.localEnv = new EnvironmentExp(null);
     }
 
     @Override
@@ -41,6 +46,10 @@ public class Main extends AbstractMain {
     @Override
     protected void codeGenMain(DecacCompiler compiler) {
         // A FAIRE: traiter les déclarations de variables.
+        compiler.addComment("Debut declaration des variables");
+        //genere le code pour les déclarations de variables
+        GenDeclVar.genDeclVar(declVariables, compiler);
+
         compiler.addComment("Beginning of main instructions:");
         insts.codeGenListInst(compiler);
     }

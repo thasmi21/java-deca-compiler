@@ -26,6 +26,9 @@ public class Initialization extends AbstractInitialization {
     public Initialization(AbstractExpr expression) {
         Validate.notNull(expression);
         this.expression = expression;
+
+        //bonne positionnement de la Localisation de l'initialisation
+        this.setLocation(expression.getLocation());
     }
 
     @Override

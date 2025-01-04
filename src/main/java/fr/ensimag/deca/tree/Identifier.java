@@ -7,6 +7,13 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.Operand;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -166,6 +173,16 @@ public class Identifier extends AbstractIdentifier {
         this.setDefinition(def);
         this.setType(def.getType());
         return def.getType();
+    }
+
+    @Override
+    public void codeGenPrint(DecacCompiler compiler){
+        //on recupere sa valeur et on charge
+        //Mais si c'est une classe par exemple il faut gérer cela.
+        //Pour l'instant j'essaie jeuste de faire le cas ou c'est un int
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(op, Register.getR(1)));
+        compiler.addInstruction(new WINT());
     }
 
     /**

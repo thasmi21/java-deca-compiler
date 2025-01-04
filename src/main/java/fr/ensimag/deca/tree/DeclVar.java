@@ -1,11 +1,16 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GenDeclVar;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.ImmediateInteger;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -46,6 +51,19 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.setType(t);
     }
 
+    @Override
+    public void codeGenDeclVar(DecacCompiler compiler){
+            //throw new UnsupportedOperationException("Not Yet implemented by us");
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(1, Register.GB));
+        //initialiser l'adresse
+        if(initialization instanceof Initialization){
+            //prendre un registre libre;
+            //evaluer l'expression et charger dans le registre
+            //puis affecter
+            Register r = GenDeclVar.evalueExpr(compiler,((Initialization) initialization).getExpression());
+            compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+        }
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
