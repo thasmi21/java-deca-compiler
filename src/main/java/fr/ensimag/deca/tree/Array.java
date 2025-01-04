@@ -27,6 +27,9 @@ public class Array extends AbstractExpr{
         }
         this.size = size;
         this.coefficients = new AbstractExpr[size];
+        for(int i = 0; i < size; i++){
+            this.coefficients[i] = null;
+        }
     }
 
     public Array(ArrayList<Integer> sizes, ArrayList<Type> types) {
@@ -35,7 +38,7 @@ public class Array extends AbstractExpr{
         Type type = types.get(types.size()-1);
         Validate.notNull(type);
         int size = sizes.get(0);
-        if(sizes.size()!=1){
+        if(sizes.size()!=2){
             sizes.remove(0);
             types.remove(types.size()-1);
             if(size <= 0 ){

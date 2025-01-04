@@ -63,7 +63,12 @@ public class ArrayIdf extends Identifier {
             T.add(currentType);
             currentType = new ArrayType(arraySymbol, currentType, i + 1);
         }
-        this.array = new Array(taille,T);
+        if(taille.size()==1) {
+            this.array = new Array(taille.get(0), baseTypeDef.getType());
+        }
+        else{
+            this.array = new Array(taille,T);
+        }
         // Associez le dernier type tableau à l'identifiant
         setDefinition(new TypeDefinition(currentType, getLocation()));
         return currentType;
