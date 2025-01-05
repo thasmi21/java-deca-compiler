@@ -20,7 +20,6 @@ public class ArrayIdentifier extends Identifier {
                 dimensions += 1;
             }
         }
-
     }
 
     @Override

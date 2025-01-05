@@ -58,7 +58,7 @@ public abstract class AbstractIdentifier extends AbstractLValue {
     public abstract MethodDefinition getMethodDefinition();
 
     public abstract SymbolTable.Symbol getName();
-
+    public abstract void setName(SymbolTable.Symbol name);
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a ExpDefinition.
      *

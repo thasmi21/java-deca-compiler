@@ -7,7 +7,6 @@ import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
 import org.apache.commons.lang.Validate;
-
 /**
  * @author gl06
  * @date 01/01/2025
@@ -32,9 +31,6 @@ public class DeclVar extends AbstractDeclVar {
         return this.type;
     }
 
-    public AbstractIdentifier getVarName() {
-        return this.varName;
-    }
 
     public AbstractInitialization getInitialization() {
         return this.initialization;
@@ -42,22 +38,57 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     protected void verifyDeclVar(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
-        Type t = this.type.verifyType(compiler);
-        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
-        if (t.isVoid()) {
-              throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
+                                 EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+        EnvironmentType env = compiler.getEnvironmentType();
+        //Vérification du type de base
+        Type identType = this.getType().verifyType(compiler);
+        // Vérification du type vide
+        if (identType.isVoid()) {
+            throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
         }
-        initialization.verifyInitialization(compiler,t, localEnv, currentClass);
+        //Dimension de la variable + du type
+        int dimVar = countArrayDimensions(this.varName.getName().getName());
+        int dimType = countArrayDimensions(this.type.getName().getName());
+        int dimTotal = dimVar + dimType;
+
+        // Construction du nouveau type (en prenant en compte la variable)
+        Type arrayType = getBaseType(compiler, identType);
+        String arrayTypeName = arrayType.getName().getName();
+        for (int i = 0; i < dimTotal; i++) {
+            arrayTypeName += "[]";
+            SymbolTable.Symbol arraySymbol = compiler.createSymbol(arrayTypeName);
+            arrayType = new ArrayType(arraySymbol,arrayType,i+1);
+            // Ajouter le type tableau dans l'environnement global s'il n'existe pas déjà
+            if (env.defOfType(arraySymbol) == null) {
+                compiler.getEnvironmentType().setTypeDefinition(arraySymbol, new TypeDefinition(arrayType, getLocation()));
+            }
+        }
+        System.out.println(env);
+        VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
+        initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
+        String varNameWoBrackets = withoutBrackets(varName.getName().getName());
         try {
-            localEnv.declare(this.varName.getName(), varDef);
+            localEnv.declare(compiler.createSymbol(varNameWoBrackets), varDef);
         } catch(EnvironmentExp.DoubleDefException e) {
             throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
         }
+        this.varName.setName(compiler.createSymbol(varNameWoBrackets));
         this.varName.setDefinition(varDef);
-        this.varName.setType(t);
+        //this.varName.setType(arrayType);
     }
 
+    // méthode qui récupère le type de base, par ex(int[][][] -> int)
+    public Type getBaseType(DecacCompiler compiler,Type type) throws ContextualError {
+        String typeName = type.getName().getName();
+        String baseTypeName = extractBaseType(typeName); // Enlève les `[]`
+        SymbolTable.Symbol baseSymbol = compiler.createSymbol(baseTypeName);
+        TypeDefinition baseTypeDef = compiler.getEnvironmentType().defOfType(baseSymbol);
+
+        if (baseTypeDef == null) {
+            throw new ContextualError("Le type de base '" + baseTypeName + "' n'est pas défini.", getLocation());
+        }
+        return baseTypeDef.getType();
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
@@ -77,5 +108,31 @@ public class DeclVar extends AbstractDeclVar {
         type.prettyPrint(s, prefix, false);
         varName.prettyPrint(s, prefix, false);
         initialization.prettyPrint(s, prefix, true);
+    }
+
+    public static int countArrayDimensions(String fullName) {
+        int count = 0;
+        for (int i = 0; i < fullName.length(); i++) {
+            if (fullName.charAt(i) == '[') {
+                count++;
+            }
+        }
+        return count; // Chaque "[" correspond à une dimension
+    }
+
+        public String extractBaseType(String fullName) {
+        int bracketIndex = fullName.indexOf('[');
+        if (bracketIndex == -1) {
+            return fullName; // Pas de crochets, le type est directement le type de base
+        }
+        return fullName.substring(0, bracketIndex);
+    }
+
+    public String withoutBrackets(String fullName) {
+        int bracketIndex = fullName.indexOf('[');
+        if (bracketIndex == -1) {
+            return fullName; // Pas de crochets, le type est directement le type de base
+        }
+        return fullName.substring(0, bracketIndex);
     }
 }

@@ -75,9 +75,8 @@ list_decl returns[ListDeclVar tree]
 
 
 decl_var_set[ListDeclVar l]
-    : type list_decl_var[$l,$type.tree] SEMI
-    | type_crochet list_decl_array[$l,$type_crochet.tree] SEMI
-    | type_a list_crochet[$l,$type_a.tree] SEMI
+    //:type_array list_decl_array[$l,$type_array.tree] SEMI
+    :type list_decl_var[$l,$type.tree] SEMI
     ;
 
 
@@ -90,23 +89,23 @@ list_decl_var[ListDeclVar l, AbstractIdentifier t]
       )*
     ;
 
-list_decl_array[ListDeclVar l, AbstractIdentifier t]
-    : dv1=decl_array[$t] {
-        $l.add($dv1.tree);
-        } (COMMA dv2=decl_array[$t] {
-            $l.add($dv2.tree);
-        }
-      )*
-    ;
-
-list_crochet[ListDeclVar l, AbstractIdentifier t]
-    : dv1=decl_crochet[$t] {
-        $l.add($dv1.tree);
-        } (COMMA dv2=decl_crochet[$t] {
-            $l.add($dv2.tree);
-        }
-      )*
-    ;
+//list_decl_array[ListDeclVar l, AbstractIdentifier t]
+//    : dv1=decl_array[$t] {
+//        $l.add($dv1.tree);
+//        } (COMMA dv2=decl_array[$t] {
+//            $l.add($dv2.tree);
+//        }
+//      )*
+//    ;
+//
+//list_crochet[ListDeclVar l, AbstractIdentifier t]
+//    : dv1=decl_crochet[$t] {
+//        $l.add($dv1.tree);
+//        } (COMMA dv2=decl_crochet[$t] {
+//            $l.add($dv2.tree);
+//        }
+//      )*
+//    ;
 
 decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
     @ init {
@@ -123,35 +122,35 @@ decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
      )
     ;
 
-decl_array[AbstractIdentifier t] returns[AbstractDeclVar tree]
-    @ init {
-    }
-    : i=identarray_without_int
-      (EQUALS e=expr {
-            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
-            setLocation($tree, $EQUALS);
-        }
-     | {
-            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
-            setLocation($tree, $i.start);
-        }
-     )
-    ;
+//decl_array[AbstractIdentifier t] returns[AbstractDeclVar tree]
+//    @ init {
+//    }
+//    : i=identarray_without_int
+//      (EQUALS e=expr {
+//            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
+//            setLocation($tree, $EQUALS);
+//        }
+//     | {
+//            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
+//            setLocation($tree, $i.start);
+//        }
+//     )
+//    ;
 
-decl_crochet[AbstractIdentifier t] returns[AbstractDeclVar tree]
-    @ init {
-    }
-    : i=ident_crochet
-      (EQUALS e=expr {
-            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
-            setLocation($tree, $EQUALS);
-        }
-     | {
-            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
-            setLocation($tree, $i.start);
-        }
-     )
-    ;
+//decl_crochet[AbstractIdentifier t] returns[AbstractDeclVar tree]
+//    @ init {
+//    }
+//    : i=ident_crochet
+//      (EQUALS e=expr {
+//            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
+//            setLocation($tree, $EQUALS);
+//        }
+//     | {
+//            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
+//            setLocation($tree, $i.start);
+//        }
+//     )
+//    ;
 
 list_inst returns[ListInst tree]
 @init {
@@ -470,9 +469,9 @@ primary_expr returns[AbstractExpr tree]
             $tree=$ident.tree;
             setLocation($tree,$NEW);
         }
-    | NEW i=identarray {
-            assert($i.tree !=null);
-            $tree=$i.tree;
+    | NEW array {
+            assert($array.tree !=null);
+            $tree=$array.tree;
             setLocation($tree, $NEW);
     }
     | cast=OPARENT type CPARENT OPARENT expr CPARENT {
@@ -486,12 +485,23 @@ primary_expr returns[AbstractExpr tree]
         }
     ;
 
-type_array returns[AbstractIdentifier tree]
-    : i=identarray_without_int {
-            assert($i.tree != null);
-            $tree=$i.tree;
-        }
+array returns[AbstractExpr tree]
+    : ARRAY {
+        $tree = new Array($ARRAY.text);
+        setLocation($tree, $ARRAY);
+    }
     ;
+
+//type_array returns[AbstractIdentifier tree]
+//    : i=identarray_without_int {
+//            assert($i.tree != null);
+//            $tree=$i.tree;
+//        }
+//    | id=ident {
+//            assert($id.tree != null);
+//            $tree=$id.tree;
+//        }
+//    ;
 
 type returns[AbstractIdentifier tree]
     : ident {
@@ -500,19 +510,20 @@ type returns[AbstractIdentifier tree]
         }
     ;
 
-type_a returns[AbstractIdentifier tree]
-      : i=ident_a {
-            assert($i.tree != null);
-            $tree=$i.tree;
-            }
-      ;
 
-type_crochet returns[AbstractIdentifier tree]
-      : i=ident_crochet {
-            assert($i.tree != null);
-            $tree=$i.tree;
-            }
-      ;
+//type_a returns[AbstractIdentifier tree]
+//      : i=ident_a {
+//            assert($i.tree != null);
+//            $tree=$i.tree;
+//            }
+//      ;
+//
+//type_crochet returns[AbstractIdentifier tree]
+//      : i=ident_crochet {
+//            assert($i.tree != null);
+//            $tree=$i.tree;
+//            }
+//      ;
 
 literal returns[AbstractExpr tree]
     : INT {
@@ -553,42 +564,42 @@ ident returns[AbstractIdentifier tree]
         }
     ;
 
-identarray_without_int returns[AbstractIdentifier tree]
-    :
-    IDENTARRAY{
-        $tree=new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
-        setLocation($tree, $IDENTARRAY);
-    }
-    |
-    IDENT{
-        $tree=new ArrayIdentifier(SymbolTable.create($IDENT.text));
-        setLocation($tree, $IDENT);
-    }
-    ;
-
-ident_a returns[AbstractIdentifier tree]
-     :
-     IDENT {
-         $tree = new ArrayIdentifier(SymbolTable.create($IDENT.text));
-         setLocation($tree,$IDENT);
-         }
-     ;
-
-ident_crochet returns[AbstractIdentifier tree]
-     :
-     IDENTARRAY {
-         $tree = new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
-         setLocation($tree,$IDENTARRAY);
-         }
-     ;
-
-identarray returns[AbstractIdentifier tree]
-    :
-    IDTARRAY{
-        $tree=new ArrayIdf(SymbolTable.create($IDTARRAY.text));
-        setLocation($tree, $IDTARRAY);
-    }
-    ;
+//identarray_without_int returns[AbstractIdentifier tree]
+//    :
+//    IDENTARRAY{
+//        $tree=new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
+//        setLocation($tree, $IDENTARRAY);
+//    }
+//    |
+//    IDENT{
+//        $tree=new ArrayIdentifier(SymbolTable.create($IDENT.text));
+//        setLocation($tree, $IDENT);
+//    }
+//    ;
+//
+//ident_a returns[AbstractIdentifier tree]
+//     :
+//     IDENT {
+//         $tree = new ArrayIdentifier(SymbolTable.create($IDENT.text));
+//         setLocation($tree,$IDENT);
+//         }
+//     ;
+//
+//ident_crochet returns[AbstractIdentifier tree]
+//     :
+//     IDENTARRAY {
+//         $tree = new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
+//         setLocation($tree,$IDENTARRAY);
+//         }
+//     ;
+//
+//identarray returns[AbstractIdentifier tree]
+//    :
+//    IDTARRAY{
+//        $tree=new ArrayIdf(SymbolTable.create($IDTARRAY.text));
+//        setLocation($tree, $IDTARRAY);
+//    }
+//    ;
 
 
 /****     Class related rules     ****/

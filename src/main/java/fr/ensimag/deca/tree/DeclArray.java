@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import org.apache.commons.lang.Validate;
 
-import static fr.ensimag.deca.tree.ArrayIdf.extractBaseType;
 
 /**
  * @author gl06
@@ -68,34 +67,13 @@ public class DeclArray extends DeclVar {
         this.varName.setType(arrayType);
     }
 
-
-    @Override
-    public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    @Override
-    protected
-    void iterChildren(TreeFunction f) {
-        type.iter(f);
-        varName.iter(f);
-        initialization.iter(f);
-    }
-
-    @Override
-    protected void prettyPrintChildren(PrintStream s, String prefix) {
-        type.prettyPrint(s, prefix, false);
-        varName.prettyPrint(s, prefix, false);
-        initialization.prettyPrint(s, prefix, true);
-    }
-
-    public int countArrayDimensions(String fullName) {
-        int count = 0;
-        for (int i = 0; i < fullName.length(); i++) {
-            if (fullName.charAt(i) == '[') {
-                count++;
-            }
-        }
-        return count; // Chaque "[" correspond à une dimension
-    }
+//    public int countArrayDimensions(String fullName) {
+//        int count = 0;
+//        for (int i = 0; i < fullName.length(); i++) {
+//            if (fullName.charAt(i) == '[') {
+//                count++;
+//            }
+//        }
+//        return count; // Chaque "[" correspond à une dimension
+//    }
 }
