@@ -61,7 +61,7 @@ public class EnvironmentType {
      */
     public void setTypeDefinition(Symbol s, TypeDefinition typeDef) {
         if (envTypes.containsKey(s)) {
-            throw new IllegalArgumentException("Le type '" + s.getName() + "' est déjà défini dans l'environnement.");
+            return;
         }
         envTypes.put(s, typeDef);
     }
