@@ -203,12 +203,13 @@ public class  Identifier extends AbstractIdentifier {
         }
 
         // Récupération du type de base
-        Type currentType = baseTypeDef.getType();
+        Type baseType = baseTypeDef.getType();
+        Type currentType = baseType;
 
         // Construction progressive des types tableaux
         for (int i = 0; i < getDimensions(); i++) {
             Symbol arraySymbol = compiler.createSymbol(fullName);
-            currentType = new ArrayType(arraySymbol, currentType, i + 1);
+            currentType = new ArrayType(arraySymbol, baseType, i + 1);
             TypeDefinition currentTypeDef = new TypeDefinition(currentType, getLocation());
             env.setTypeDefinition(arraySymbol, currentTypeDef);
         }

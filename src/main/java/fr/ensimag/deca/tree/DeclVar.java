@@ -52,18 +52,18 @@ public class DeclVar extends AbstractDeclVar {
         int dimTotal = dimVar + dimType;
 
         // Construction du nouveau type (en prenant en compte la variable)
-        Type arrayType = getBaseType(compiler, identType);
+        Type baseType = getBaseType(compiler, identType);
+        Type arrayType = baseType;
         String arrayTypeName = arrayType.getName().getName();
         for (int i = 0; i < dimTotal; i++) {
             arrayTypeName += "[]";
             SymbolTable.Symbol arraySymbol = compiler.createSymbol(arrayTypeName);
-            arrayType = new ArrayType(arraySymbol,arrayType,i+1);
+            arrayType = new ArrayType(arraySymbol,baseType,i+1);
             // Ajouter le type tableau dans l'environnement global s'il n'existe pas déjà
             if (env.defOfType(arraySymbol) == null) {
                 compiler.getEnvironmentType().setTypeDefinition(arraySymbol, new TypeDefinition(arrayType, getLocation()));
             }
         }
-        System.out.println(env);
         VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
         initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
@@ -78,15 +78,11 @@ public class DeclVar extends AbstractDeclVar {
     }
 
     // méthode qui récupère le type de base, par ex(int[][][] -> int)
-    public Type getBaseType(DecacCompiler compiler,Type type) throws ContextualError {
+    public static Type getBaseType(DecacCompiler compiler,Type type) throws ContextualError {
         String typeName = type.getName().getName();
         String baseTypeName = extractBaseType(typeName); // Enlève les `[]`
         SymbolTable.Symbol baseSymbol = compiler.createSymbol(baseTypeName);
         TypeDefinition baseTypeDef = compiler.getEnvironmentType().defOfType(baseSymbol);
-
-        if (baseTypeDef == null) {
-            throw new ContextualError("Le type de base '" + baseTypeName + "' n'est pas défini.", getLocation());
-        }
         return baseTypeDef.getType();
     }
 
@@ -120,7 +116,7 @@ public class DeclVar extends AbstractDeclVar {
         return count; // Chaque "[" correspond à une dimension
     }
 
-        public String extractBaseType(String fullName) {
+        public static String extractBaseType(String fullName) {
         int bracketIndex = fullName.indexOf('[');
         if (bracketIndex == -1) {
             return fullName; // Pas de crochets, le type est directement le type de base

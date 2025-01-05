@@ -25,6 +25,4 @@ public class FloatType extends Type {
         return otherType instanceof FloatType;
     }
 
-
-
 }

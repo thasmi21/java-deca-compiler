@@ -1,6 +1,8 @@
 package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.tools.SymbolTable;
+import static fr.ensimag.deca.tree.DeclVar.getBaseType;
+import static fr.ensimag.deca.tree.DeclVar.extractBaseType;
 
 /**
  *
@@ -23,7 +25,4 @@ public class IntType extends Type {
     public boolean sameType(Type otherType) {
         return otherType instanceof IntType;
     }
-
-
-
 }

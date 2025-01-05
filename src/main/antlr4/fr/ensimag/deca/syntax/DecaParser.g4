@@ -483,6 +483,10 @@ primary_expr returns[AbstractExpr tree]
             assert($literal.tree != null);
             $tree=$literal.tree;
         }
+    | array {
+                assert($array.tree !=null);
+                $tree=$array.tree;
+        }
     ;
 
 array returns[AbstractExpr tree]
@@ -490,6 +494,22 @@ array returns[AbstractExpr tree]
         $tree = new Array($ARRAY.text);
         setLocation($tree, $ARRAY);
     }
+    | ARRAY OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
+            List<AbstractExpr> values = new ArrayList<>();
+            for (LiteralContext t : $elements) {
+                values.add(t.tree);
+            }
+            $tree = new Array($ARRAY.text, values);
+            setLocation($tree, $ARRAY);
+    }
+    | OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
+                List<AbstractExpr> values = new ArrayList<>();
+                for (LiteralContext t : $elements) {
+                    values.add(t.tree);
+                }
+                $tree = new Array(values);
+                setLocation($tree, $OBRACE);
+        }
     ;
 
 //type_array returns[AbstractIdentifier tree]
