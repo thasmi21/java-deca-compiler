@@ -12,26 +12,104 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Array extends AbstractExpr{
-    private String name;
-    private int dimension;
     private int size;
-    private List<AbstractExpr> coefficients= new ArrayList<>();
+    private AbstractExpr[] coefficients;
+    private String name;
 
-    // pour des assignations du type tab = new int[]
-    public Array(String name) {
-        this.name = removeIntegers(name);
-        this.dimension = getDimensionFromName(name);
-        this.size = getSizeFromName(name);
-    }
-
-        // pour des assignations du type tab = new int[] {1,2,3...}
+    // pour des assignations du type tab = new int[] {1,2,3...}
+    /*
     public Array(String name, List<AbstractExpr> coefficients) {
         this.name = removeIntegers(name);
         this.dimension = getDimensionFromName(name);
         this.size = getSizeFromName(name);
         this.coefficients=coefficients;
     }
+    */
 
+    public Array(ArrayList<Integer> sizes, ArrayList<Type> types) {
+        Validate.notNull(types);
+        Validate.notNull(sizes);
+        Type type = types.get(types.size()-1);
+        Validate.notNull(type);
+        int size = sizes.get(0);
+        if(sizes.size()!=2){
+            sizes.remove(0);
+            types.remove(types.size()-1);
+            if(size <= 0 ){
+                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+            }
+            this.size = size;
+            this.coefficients = new AbstractExpr[size];
+            for(int i = 0; i < size; i++){
+                this.coefficients[i]= new Array(sizes, types);
+            }
+        }
+        else{
+            if(size <= 0 ){
+                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+            }
+            this.size = size;
+            this.coefficients = new AbstractExpr[size];
+            for(int i = 0; i < size; i++){
+                this.coefficients[i]= new Array(size, type);
+            }
+        }
+    }
+
+    public Array(ArrayList<Integer> sizes) {
+        Validate.notNull(sizes);
+        int size = sizes.get(0);
+        if(sizes.size()!=2){
+            sizes.remove(0);
+            if(size <= 0 ){
+                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+            }
+            this.size = size;
+            this.coefficients = new AbstractExpr[size];
+            for(int i = 0; i < size; i++){
+                this.coefficients[i]= new Array(sizes);
+            }
+        }
+        else{
+            if(size <= 0 ){
+                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+            }
+            this.size = size;
+            this.coefficients = new AbstractExpr[size];
+            for(int i = 0; i < size; i++){
+                this.coefficients[i]= new Array(size);
+            }
+        }
+    }
+
+    public Array(int size) {
+        // size est-il utile ? je sais pas
+        if (size <= 0) {
+            throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+        }
+        this.size = size;
+        this.coefficients = new AbstractExpr[size];
+        for (int i = 0; i < size; i++) {
+            this.coefficients[i] = null;
+        }
+    }
+
+    public Array(int size, Type type) {
+        //mettre le type comme ça ? Ou alors créer une classe ArrayType qui extends Type
+        Validate.notNull(type);
+        setType(type);
+        // size est-il utile ? je sais pas
+        if(size <= 0 ){
+            throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+        }
+        this.size = size;
+        this.coefficients = new AbstractExpr[size];
+        for(int i = 0; i < size; i++){
+            this.coefficients[i] = null;
+        }
+    }
+
+/*
     public Array(List<AbstractExpr> coefficients) {
         this.dimension = 1;
         this.size = coefficients.size();
@@ -43,58 +121,14 @@ public class Array extends AbstractExpr{
 //        this.name = name;
         this.coefficients=coefficients;
     }
+*/
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name=name;
-    }
 
     public int getSize() {
         return size;
     }
 
-    public int getSizeFromName(String name) {
-        int product = 1;
-        boolean hasDigit = false;
 
-        for (char c : name.toCharArray()) {
-            if (Character.isDigit(c)) {
-                product *= Character.getNumericValue(c);
-                hasDigit = true;
-            }
-        }
-        if(hasDigit) {
-            return product;
-        }
-        else{
-            return 0;
-        }
-    }
-
-    public int getDimension() {
-        return dimension;
-    }
-
-    public int getDimensionFromName(String name) {
-        int count = 0;
-        for (char c : name.toCharArray()) {
-            if (c == '[') {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public void setCoefficients(int i, AbstractExpr coeff) {
-        coefficients.set(i, coeff);
-    }
-
-    public AbstractExpr getCoefficients(int i) {
-        return coefficients.get(i);
-    }
 
     // Je vérifie que tous les coefficients du tableau sont du bon type
     @Override
@@ -104,10 +138,15 @@ public class Array extends AbstractExpr{
         setType(type);
         // Vérification que tous les coefficients sont du bon type
         for (AbstractExpr coefficient : coefficients) {
-            Type typeExpr = coefficient.verifyExpr(compiler, localEnv, currentClass);
-            if (!typeExpr.isSubTypeOf(type)) {
-                throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
+            if(coefficient.getType().isArray()){
+                Array array = (Array)coefficient;
+                array.setName();
+                Type typeExpr = coefficient.verifyExpr(compiler, localEnv, currentClass);
+                if (!typeExpr.isSubTypeOf(type)) {
+                    throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
+                }
             }
+
         }
         return type;
     }
@@ -127,6 +166,10 @@ public class Array extends AbstractExpr{
             throw new ContextualError("Le type de base '" + baseTypeName + "' n'est pas défini.", getLocation());
         }
         return baseTypeDef.getType();
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String extractBaseType(String fullName) {
