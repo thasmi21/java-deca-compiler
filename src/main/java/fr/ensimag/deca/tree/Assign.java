@@ -47,14 +47,14 @@ public class Assign extends AbstractBinaryExpr {
         public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
                 ClassDefinition currentClass, Type returnType) throws ContextualError {
             // Vérifie le type de l'affectation
-            Type typeRight = getRightOperand().getType();
+            Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-            if(getRightOperand() instanceof Array && ((Array) getRightOperand()).getName()==null){
-                getRightOperand().setType(typeLeft);
-                typeRight = typeLeft;
-                ((Array) getRightOperand()).setName(typeLeft.getName().getName());
-            }
-            getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+//            if(getRightOperand() instanceof Array && ((Array) getRightOperand()).getName()==null){
+//                getRightOperand().setType(typeLeft);
+//                typeRight = typeLeft;
+//                ((Array) getRightOperand()).setName(typeLeft.getName().getName());
+//            }
+            //getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             // Vérifie la compatibilité des types
             if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
                 if (typeLeft.isFloat() && typeRight.isInt()) {

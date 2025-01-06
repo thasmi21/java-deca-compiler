@@ -155,9 +155,6 @@ public abstract class AbstractExpr extends AbstractInst {
             s.print(prefix);
             s.print("type: ");
             s.print(t);
-            if(this instanceof Array){
-                System.out.print(", size = " + ((Array) this).getSize()+ ", dimension = " + ((Array) this).getDimension());
-            }
             s.println();
         }
     }
