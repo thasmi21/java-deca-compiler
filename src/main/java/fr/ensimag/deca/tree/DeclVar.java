@@ -1,13 +1,11 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.codegen.GenDeclVar;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
-import fr.ensimag.deca.tools.SymbolTable;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
@@ -60,7 +58,9 @@ public class DeclVar extends AbstractDeclVar {
             //prendre un registre libre;
             //evaluer l'expression et charger dans le registre
             //puis affecter
-            Register r = GenDeclVar.evalueExpr(compiler,((Initialization) initialization).getExpression());
+            GPRegister r = Register.getR(3);
+            ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
+            //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
             compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
         }
     }

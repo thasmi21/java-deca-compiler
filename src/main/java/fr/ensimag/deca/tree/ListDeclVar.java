@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 
 /**
  * List of declarations (e.g. int x; float y,z).
@@ -39,5 +40,13 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
         }
     }
 
+    void codeGenListDeclVar(DecacCompiler compiler){
+        //on ajoute d'abord l'instruction pour augmenter la pile
+        // on fera le TSTO après
+        compiler.addInstruction(new ADDSP(this.getList().size()));
+        for(AbstractDeclVar declVar: this.getList()){
+            declVar.codeGenDeclVar(compiler);
+        }
+    }
 
 }

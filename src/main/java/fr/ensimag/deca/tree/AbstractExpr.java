@@ -7,8 +7,11 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.Register;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -140,7 +143,16 @@ public abstract class AbstractExpr extends AbstractInst {
     protected void codeGenInst(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
+
+    /*
+    * une methode qui prend un registre, effectue
+    * l'evaluation de l'expression et le met dans le registre
+    * en question (registre ou adresse de pile)
+    *
+    * */
+    protected  void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
 
     @Override
     protected void decompileInst(IndentPrintStream s) {
