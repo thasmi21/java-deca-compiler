@@ -48,7 +48,9 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
         // autant qu'il y a de variables définies
         int taille_pile = getList().size();
         if (taille_pile > 0) {
-            compiler.addInstruction(new ADDSP(taille_pile));
+            // On utilise addFirst pour que l'instruction ADDSP soit avant
+            // l'instruction ; Main Program
+            compiler.addFirst(new ADDSP(taille_pile));
         }
 
         // Pour chaque variable on va appeler une nouvelle méthode de genCode

@@ -8,10 +8,8 @@ import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
 import fr.ensimag.deca.tree.LocationException;
-import fr.ensimag.ima.pseudocode.AbstractLine;
-import fr.ensimag.ima.pseudocode.IMAProgram;
-import fr.ensimag.ima.pseudocode.Instruction;
-import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -98,6 +96,14 @@ public class DecacCompiler {
      */
     public void addInstruction(Instruction instruction) {
         program.addInstruction(instruction);
+    }
+
+    public void addFirst(Instruction instruction) {
+        program.addFirst(instruction);
+    }
+
+    public void addFirst(Line l) {
+        program.addFirst(l);
     }
 
     /**
@@ -204,7 +210,7 @@ public class DecacCompiler {
         prog.verifyProgram(this);
         assert(prog.checkAllDecorations());
 
-        addComment("start main program");
+        //addComment("start main program");
         prog.codeGenProgram(this);
         addComment("end main program");
         LOG.debug("Generated assembly code:" + nl + program.display());
