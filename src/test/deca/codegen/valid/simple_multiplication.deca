@@ -1,0 +1,14 @@
+// Description :
+//      tests d'une multiplication simple
+//
+// Resultats :
+//      24
+
+{
+    int x = 6;
+    int y = 4;
+    int z = 7;
+    println("", x, " * ", y, " = ", x*y);
+    println("", x, " * ", z, " = ", x*z);
+    println("", y, " * ", z, " = ", z*y);
+}

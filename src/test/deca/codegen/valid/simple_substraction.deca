@@ -1,0 +1,13 @@
+// Description :
+//      tests d'une soustraction simple
+//
+// Resultats :
+//      8
+
+{
+    int a = 12;
+    int b = 4;
+    //println("La valeur de a est: ", a);
+    //println("La valeur de b est: ", b);
+    println("", a, " - ", b, " = ", a-b);
+}

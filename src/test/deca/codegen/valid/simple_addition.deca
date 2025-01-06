@@ -1,0 +1,14 @@
+// Description :
+//      tests d'une addition simple
+//
+// Resultats :
+//      6
+
+{
+    int i = 2;
+    int j = 4;
+    println("La valeur de i est: ", i);
+    println("Voici la valeur de j: ", j);
+    //println(i);
+    println("La somme de ", i, " et ", j, " vaut :", i+j);
+}
