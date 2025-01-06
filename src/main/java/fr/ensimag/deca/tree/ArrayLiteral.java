@@ -84,9 +84,6 @@ public class ArrayLiteral extends AbstractExpr{
         array.setType(type);
         // Vérification que tous les coefficients sont du bon type
         Type typeExpr = array.verifyExpr(compiler, localEnv, currentClass);
-        if (!typeExpr.isSubTypeOf(type)) {
-            throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
-        }
         return type;
     }
 

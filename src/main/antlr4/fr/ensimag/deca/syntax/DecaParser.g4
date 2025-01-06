@@ -483,45 +483,32 @@ primary_expr returns[AbstractExpr tree]
             assert($literal.tree != null);
             $tree=$literal.tree;
         }
-    | array {
-                assert($array.tree !=null);
-                $tree=$array.tree;
-        }
     ;
 
 array returns[AbstractExpr tree]
     : ARRAY {
-        $tree = new Array($ARRAY.text);
+        $tree = new ArrayLiteral($ARRAY.text);
         setLocation($tree, $ARRAY);
     }
-    | ARRAY OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
-            List<AbstractExpr> values = new ArrayList<>();
-            for (LiteralContext t : $elements) {
-                values.add(t.tree);
-            }
-            $tree = new Array($ARRAY.text, values);
-            setLocation($tree, $ARRAY);
-    }
-    | OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
-                List<AbstractExpr> values = new ArrayList<>();
-                for (LiteralContext t : $elements) {
-                    values.add(t.tree);
-                }
-                $tree = new Array(values);
-                setLocation($tree, $OBRACE);
-        }
+//    | ARRAY OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
+//            List<AbstractExpr> values = new ArrayList<>();
+//            for (LiteralContext t : $elements) {
+//                values.add(t.tree);
+//            }
+//            $tree = new Array($ARRAY.text, values);
+//            setLocation($tree, $ARRAY);
+//    }
+//    | OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
+//                List<AbstractExpr> values = new ArrayList<>();
+//                for (LiteralContext t : $elements) {
+//                    values.add(t.tree);
+//                }
+//                $tree = new Array(values);
+//                setLocation($tree, $OBRACE);
+//        }
     ;
 
-//type_array returns[AbstractIdentifier tree]
-//    : i=identarray_without_int {
-//            assert($i.tree != null);
-//            $tree=$i.tree;
-//        }
-//    | id=ident {
-//            assert($id.tree != null);
-//            $tree=$id.tree;
-//        }
-//    ;
+
 
 type returns[AbstractIdentifier tree]
     : ident {
@@ -529,21 +516,6 @@ type returns[AbstractIdentifier tree]
             $tree=$ident.tree;
         }
     ;
-
-
-//type_a returns[AbstractIdentifier tree]
-//      : i=ident_a {
-//            assert($i.tree != null);
-//            $tree=$i.tree;
-//            }
-//      ;
-//
-//type_crochet returns[AbstractIdentifier tree]
-//      : i=ident_crochet {
-//            assert($i.tree != null);
-//            $tree=$i.tree;
-//            }
-//      ;
 
 literal returns[AbstractExpr tree]
     : INT {
