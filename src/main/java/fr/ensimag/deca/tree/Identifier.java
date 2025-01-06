@@ -9,9 +9,11 @@ import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.Operand;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -173,6 +175,16 @@ public class Identifier extends AbstractIdentifier {
         return def.getType();
     }
 
+    @Override
+    public void codeGenPrint(DecacCompiler compiler){
+        //on recupere sa valeur et on charge
+        //Mais si c'est une classe par exemple il faut gérer cela.
+        //Pour l'instant j'essaie jeuste de faire le cas ou c'est un int
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(op, Register.getR(1)));
+        compiler.addInstruction(new WINT());
+    }
+
     /**
      * Implements non-terminal "type" of [SyntaxeContextuelle] in the 3 passes
      * @param compiler contains "env_types" attribute
@@ -222,15 +234,4 @@ public class Identifier extends AbstractIdentifier {
             s.println();
         }
     }
-
-    @Override
-    public void codeGenPrint(DecacCompiler compiler){
-        //on recupere sa valeur et on charge
-        //Mais si c'est une classe par exemple il faut gérer cela.
-        //Pour l'instant j'essaie jeuste de faire le cas ou c'est un int
-        DAddr op = this.getExpDefinition().getOperand();
-        compiler.addInstruction(new LOAD(op, Register.getR(1)));
-        compiler.addInstruction(new WINT());
-    }
-
 }

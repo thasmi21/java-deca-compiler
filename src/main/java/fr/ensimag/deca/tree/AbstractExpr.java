@@ -7,8 +7,11 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.Register;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -42,9 +45,9 @@ public abstract class AbstractExpr extends AbstractInst {
     @Override
     protected void checkDecoration() {
         //commenter par Victor
-        /*if (getType() == null) {
+        if (getType() == null) {
             throw new DecacInternalError("Expression " + decompile() + " has no Type decoration");
-        }*/
+        }
     }
 
     /**
@@ -133,7 +136,6 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
-        // compiler.addInstruction(new WSTR());
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -142,8 +144,14 @@ public abstract class AbstractExpr extends AbstractInst {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    protected void codeGenExpr(DecacCompiler compiler) {
-        //TODO
+    /*
+    * une methode qui prend un registre, effectue
+    * l'evaluation de l'expression et le met dans le registre
+    * en question (registre ou adresse de pile)
+    *
+    * */
+    protected  void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
     }
 
     @Override

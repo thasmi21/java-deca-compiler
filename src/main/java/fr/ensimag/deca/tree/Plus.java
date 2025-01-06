@@ -6,6 +6,9 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.ADD;
 
 /**
  * @author gl06
@@ -22,5 +25,12 @@ public class Plus extends AbstractOpArith {
         return "+";
     }
 
-
+    @Override
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = Register.getR(4);
+        GPRegister r2 = Register.getR(5);
+        getLeftOperand().evalueExpr(compiler, r1 );
+        getRightOperand().evalueExpr(compiler, register );
+        compiler.addInstruction(new ADD(r1, register));
+    }
 }
