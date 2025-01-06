@@ -137,7 +137,7 @@ public abstract class AbstractExpr extends AbstractInst {
      */
     protected void codeGenPrint(DecacCompiler compiler) {
 
-        //throw new UnsupportedOperationException("not yet implemented");
+        throw new UnsupportedOperationException("not yet implemented by us");
     }
 
     @Override

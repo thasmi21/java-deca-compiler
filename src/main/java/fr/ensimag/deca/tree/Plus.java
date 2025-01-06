@@ -39,7 +39,6 @@ public class Plus extends AbstractOpArith {
             return;
         }
         System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
-
     }
 
     @Override
