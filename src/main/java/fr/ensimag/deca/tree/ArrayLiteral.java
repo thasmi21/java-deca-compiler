@@ -81,7 +81,7 @@ public class ArrayLiteral extends AbstractExpr{
         EnvironmentType envType = compiler.getEnvironmentType();
         Type type = envType.defOfType(compiler.createSymbol(name)).getType();
         setType(type);
-        array.setName(name);
+        array.setType(type);
         // Vérification que tous les coefficients sont du bon type
         Type typeExpr = array.verifyExpr(compiler, localEnv, currentClass);
         if (!typeExpr.isSubTypeOf(type)) {

@@ -1,0 +1,26 @@
+//programme deca pour bien vérifier
+//que le Parseur reconnait le programme ci-dessous syntaxiquement correct
+//mais pas contextuellement
+
+{
+    int x[],y;
+}
+
+//doit pas planter
+/*sortie attendu:
+   good_synt3.deca: quelque chose un peu comme çà
+                    > [1, 0] Program
+                       +> ListDeclClass [List with 0 elements]
+                       `> [1, 0] Main
+                          +> ListDeclVar [List with 2 elements]
+                          |  []> [2, 8] DeclVar
+                          |  ||  +> [2, 4] Identifier (int)
+                          |  ||  +> [2, 8] Identifier (x[])
+                          |  ||  `> NoInitialization
+                          |  []> [2, 12] DeclVar
+                          |      +> [2, 4] Identifier (int)
+                          |      +> [2, 12] Identifier (y)
+                          |      `> NoInitialization
+                          `> ListInst [List with 0 elements]
+
+*/

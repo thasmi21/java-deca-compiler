@@ -1,0 +1,19 @@
+//programme deca pour bien vérifier
+//que le lexer sait gérer les priorités de reconnaissance entre les tokens
+
+{
+    int x[]=new int[3];
+}
+
+//doit reconnaitre le type int[]
+/*sortie attendu:
+   good_lex1.deca:
+   OBRACE: [@0,0:0='{',<15>,1:0]
+   IDENT: [@1,6:8='int',<31>,2:4]
+   IDENT: [@2,10:12='x[]',<31>,2:8]
+   EQUALS: [@3,13:13='=',<35>,2:11]
+   NEW: [@4,14:16='new',<8>,2:12]
+   ARRAY: [@5,18:23='int[3]',<32>,2:16]
+   SEMI: [@6,24:24=';',<28>,2:22]
+   CBRACE: [@7,26:26='}',<27>,3:0]
+*/

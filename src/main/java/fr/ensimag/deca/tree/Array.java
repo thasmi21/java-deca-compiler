@@ -14,7 +14,7 @@ import java.util.List;
 public class Array extends AbstractExpr{
     private int size;
     private AbstractExpr[] coefficients;
-    private String name;
+
 
     // pour des assignations du type tab = new int[] {1,2,3...}
     /*
@@ -26,35 +26,7 @@ public class Array extends AbstractExpr{
     }
     */
 
-    public Array(ArrayList<Integer> sizes, ArrayList<Type> types) {
-        Validate.notNull(types);
-        Validate.notNull(sizes);
-        Type type = types.get(types.size()-1);
-        Validate.notNull(type);
-        int size = sizes.get(0);
-        if(sizes.size()!=2){
-            sizes.remove(0);
-            types.remove(types.size()-1);
-            if(size <= 0 ){
-                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-            }
-            this.size = size;
-            this.coefficients = new AbstractExpr[size];
-            for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(sizes, types);
-            }
-        }
-        else{
-            if(size <= 0 ){
-                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-            }
-            this.size = size;
-            this.coefficients = new AbstractExpr[size];
-            for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(size, type);
-            }
-        }
-    }
+
 
     public Array(ArrayList<Integer> sizes) {
         Validate.notNull(sizes);
@@ -94,20 +66,6 @@ public class Array extends AbstractExpr{
         }
     }
 
-    public Array(int size, Type type) {
-        //mettre le type comme ça ? Ou alors créer une classe ArrayType qui extends Type
-        Validate.notNull(type);
-        setType(type);
-        // size est-il utile ? je sais pas
-        if(size <= 0 ){
-            throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-        }
-        this.size = size;
-        this.coefficients = new AbstractExpr[size];
-        for(int i = 0; i < size; i++){
-            this.coefficients[i] = null;
-        }
-    }
 
 /*
     public Array(List<AbstractExpr> coefficients) {
@@ -134,17 +92,14 @@ public class Array extends AbstractExpr{
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         EnvironmentType envType = compiler.getEnvironmentType();
+        String name=getType().getName().getName();
         Type type = envType.defOfType(compiler.createSymbol(name)).getType();
-        setType(type);
         // Vérification que tous les coefficients sont du bon type
         for (AbstractExpr coefficient : coefficients) {
-            if(coefficient.getType().isArray()){
-                Array array = (Array)coefficient;
-                array.setName();
-                Type typeExpr = coefficient.verifyExpr(compiler, localEnv, currentClass);
-                if (!typeExpr.isSubTypeOf(type)) {
-                    throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
-                }
+            coefficient.setType(envType.defOfType(compiler.createSymbol(name.substring(0,name.length()-2))).getType());
+            Type typeExpr = coefficient.verifyExpr(compiler, localEnv, currentClass);
+            if (!typeExpr.isSubTypeOf(type)) {
+                throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
             }
 
         }
@@ -168,9 +123,6 @@ public class Array extends AbstractExpr{
         return baseTypeDef.getType();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String extractBaseType(String fullName) {
         int bracketIndex = fullName.indexOf('[');
