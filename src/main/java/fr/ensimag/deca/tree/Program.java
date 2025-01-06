@@ -3,6 +3,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.instructions.*;
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -47,6 +48,11 @@ public class Program extends AbstractProgram {
         compiler.addComment("Main program");
         main.codeGenMain(compiler);
         compiler.addInstruction(new HALT());
+        // On doit gérer le cas ou on a une pile pleine et qu'il faut renvoyer une erreur
+        compiler.addLabel(new Label("pile_pleine")); // On ajoute l'etiquette à laquelle il faut jump si il y a débordement
+        compiler.addInstruction(new WSTR("Erreur: La pile est pleine")); // On écrit un message d'erreur
+        compiler.addInstruction(new WNL());
+        compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
     }
 
     @Override

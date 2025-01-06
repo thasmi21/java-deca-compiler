@@ -7,7 +7,11 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -48,12 +52,24 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.setType(t);
     }
 
+    public static Register evalueExpr(DecacCompiler compiler, AbstractExpr expr) {
+        if(expr instanceof IntLiteral) {
+            compiler.addInstruction(new LOAD(((IntLiteral) expr).getValue(), Register.getR(3)));
+        }
+        return Register.getR(3);
+    }
+
     @Override
     public void codeGenDeclVar(DecacCompiler compiler) {
         // On a déjà réservé dans la class mère la place nécessaire dans la pile avec ADDSP
 
         // Maintenant on doit Enregistrer l'emplacement de la variable
         // this.memoryLocation = new MemoryOperand(compiler.getNextGlobalOffset());
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(1, Register.GB));
+        if (initialization instanceof Initialization){
+            Register r = evalueExpr(compiler,((Initialization)(Initialization) initialization).getExpression());
+            compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+        }
     }
 
     // On crée un attribut qui représente l'emplacement mémoire associé à la variable

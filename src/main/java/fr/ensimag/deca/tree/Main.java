@@ -56,12 +56,6 @@ public class Main extends AbstractMain {
         // Ajouter en début de programme :
         // TSTO #d ; taille maximale de la pile que l'on peut calculer qu'a la fin de la génération de code
         // BOV pile_pleine ; Instruction de branchement pour sauter à l'etiquette en cas de débordement
-
-        // On doit gérer le cas ou on a une pile pleine et qu'il faut renvoyer une erreur
-        compiler.addLabel(new Label("pile_pleine")); // On ajoute l'etiquette à laquelle il faut jump si il y a débordement
-        compiler.addInstruction(new WSTR("Erreur: La pile est pleine")); // On écrit un message d'erreur
-        compiler.addInstruction(new WNL());
-        compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
     }
     
     @Override
