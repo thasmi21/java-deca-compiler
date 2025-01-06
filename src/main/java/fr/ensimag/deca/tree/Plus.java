@@ -52,14 +52,4 @@ public class Plus extends AbstractOpArith {
         r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
         compiler.addInstruction(new WINT());
     }
-
-    @Override
-    public void codeGenPrint(DecacCompiler compiler){
-        GPRegister r1 = Register.getR(4);
-        GPRegister r2 = Register.getR(1);
-        getLeftOperand().evalueExpr(compiler, r1 );
-        getRightOperand().evalueExpr(compiler, r2 );
-        compiler.addInstruction(new ADD(r1, r2));
-        compiler.addInstruction(new WINT());
-    }
 }

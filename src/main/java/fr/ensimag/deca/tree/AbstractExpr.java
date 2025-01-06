@@ -151,7 +151,7 @@ public abstract class AbstractExpr extends AbstractInst {
     * en question (registre ou adresse de pile)
     *
     * */
-    protected  void evalueExpr(DecacCompiler compiler, GPRegister register ){
+    protected void evalueExpr(DecacCompiler compiler, GPRegister register ){
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 

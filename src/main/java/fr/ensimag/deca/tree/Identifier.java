@@ -9,6 +9,7 @@ import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Operand;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -183,6 +184,12 @@ public class Identifier extends AbstractIdentifier {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(op, Register.getR(1)));
         compiler.addInstruction(new WINT());
+    }
+
+    @Override
+    protected void evalueExpr(DecacCompiler compiler, GPRegister register ) {
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(op, register));
     }
 
     /**
