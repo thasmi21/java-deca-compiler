@@ -32,7 +32,7 @@ public class UnaryMinus extends AbstractUnaryExpr {
         if (!operandType.isInt() && !operandType.isFloat()) {
             throw new ContextualError("L'expression doit être un nombre (entier ou décimal)!", getLocation());
         }
-        operand.setType(operandType);
+        setType(operandType);
         return operandType;
     }
 
