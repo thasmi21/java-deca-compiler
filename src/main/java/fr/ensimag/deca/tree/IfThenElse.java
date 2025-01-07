@@ -1,5 +1,6 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -7,6 +8,14 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateInteger;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.instructions.BNE;
+import fr.ensimag.ima.pseudocode.instructions.BRA;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -46,7 +55,22 @@ public class IfThenElse extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if (condition instanceof BooleanLiteral){
+            //on recupeere un registre pour y mettre la valeur de la condition
+            GPRegister r =  GestionRegistre.obtainFreeRegister();
+            int entier = ((BooleanLiteral) condition).getValue()?1:0;
+            compiler.addInstruction(new LOAD(entier, r));
+            Label E = new Label(thenBranch.toString().replace('@', '_'));
+            Label fin = new Label(thenBranch.toString().replace('@', '_')+"_fin");
+            compiler.addInstruction(new CMP(0, r));
+            compiler.addInstruction(new BNE(E));
+            elseBranch.codeGenListInst(compiler);
+            compiler.addInstruction(new BRA(fin));
+            compiler.addLabel(E);
+            thenBranch.codeGenListInst(compiler);
+            compiler.addLabel(fin);
+
+        }
     }
 
     @Override
