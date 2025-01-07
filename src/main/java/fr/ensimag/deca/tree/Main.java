@@ -51,6 +51,7 @@ public class Main extends AbstractMain {
         declVariables.codeGenListDeclVar(compiler);
 
         compiler.addComment("Beginning of main instructions:");
+        //compiler.addLabel(new Label(insts.toString().replace('@', '_')));
         insts.codeGenListInst(compiler);
 
         // Il faudrait aussi que l'on puisse ajouter au debut du programme .ass l'instruction TSTO avec le bon #d calculé
