@@ -1,5 +1,6 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.DecacInternalError;
@@ -8,13 +9,8 @@ import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import java.io.PrintStream;
 
-import fr.ensimag.ima.pseudocode.DAddr;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Operand;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
-import fr.ensimag.ima.pseudocode.instructions.WSTR;
+import fr.ensimag.ima.pseudocode.*;
+import fr.ensimag.ima.pseudocode.instructions.*;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -182,8 +178,41 @@ public class Identifier extends AbstractIdentifier {
         //Mais si c'est une classe par exemple il faut gérer cela.
         //Pour l'instant j'essaie jeuste de faire le cas ou c'est un int
         DAddr op = this.getExpDefinition().getOperand();
-        compiler.addInstruction(new LOAD(op, Register.getR(1)));
-        compiler.addInstruction(new WINT());
+        if(this.getType() instanceof IntType){
+            compiler.addInstruction(new LOAD(op, Register.getR(1)));
+            compiler.addInstruction(new WINT());
+        }
+        else if(this.getType() instanceof BooleanType){
+            GPRegister r1 = GestionRegistre.obtainFreeRegister();
+            compiler.addInstruction(new LOAD(op, r1));
+            if(true){
+                compiler.addInstruction(new WSTR("true"));
+            }
+            else{
+                compiler.addInstruction(new WSTR("false"));
+            }
+            r1.setInUse(false);
+        }
+
+
+    }
+
+    @Override
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(op, r));
+
+
+        Label E = new Label(thenIns.toString().replace('@', '_'));
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"_fin");
+        compiler.addInstruction(new CMP(0, r));
+        compiler.addInstruction(new BNE(E));
+        elseIns.codeGenListInst(compiler);
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        thenIns.codeGenListInst(compiler);
+        compiler.addLabel(fin);
     }
 
     @Override
@@ -191,6 +220,8 @@ public class Identifier extends AbstractIdentifier {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(op, register));
     }
+
+
 
     /**
      * Implements non-terminal "type" of [SyntaxeContextuelle] in the 3 passes

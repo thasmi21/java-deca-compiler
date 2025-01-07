@@ -55,10 +55,11 @@ public class IfThenElse extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        if (condition instanceof BooleanLiteral){
             //on recupeere un registre pour y mettre la valeur de la condition
+        /*if(condition instanceof BooleanLiteral){
             GPRegister r =  GestionRegistre.obtainFreeRegister();
-            int entier = ((BooleanLiteral) condition).getValue()?1:0;
+
+            int entier = ((BooleanLiteral)condition).getValue()?1:0;
             compiler.addInstruction(new LOAD(entier, r));
             Label E = new Label(thenBranch.toString().replace('@', '_'));
             Label fin = new Label(thenBranch.toString().replace('@', '_')+"_fin");
@@ -69,8 +70,9 @@ public class IfThenElse extends AbstractInst {
             compiler.addLabel(E);
             thenBranch.codeGenListInst(compiler);
             compiler.addLabel(fin);
+        }*/
+        condition.genIfElseCode(compiler, thenBranch, elseBranch);
 
-        }
     }
 
     @Override

@@ -36,6 +36,13 @@ public abstract class AbstractExpr extends AbstractInst {
         return type;
     }
 
+    public int getEvalBooleanExpr(){
+        return 0;
+    }
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        throw  new IllegalArgumentException("Not Yet implementted");
+    }
+
     protected void setType(Type type) {
         Validate.notNull(type);
         this.type = type;
