@@ -61,8 +61,8 @@ public class Modulo extends AbstractOpArith {
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         GPRegister r2 = Register.R1;
-        getLeftOperand().evalueExpr(compiler, r1 );
-        getRightOperand().evalueExpr(compiler, r2 );
+        getLeftOperand().evalueExpr(compiler, r2 );
+        getRightOperand().evalueExpr(compiler, r1 );
         compiler.addInstruction(new REM(r1, r2));
         r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
         compiler.addInstruction(new WINT());
