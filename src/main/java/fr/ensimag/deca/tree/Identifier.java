@@ -185,12 +185,15 @@ public class Identifier extends AbstractIdentifier {
         else if(this.getType() instanceof BooleanType){
             GPRegister r1 = GestionRegistre.obtainFreeRegister();
             compiler.addInstruction(new LOAD(op, r1));
-            if(true){
-                compiler.addInstruction(new WSTR("true"));
-            }
-            else{
-                compiler.addInstruction(new WSTR("false"));
-            }
+            Label E = new Label(this.toString().replace('@', '_'));
+            Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+            compiler.addInstruction(new CMP(0, r1));
+            compiler.addInstruction(new BNE(E));
+            compiler.addInstruction(new WSTR("false"));
+            compiler.addInstruction(new BRA(fin));
+            compiler.addLabel(E);
+            compiler.addInstruction(new WSTR("true"));
+            compiler.addLabel(fin);
             r1.setInUse(false);
         } else if (this.getType() instanceof FloatType) {
             compiler.addInstruction(new LOAD(op, Register.getR(1)));
@@ -216,6 +219,17 @@ public class Identifier extends AbstractIdentifier {
         compiler.addLabel(E);
         thenIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
+        r.setInUse(false);
+    }
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(op, r));
+
+        compiler.addInstruction(new CMP(0, r)); //si vrai
+        compiler.addInstruction(new BNE(label));
+        r.setInUse(false);
     }
 
     @Override

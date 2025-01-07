@@ -35,6 +35,23 @@ public class Not extends AbstractUnaryExpr {
     }
 
     @Override
+    protected void evalueExpr(DecacCompiler compiler, GPRegister register ) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        getOperand().evalueExpr(compiler, r1);
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstruction(new CMP(0, r1));
+        compiler.addInstruction(new BEQ(E));
+        compiler.addInstruction(new LOAD(0, register));
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        compiler.addInstruction(new LOAD(1, register));
+        compiler.addLabel(fin);
+        r1.setInUse(false);
+
+    }
+
+    @Override
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
@@ -58,6 +75,7 @@ public class Not extends AbstractUnaryExpr {
         compiler.addLabel(E);
         thenIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
+        r.setInUse(false);
     }
 
     @Override

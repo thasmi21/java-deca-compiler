@@ -51,7 +51,7 @@ public class Assign extends AbstractBinaryExpr {
         }
     }
 
-    @Override
+    /*@Override
     protected void evalueExpr(DecacCompiler compiler, GPRegister register) {
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
@@ -63,10 +63,11 @@ public class Assign extends AbstractBinaryExpr {
         // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
         compiler.addInstruction(new STORE(reg, regAdresse));
         reg.setInUse(false);
-    }
+    }*/
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
+        //gerer le cas ou ce serait un entier egalement
         DAddr addresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
         GPRegister r2 = Register.R1; // On prend le registre R1 car on va print ensuite
         getRightOperand().evalueExpr(compiler, r2 );

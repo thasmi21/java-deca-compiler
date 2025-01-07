@@ -25,7 +25,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         Type type;
         if (!(typeLeft.isFloat() || typeLeft.isInt()) && !(typeRight.isFloat() || typeRight.isInt())) {
-            throw new ContextualError("Les deux opérandes ne sont pas du même type !"+typeLeft+typeRight, getLocation());
+            throw new ContextualError("Les deux opérandes ne sont pas du même type (ou l'operation n'est pas prise en charge) !"+typeLeft+typeRight, getLocation());
         }
         if(typeLeft.isFloat() || typeRight.isFloat()) {
             this.setType(compiler.environmentType.FLOAT);

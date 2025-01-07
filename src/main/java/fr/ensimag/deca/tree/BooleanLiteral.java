@@ -77,6 +77,17 @@ public class BooleanLiteral extends AbstractExpr {
             compiler.addLabel(E);
             thenIns.codeGenListInst(compiler);
             compiler.addLabel(fin);
+            r.setInUse(false);
+    }
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+
+        int entier = (this.getValue())?1:0;
+        compiler.addInstruction(new LOAD(entier, r));
+        compiler.addInstruction(new CMP(0, r)); //si vrai
+        compiler.addInstruction(new BNE(label));
+        r.setInUse(false);
     }
     @Override
     public void decompile(IndentPrintStream s) {

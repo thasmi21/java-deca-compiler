@@ -39,6 +39,10 @@ public abstract class AbstractExpr extends AbstractInst {
     public int getEvalBooleanExpr(){
         return 0;
     }
+
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        throw new UnsupportedOperationException("Not Yet implemented By us");
+    }
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
         throw  new IllegalArgumentException("Not Yet implementted");
     }
