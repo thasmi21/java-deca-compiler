@@ -192,6 +192,9 @@ public class Identifier extends AbstractIdentifier {
                 compiler.addInstruction(new WSTR("false"));
             }
             r1.setInUse(false);
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstruction(new LOAD(op, Register.getR(1)));
+            compiler.addInstruction(new WFLOAT());
         }
 
 

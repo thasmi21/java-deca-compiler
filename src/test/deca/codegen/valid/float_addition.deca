@@ -10,6 +10,6 @@
     println("La valeur de a est: ", a);
     println("Voici la valeur de b: ", b);
 
-    //println("La somme de ", i, " et ", j, " vaut :", i+j);
+    println("La somme de ", a, " et ", b, " vaut :", a+b);
     //println("", i, " + ", j, " * ", k, " = ", i+j*k);
 }
