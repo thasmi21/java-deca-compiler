@@ -1,0 +1,15 @@
+// Description :
+//      tests d'une division entre float
+//
+// Resultats :
+//      7
+
+{
+    int a = 63;
+    int b = 9;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+    println("", a, " / ", b, " = ", a / b);
+    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
+}

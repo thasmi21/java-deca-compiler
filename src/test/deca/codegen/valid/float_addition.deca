@@ -2,7 +2,7 @@
 //      tests d'une addition entre float
 //
 // Resultats :
-//      5.0
+//      5.00000e+00
 
 {
     float a = 2.5;

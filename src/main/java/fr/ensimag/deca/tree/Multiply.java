@@ -3,14 +3,12 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.MUL;
 import fr.ensimag.ima.pseudocode.instructions.SUB;
+import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 /**
@@ -44,12 +42,23 @@ public class Multiply extends AbstractOpArith {
 
     @Override
     public void codeGenPrint(DecacCompiler compiler){
-        GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        GPRegister r2 = Register.R1;
-        getLeftOperand().evalueExpr(compiler, r2 );
-        getRightOperand().evalueExpr(compiler, r1 );
-        compiler.addInstruction(new MUL(r1, r2));
-        r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
-        compiler.addInstruction(new WINT());
+        if (this.getType() instanceof IntType) {
+            GPRegister r1 = GestionRegistre.obtainFreeRegister();
+            GPRegister r2 = Register.R1;
+            getLeftOperand().evalueExpr(compiler, r2 );
+            getRightOperand().evalueExpr(compiler, r1 );
+            compiler.addInstruction(new MUL(r1, r2));
+            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            compiler.addInstruction(new WINT());
+        } else if (this.getType() instanceof FloatType) {
+            GPRegister r1 = GestionRegistre.obtainFreeRegister();
+            GPRegister r2 = Register.R1;
+            getLeftOperand().evalueExpr(compiler, r2 );
+            getRightOperand().evalueExpr(compiler, r1 );
+            compiler.addInstruction(new MUL(r1, r2));
+            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            compiler.addInstruction(new WFLOAT());
+        }
+
     }
 }
