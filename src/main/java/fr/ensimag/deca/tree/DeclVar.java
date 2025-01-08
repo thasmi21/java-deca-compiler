@@ -65,7 +65,13 @@ public class DeclVar extends AbstractDeclVar {
             }
         }
         VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
-        initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
+
+        if (!(initialization instanceof Initialization && ((Initialization) initialization).getExpression() instanceof ArrayLiteral && ((ArrayLiteral) ((Initialization) initialization).getExpression()).implicitDeclaration())){
+            initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
+        }
+        else {
+            ((Initialization) initialization).getExpression().setType(arrayType);
+        }
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
         try {
             localEnv.declare(compiler.createSymbol(varNameWoBrackets), varDef);

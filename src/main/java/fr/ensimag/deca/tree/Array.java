@@ -49,7 +49,7 @@ public class Array extends AbstractExpr{
             this.size = size;
             this.coefficients = new AbstractExpr[size];
             for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(size);
+                this.coefficients[i]= new Array(sizes.get(1));
             }
         }
     }
@@ -96,12 +96,10 @@ public class Array extends AbstractExpr{
         Type type = envType.defOfType(compiler.createSymbol(name)).getType();
         // Vérification que tous les coefficients sont du bon type
         for (AbstractExpr coefficient : coefficients) {
-            coefficient.setType(envType.defOfType(compiler.createSymbol(name.substring(0,name.length()-2))).getType());
-            Type typeExpr = coefficient.verifyExpr(compiler, localEnv, currentClass);
-            if (!typeExpr.isSubTypeOf(type)) {
-                throw new ContextualError("Les coefficients ne sont pas tous du bon type. Type souhaité : " + getBaseType(compiler,type) + ". Type reçu : "+ typeExpr, getLocation());
+            if (coefficient != null) {
+                coefficient.setType(envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType());
+                coefficient.verifyExpr(compiler, localEnv, currentClass);
             }
-
         }
         return type;
     }

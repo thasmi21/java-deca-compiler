@@ -89,30 +89,14 @@ list_decl_var[ListDeclVar l, AbstractIdentifier t]
       )*
     ;
 
-//list_decl_array[ListDeclVar l, AbstractIdentifier t]
-//    : dv1=decl_array[$t] {
-//        $l.add($dv1.tree);
-//        } (COMMA dv2=decl_array[$t] {
-//            $l.add($dv2.tree);
-//        }
-//      )*
-//    ;
-//
-//list_crochet[ListDeclVar l, AbstractIdentifier t]
-//    : dv1=decl_crochet[$t] {
-//        $l.add($dv1.tree);
-//        } (COMMA dv2=decl_crochet[$t] {
-//            $l.add($dv2.tree);
-//        }
-//      )*
-//    ;
-
 decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
     @ init {
     }
     : i=ident
       (EQUALS e=expr {
-            $tree = new DeclVar($t, $i.tree, new Initialization($e.tree)) ;
+            AbstractInitialization init = new Initialization($e.tree);
+            setLocation(init, $EQUALS);
+            $tree = new DeclVar($t, $i.tree, init) ;
             setLocation($tree, $EQUALS);
         }
      | {
@@ -121,36 +105,6 @@ decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
         }
      )
     ;
-
-//decl_array[AbstractIdentifier t] returns[AbstractDeclVar tree]
-//    @ init {
-//    }
-//    : i=identarray_without_int
-//      (EQUALS e=expr {
-//            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
-//            setLocation($tree, $EQUALS);
-//        }
-//     | {
-//            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
-//            setLocation($tree, $i.start);
-//        }
-//     )
-//    ;
-
-//decl_crochet[AbstractIdentifier t] returns[AbstractDeclVar tree]
-//    @ init {
-//    }
-//    : i=ident_crochet
-//      (EQUALS e=expr {
-//            $tree = new DeclArray($t, $i.tree, new Initialization($e.tree)) ;
-//            setLocation($tree, $EQUALS);
-//        }
-//     | {
-//            $tree = new DeclArray($t, $i.tree, new NoInitialization()) ;
-//            setLocation($tree, $i.start);
-//        }
-//     )
-//    ;
 
 list_inst returns[ListInst tree]
 @init {
@@ -497,7 +451,7 @@ array returns[AbstractExpr tree]
     ;
 
 array_literal returns [AbstractExpr tree]
-    : OBRACE literal (COMMA literal)* CBRACE {
+    : OBRACE expr (COMMA expr)* CBRACE {
         $tree = new ArrayLiteral($ctx.getText());
         setLocation($tree, $OBRACE);
     }

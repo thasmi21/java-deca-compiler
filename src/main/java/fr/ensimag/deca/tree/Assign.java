@@ -26,20 +26,27 @@ public class Assign extends AbstractBinaryExpr {
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-        Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if (typeRight.sameType(typeLeft) || ((typeLeft.isFloat() && typeRight.isInt() || typeLeft.isInt()) && (typeRight.isFloat()))) {
-            if (typeRight.sameType(typeLeft)) {
-                this.setType(typeLeft);
-                return typeLeft;
+        Type typeRight;
+        if(getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
+            getRightOperand().setType(typeLeft);
+            return typeLeft;
+        }
+        else {
+            typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            if (typeRight.sameType(typeLeft) || ((typeLeft.isFloat() && typeRight.isInt() || typeLeft.isInt()) && (typeRight.isFloat()))) {
+                if (typeRight.sameType(typeLeft)) {
+                    this.setType(typeLeft);
+                    return typeLeft;
+                }
+                if (typeLeft.isFloat()) {
+                    this.setType(typeLeft);
+                    return typeLeft;
+                }
+                this.setType(typeRight);
+                return typeRight;
+            } else {
+                throw new ContextualError("Les deux opérandes ne sont pas du même type : " + typeLeft + typeRight, getLocation());
             }
-            if (typeLeft.isFloat()) {
-                this.setType(typeLeft);
-                return typeLeft;
-            }
-            this.setType(typeRight);
-            return typeRight;
-        } else {
-            throw new ContextualError("Les deux opérandes ne sont pas du même type : " + typeLeft + typeRight, getLocation());
         }
     }
 
@@ -47,27 +54,27 @@ public class Assign extends AbstractBinaryExpr {
         public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
                 ClassDefinition currentClass, Type returnType) throws ContextualError {
             // Vérifie le type de l'affectation
-            Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-//            if(getRightOperand() instanceof Array && ((Array) getRightOperand()).getName()==null){
-//                getRightOperand().setType(typeLeft);
-//                typeRight = typeLeft;
-//                ((Array) getRightOperand()).setName(typeLeft.getName().getName());
-//            }
-            //getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-            // Vérifie la compatibilité des types
-            if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
-                if (typeLeft.isFloat() && typeRight.isInt()) {
-                    // Promotion implicite de int vers float
-                    setRightOperand(new ConvFloat(getRightOperand()));
-                }
+            Type typeRight;
+            if (getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
+                getRightOperand().setType(typeLeft);
                 this.setType(typeLeft);
             } else {
-                throw new ContextualError(
-                        "Erreur de type : impossible d'affecter une expression de type " +
-                                typeRight + " à une variable de type " + typeLeft,
-                        getLocation()
-                );
+                typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+                // Vérifie la compatibilité des types
+                if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
+                    if (typeLeft.isFloat() && typeRight.isInt()) {
+                        // Promotion implicite de int vers float
+                        setRightOperand(new ConvFloat(getRightOperand()));
+                    }
+                    this.setType(typeLeft);
+                } else {
+                    throw new ContextualError(
+                            "Erreur de type : impossible d'affecter une expression de type " +
+                                    typeRight + " à une variable de type " + typeLeft,
+                            getLocation()
+                    );
+                }
             }
         }
 

@@ -22,11 +22,24 @@ public class ArrayLiteral extends AbstractExpr{
 
     // pour des assignations du type tab = new int[]
     public ArrayLiteral(String name) {
-        this.name = removeIntegers(name);
-        this.dimension = getDimensionFromName(name);
         this.sizes = new ArrayList<>();
-        getSizeFromName(name);
-        this.array = new Array(sizes);
+        this.name = name;
+        if(!thereIsInit()){
+            this.name = removeIntegers(name);
+            setSizeFromName(name);
+            this.dimension = getDimensionFromName(name);
+        }
+        else{
+            setSizeFromNameInit(name);
+            this.dimension = getDimensionFromNameInit(name);
+        }
+        if(sizes.size()==1){
+            this.array = new Array(sizes.get(0));
+        }
+        else {
+            this.array = new Array(sizes);
+        }
+
     }
 
 
@@ -42,7 +55,25 @@ public class ArrayLiteral extends AbstractExpr{
         return sizes;
     }
 
-    public void getSizeFromName(String name) {
+    public void setSizeFromNameInit(String name) {
+        boolean entreAccolades = false;
+        int counter = 0;
+        for (char caractere : name.toCharArray()) {
+            if (caractere == '}') {
+                entreAccolades = false;
+                sizes.add(counter);
+            }
+            if (entreAccolades) {
+                counter += 1;
+            }
+            if (caractere == '{') {
+                entreAccolades = true;
+                counter = 0;
+            }
+        }
+    }
+
+    public void setSizeFromName(String name) {
         boolean entreCrochet = false;
         String nbr = "";
         for (char caractere : name.toCharArray()) {
@@ -74,17 +105,51 @@ public class ArrayLiteral extends AbstractExpr{
         return count;
     }
 
+    public int getDimensionFromNameInit(String name){
+        int count = 0;
+        for (char c : name.toCharArray()) {
+            if (c == '{') {
+                count++;
+            }
+        }
+        return count;
+    }
+    public boolean thereIsInit() {
+        if (name.contains("{")){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean implicitDeclaration(){
+        if (name.contains("{") && !name.contains("[")){
+            return true;
+        }
+        return false;
+    }
 
     // Je vérifie que tous les coefficients du tableau sont du bon type
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         EnvironmentType envType = compiler.getEnvironmentType();
-        Type type = envType.defOfType(compiler.createSymbol(name)).getType();
-        setType(type);
-        array.setType(type);
-        // Vérification que tous les coefficients sont du bon type
-        Type typeExpr = array.verifyExpr(compiler, localEnv, currentClass);
-        return type;
+        if(!implicitDeclaration()){
+            Type type = envType.defOfType(compiler.createSymbol(removeBracesContent(name))).getType();
+            setType(type);
+            array.setType(type);
+            // Vérification que tous les coefficients sont du bon type
+            array.verifyExpr(compiler, localEnv, currentClass);
+            return type;
+        }
+        return null;
+    }
+
+    public String removeBracesContent(String name){
+        // Supprimer tout ce qui se trouve après la première occurrence de '{'
+        if(name.contains("{")){
+            int braceIndex = name.indexOf('{');
+            name = name.substring(0, braceIndex);
+        }
+        return name;
     }
 
     public static String removeIntegers(String input) {
