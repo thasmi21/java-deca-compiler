@@ -36,14 +36,111 @@ public class CompilerOptions {
         return Collections.unmodifiableList(sourceFiles);
     }
 
+    public int getArret(){
+        return arret;
+    }
+
     private int debug = 0;
     private boolean parallel = false;
     private boolean printBanner = false;
     private List<File> sourceFiles = new ArrayList<File>();
+    private int arret=0;
 
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
+        String chemin=null;
+        if(args.length == 1) {
+            System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
+                    ". -b (banner) : affiche une bannière indiquant le nom de l'équipe\n" +
+                    ". -p (parse) : arrête decac après l'étape de construction de\n" +
+                    "l'arbre, et affiche la décompilation de ce dernier\n" +
+                    "(i.e. s'il n'y a qu'un fichier source à\n" +
+                    "compiler, la sortie doit être un programme\n" +
+                    "deca syntaxiquement correct)\n" +
+                    ". -v (verification) : arrête decac après l'étape de vérifications\n" +
+                    "(ne produit aucune sortie en l'absence d'erreur)\n" +
+                    ". -n (no check) : supprime les tests à l'exécution spécifiés dans\n" +
+                    "les points 11.1 et 11.3 de la sémantique de Deca.\n" +
+                    ". -r X (registers) : limite les registres banalisés disponibles à\n" +
+                    "R0 ... R{X-1}, avec 4 <= X <= 16\n" +
+                    ". -d (debug) : active les traces de debug. Répéter\n" +
+                    "l'option plusieurs fois pour avoir plus de\n" +
+                    "traces.\n" +
+                    ". -P (parallel) : s'il y a plusieurs fichiers sources,\n" +
+                    "lance la compilation des fichiers en\n" +
+                    "parallèle (pour accélérer la compilation)");
+        }
+        if(args[0].equals("-b")) {
+            if(args.length > 2) {
+                throw new CLIException("deca -b n'a pas d'argument!!");
+            }
+            else {
+                printBanner = true;
+            }
+        }
+        int v=0;
+        int p=0;
+        int r=0;
+        int P=0;
+        int n=0;
+        int w=0;
+        int d=0;
+        for (int i = 0; i < args.length; i++) {
+            if(args[i].equals("-v") && v==0 && p==0) {
+                v=1;
+                arret=2;
+            } else if (args[i].equals("-p") && p==0 && v==0) {
+                p=1;
+                arret=1;
+            }
+            else if(args[i].equals("-r") && r==0) {
+                if(args.length>i+1) {
+                    int digit = Integer.parseInt(args[i+1]);
+                    if(4<=digit && digit<=16){
+                        r=1;
+                        //A faire
+                    }
+                    else {
+                        throw new CLIException("l'option -r de deca nécéssite un entier en argument compris entre 4 et 16");
+                    }
+                }
+                else {
+                    throw new CLIException("l'option -r de deca nécéssite un entier en argument");
+                }
+            }
+            else if(args[i].equals("-P") && P==0) {
+                P=1;
+                parallel = true;
+                //compilation en parallele à faire plus tard
+            }
+            else if(args[i].equals("-n")&& n==0) {
+                n=1;
+                //A faire
+            }
+            else if(args[i].equals("-w") && w==0) {
+                w=1;
+                // A faire
+            }
+            else if(args[i].equals("-d")){
+                if(d==0){
+                    d=1;
+                    debug|=INFO;
+                } else if (d==1) {
+                    d=2;
+                    debug|=DEBUG;
+                }
+                else {
+                    debug|=TRACE;
+                }
+            }
+            else if(args.length!=i+1){
+                throw new CLIException("Le fichier doit être mis à la fin ou alors l'option n'est pas reconnue : " + args[i] + " Mettez la commande deca pour avoir toutes les options possibles.");
+            }
+            else {
+                chemin = args[i];
+            }
+        }
         Logger logger = Logger.getRootLogger();
         // map command-line debug option to log4j's level.
         switch (getDebug()) {
@@ -69,15 +166,15 @@ public class CompilerOptions {
 
         //placement du fichier source
         //on va de manière incremental sans gèrer toutes les options pour l'intant
-        String chemin = args[0];
+        //String chemin = args[0];
         File fichier = new File(chemin);
         if(fichier.exists() && fichier.isFile()){
             sourceFiles.add(fichier);
         }else{
-            System.out.println("Entrer un nom de fichier correct!");
+            throw new CLIException("Entrer un nom de fichier correct!");
         }
 
-        //throw new UnsupportedOperationException("not yet implemented");
+
     }
 
     protected void displayUsage() {

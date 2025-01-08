@@ -216,7 +216,7 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print(name.toString());
+        s.print(name.toString() + " ");
     }
 
     @Override

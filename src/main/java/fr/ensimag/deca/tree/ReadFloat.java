@@ -26,7 +26,7 @@ public class ReadFloat extends AbstractReadExpr {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("readFloat()");
+        s.print(" readFloat();");
     }
 
     @Override
