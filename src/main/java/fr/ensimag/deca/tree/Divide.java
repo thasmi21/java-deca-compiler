@@ -29,8 +29,8 @@ public class Divide extends AbstractOpArith {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         //GPRegister r2 = GestionRegistre.obtainFreeRegister();
         if (r1 != null){
-            getLeftOperand().evalueExpr(compiler, r1 );
-            getRightOperand().evalueExpr(compiler, register );
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
             if (getLeftOperand().getType() instanceof IntType && getRightOperand().getType() instanceof IntType) {
                 compiler.addInstruction(new QUO(r1, register));
             } else if (getLeftOperand().getType() instanceof FloatType && getRightOperand().getType() instanceof FloatType) {

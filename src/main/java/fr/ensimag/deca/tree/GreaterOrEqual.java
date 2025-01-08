@@ -5,10 +5,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.instructions.BGE;
-import fr.ensimag.ima.pseudocode.instructions.BLE;
-import fr.ensimag.ima.pseudocode.instructions.BRA;
-import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
  * Operator "x >= y"
@@ -37,14 +34,48 @@ public class GreaterOrEqual extends AbstractOpIneq {
 
         getLeftOperand().evalueExpr(compiler, r1);
         getRightOperand().evalueExpr(compiler, r2);
-        Label E = new Label(this.toString().replace('@', '_'));
-        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        Label E = new Label(this.toString().replace('@', '_')+"if");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
         compiler.addInstruction(new CMP(r2, r1));
         compiler.addInstruction(new BGE(E));
         elseIns.codeGenListInst(compiler);
         compiler.addInstruction(new BRA(fin));
         compiler.addLabel(E);
         thenIns.codeGenListInst(compiler);
+        compiler.addLabel(fin);
+        r1.setInUse(false);
+        r2.setInUse(false);
+    }
+
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+
+        getLeftOperand().evalueExpr(compiler, r1);
+        getRightOperand().evalueExpr(compiler, r2);
+
+        compiler.addInstruction(new CMP(r2, r1));
+        compiler.addInstruction(new BGE(label));
+        r1.setInUse(false);
+        r2.setInUse(false);
+    }
+
+    @Override
+    public void codeGenPrint(DecacCompiler compiler){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        GPRegister r2 = GestionRegistre.obtainFreeRegister();
+
+        getLeftOperand().evalueExpr(compiler, r1);
+        getRightOperand().evalueExpr(compiler, r2);
+        Label E = new Label(this.toString().replace('@', '_')+"pt");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_pt");
+        compiler.addInstruction(new CMP(r2, r1));
+        compiler.addInstruction(new BGE(E));
+        compiler.addInstruction(new WSTR("false"));
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        compiler.addInstruction(new WSTR("true"));
         compiler.addLabel(fin);
         r1.setInUse(false);
         r2.setInUse(false);

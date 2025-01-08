@@ -72,7 +72,8 @@ public class Assign extends AbstractBinaryExpr {
         GPRegister r2 = Register.R1; // On prend le registre R1 car on va print ensuite
         getRightOperand().evalueExpr(compiler, r2 );
         compiler.addInstruction(new STORE(r2, addresse));
-        compiler.addInstruction(new WINT());
+        //compiler.addInstruction(new WINT());
+        getLeftOperand().codeGenPrint(compiler);
     }
 
     @Override

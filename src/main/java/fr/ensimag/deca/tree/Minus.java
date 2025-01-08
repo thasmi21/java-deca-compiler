@@ -31,8 +31,8 @@ public class Minus extends AbstractOpArith {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         //GPRegister r2 = GestionRegistre.obtainFreeRegister();
         if (r1 != null){
-            getLeftOperand().evalueExpr(compiler, r1 );
-            getRightOperand().evalueExpr(compiler, register );
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
             compiler.addInstruction(new SUB(r1, register));
             r1.setInUse(false); //on n'utilise plus r1
             return;

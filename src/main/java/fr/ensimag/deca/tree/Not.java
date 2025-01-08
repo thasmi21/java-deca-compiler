@@ -27,6 +27,8 @@ public class Not extends AbstractUnaryExpr {
             ClassDefinition currentClass) throws ContextualError {
         AbstractExpr operand = getOperand();
         Type operandType = operand.verifyExpr(compiler, localEnv, currentClass);
+        /*
+        *  a revoir ici car on peut bien afficher !(a<=2) et pourtant "a<=2" n'est pas un boolean*/
         if (!operandType.isBoolean()) {
             throw new ContextualError("L'expression doit être un boolean!", getLocation());
         }
@@ -81,5 +83,22 @@ public class Not extends AbstractUnaryExpr {
     @Override
     protected String getOperatorName() {
         return "!";
+    }
+    @Override
+    public void codeGenPrint(DecacCompiler compiler){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+
+        getOperand().evalueExpr(compiler, r1);
+
+        Label E = new Label(this.toString().replace('@', '_')+"pt");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_pt");
+        compiler.addInstruction(new CMP(0, r1));
+        compiler.addInstruction(new BNE(E));
+        compiler.addInstruction(new WSTR("true"));
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        compiler.addInstruction(new WSTR("false"));
+        compiler.addLabel(fin);
+        r1.setInUse(false);
     }
 }
