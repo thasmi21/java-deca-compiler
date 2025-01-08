@@ -1,0 +1,25 @@
+// Descritpion :
+//      Test du calcul de la factorielle d'un nombre entré au clavier
+//
+// Résultats :
+//      24
+
+{
+    int a;
+    int fact = 1;
+    int cpt = 1;
+    println("Ce programme calcule et affiche la factoriel du nombre choisi");
+
+    println("Entrer un nombre :", a = readInt());
+
+    if (a<0){
+        println("Votre nombre est négatifs !");
+    } else {
+        while(cpt <= a){
+            fact = fact * cpt;
+            cpt = cpt + 1;
+        }
+        println("Le factoriel de ", a, " est : ", fact);
+    }
+
+}
