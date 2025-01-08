@@ -198,6 +198,7 @@ public class DecacCompiler {
             LOG.info("Parsing failed");
             return true;
         }
+
         int arret=compilerOptions.getArret();
         if(arret==1){
             prog.decompile(System.out);
