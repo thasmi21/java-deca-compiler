@@ -29,9 +29,9 @@ public class Not extends AbstractUnaryExpr {
         Type operandType = operand.verifyExpr(compiler, localEnv, currentClass);
         /*
         *  a revoir ici car on peut bien afficher !(a<=2) et pourtant "a<=2" n'est pas un boolean*/
-        if (!operandType.isBoolean()) {
+        /*if (!operandType.isBoolean()) {
             throw new ContextualError("L'expression doit être un boolean!", getLocation());
-        }
+        }*/
         setType(operandType);
         return operandType;
     }
@@ -58,6 +58,7 @@ public class Not extends AbstractUnaryExpr {
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
 
+        /*
         if( !(getOperand() instanceof Identifier)){
             int entier = this.getOperand().getEvalBooleanExpr();
             compiler.addInstruction(new LOAD(entier, r));
@@ -65,11 +66,12 @@ public class Not extends AbstractUnaryExpr {
         else{
             DAddr op = ((Identifier)getOperand()).getExpDefinition().getOperand();
             compiler.addInstruction(new LOAD(op, r));
-        }
+        }*/
+        getOperand().evalueExpr(compiler, r);
 
 
-        Label E = new Label(thenIns.toString().replace('@', '_'));
-        Label fin = new Label(thenIns.toString().replace('@', '_')+"_fin");
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
         compiler.addInstruction(new CMP(0, r));
         compiler.addInstruction(new BEQ(E));
         elseIns.codeGenListInst(compiler);
@@ -77,6 +79,16 @@ public class Not extends AbstractUnaryExpr {
         compiler.addLabel(E);
         thenIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
+        r.setInUse(false);
+    }
+
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        getOperand().evalueExpr(compiler, r);
+
+        compiler.addInstruction(new CMP(0, r)); //si vrai
+        compiler.addInstruction(new BEQ(label));
         r.setInUse(false);
     }
 

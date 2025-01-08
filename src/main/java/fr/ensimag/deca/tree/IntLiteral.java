@@ -1,5 +1,6 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -7,10 +8,10 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.ImmediateInteger;
+import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 import java.io.PrintStream;
 
@@ -43,6 +44,32 @@ public class IntLiteral extends AbstractExpr {
     protected void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(value, register));
 
+    }
+
+    @Override
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        compiler.addInstruction(new LOAD(value, r));
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
+        compiler.addInstruction(new CMP(0, r));
+        compiler.addInstruction(new BNE(E));
+        elseIns.codeGenListInst(compiler);
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        thenIns.codeGenListInst(compiler);
+        compiler.addLabel(fin);
+        r.setInUse(false);
+    }
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+
+        compiler.addInstruction(new LOAD(value, r));
+        compiler.addInstruction(new CMP(0, r)); //si vrai
+        compiler.addInstruction(new BNE(label));
+        r.setInUse(false);
     }
 
     @Override
