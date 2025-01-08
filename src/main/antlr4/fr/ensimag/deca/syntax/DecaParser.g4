@@ -486,29 +486,22 @@ primary_expr returns[AbstractExpr tree]
     ;
 
 array returns[AbstractExpr tree]
-    : ARRAY {
-        $tree = new ArrayLiteral($ARRAY.text);
-        setLocation($tree, $ARRAY);
+    : IDENT (OCROCHET INT CCROCHET)+ {
+        $tree = new ArrayLiteral($ctx.getText());
+        setLocation($tree, $IDENT);
     }
-//    | ARRAY OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
-//            List<AbstractExpr> values = new ArrayList<>();
-//            for (LiteralContext t : $elements) {
-//                values.add(t.tree);
-//            }
-//            $tree = new Array($ARRAY.text, values);
-//            setLocation($tree, $ARRAY);
-//    }
-//    | OBRACE elements+=literal (COMMA elements+=literal)* CBRACE {
-//                List<AbstractExpr> values = new ArrayList<>();
-//                for (LiteralContext t : $elements) {
-//                    values.add(t.tree);
-//                }
-//                $tree = new Array(values);
-//                setLocation($tree, $OBRACE);
-//        }
+    | IDENT (OCROCHET CCROCHET)+ array_literal {
+        $tree = new ArrayLiteral($ctx.getText());
+        setLocation($tree, $IDENT);
+    }
     ;
 
-
+array_literal returns [AbstractExpr tree]
+    : OBRACE literal (COMMA literal)* CBRACE {
+        $tree = new ArrayLiteral($ctx.getText());
+        setLocation($tree, $OBRACE);
+    }
+    ;
 
 type returns[AbstractIdentifier tree]
     : ident {
@@ -545,53 +538,20 @@ literal returns[AbstractExpr tree]
         }
     | NULL {
         }
+    | array_literal {
+        assert($array_literal.tree != null);
+        $tree= $array_literal.tree;
+    }
     ;
 
 
 ident returns[AbstractIdentifier tree]
     :
-     IDENT {
-        $tree = new Identifier(SymbolTable.create($IDENT.text));
+     IDENT (OCROCHET CCROCHET)* {
+        $tree = new Identifier(SymbolTable.create($ctx.getText()));
         setLocation($tree,$IDENT);
         }
     ;
-
-//identarray_without_int returns[AbstractIdentifier tree]
-//    :
-//    IDENTARRAY{
-//        $tree=new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
-//        setLocation($tree, $IDENTARRAY);
-//    }
-//    |
-//    IDENT{
-//        $tree=new ArrayIdentifier(SymbolTable.create($IDENT.text));
-//        setLocation($tree, $IDENT);
-//    }
-//    ;
-//
-//ident_a returns[AbstractIdentifier tree]
-//     :
-//     IDENT {
-//         $tree = new ArrayIdentifier(SymbolTable.create($IDENT.text));
-//         setLocation($tree,$IDENT);
-//         }
-//     ;
-//
-//ident_crochet returns[AbstractIdentifier tree]
-//     :
-//     IDENTARRAY {
-//         $tree = new ArrayIdentifier(SymbolTable.create($IDENTARRAY.text));
-//         setLocation($tree,$IDENTARRAY);
-//         }
-//     ;
-//
-//identarray returns[AbstractIdentifier tree]
-//    :
-//    IDTARRAY{
-//        $tree=new ArrayIdf(SymbolTable.create($IDTARRAY.text));
-//        setLocation($tree, $IDTARRAY);
-//    }
-//    ;
 
 
 /****     Class related rules     ****/

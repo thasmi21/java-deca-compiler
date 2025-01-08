@@ -24,12 +24,7 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
             throw new ContextualError("L'une des deux opérandes n'est pas un nombre (int ou float)! Op gauche : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
         }
         Type typeRes;
-        if(typeLeft.isFloat() || typeRight.isFloat()) {
-            typeRes = compiler.environmentType.FLOAT;
-            }
-        else {
-            typeRes = compiler.environmentType.INT;
-        }
+        typeRes = compiler.environmentType.BOOLEAN;
         setType(typeRes);
         return typeRes;
     }
