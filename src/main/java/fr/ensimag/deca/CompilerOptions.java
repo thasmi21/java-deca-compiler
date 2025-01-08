@@ -50,7 +50,7 @@ public class CompilerOptions {
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
         String chemin=null;
-        if(args.length == 1) {
+        if(args.length == 0) {
             System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
                     ". -b (banner) : affiche une bannière indiquant le nom de l'équipe\n" +
                     ". -p (parse) : arrête decac après l'étape de construction de\n" +
