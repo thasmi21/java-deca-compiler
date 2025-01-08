@@ -26,10 +26,16 @@ public class DecacMain {
             System.exit(1);
         }
         if (options.getPrintBanner()) {
-            throw new UnsupportedOperationException("decac -b not yet implemented");
+            System.out.println("gr1/gl06 :  \n" +
+                    "  HURSTEL Mathis\n" +
+                    "  SULLET Benjamin\n" +
+                    "  TRAORÉ Fiè Victor\n" +
+                    "  ZIVKOVIC Lucas\n" +
+                    "  ZOUGGARI Samy");
         }
         if (options.getSourceFiles().isEmpty()) {
-            System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
+            if(!options.getPrintBanner()) {
+                System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
                     ". -b (banner) : affiche une bannière indiquant le nom de l'équipe\n" +
                     ". -p (parse) : arrête decac après l'étape de construction de\n" +
                     "l'arbre, et affiche la décompilation de ce dernier\n" +
@@ -48,6 +54,7 @@ public class DecacMain {
                     ". -P (parallel) : s'il y a plusieurs fichiers sources,\n" +
                     "lance la compilation des fichiers en\n" +
                     "parallèle (pour accélérer la compilation)");
+            }
 
         }
         if (options.getParallel()) {

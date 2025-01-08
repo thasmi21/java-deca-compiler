@@ -55,11 +55,12 @@ public class CompilerOptions {
             return;
         }
         if(args[0].equals("-b")) {
-            if(args.length > 2) {
+            if(args.length > 1) {
                 throw new CLIException("deca -b n'a pas d'argument!!");
             }
             else {
                 printBanner = true;
+                return;
             }
         }
         int v=0;
