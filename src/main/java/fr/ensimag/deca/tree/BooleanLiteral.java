@@ -68,8 +68,8 @@ public class BooleanLiteral extends AbstractExpr {
 
             int entier = (this.getValue())?1:0;
             compiler.addInstruction(new LOAD(entier, r));
-            Label E = new Label(thenIns.toString().replace('@', '_'));
-            Label fin = new Label(thenIns.toString().replace('@', '_')+"_fin");
+            Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+            Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
             compiler.addInstruction(new CMP(0, r));
             compiler.addInstruction(new BNE(E));
             elseIns.codeGenListInst(compiler);

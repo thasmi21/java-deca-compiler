@@ -41,10 +41,10 @@ public abstract class AbstractExpr extends AbstractInst {
     }
 
     public void genWhileCode(DecacCompiler compiler, Label label){
-        throw new UnsupportedOperationException("Not Yet implemented By us");
+        throw new UnsupportedOperationException("Expression connot be a condition");
     }
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
-        throw  new IllegalArgumentException("Not Yet implementted");
+        throw  new IllegalArgumentException("Expression connot be a condition");
     }
 
     protected void setType(Type type) {
