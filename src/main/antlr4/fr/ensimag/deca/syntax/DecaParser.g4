@@ -530,25 +530,31 @@ list_classes returns[ListDeclClass tree]
 
 class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
+        $tree=new DeclClass($name.tree,$superclass.tree,$class_body.tree);
         }
     ;
 
 class_extension returns[AbstractIdentifier tree]
     : EXTENDS ident {
+        $tree= new Identifier($ident.tree);
         }
     | /* epsilon */ {
         }
     ;
 
-class_body
+class_body returns[ListBody tree]
+    @init{
+          $tree = new ListBody();
+    }
     : (m=decl_method {
+
         }
-      | decl_field_set
+      | decl_field_set[$tree]
       )*
     ;
 
-decl_field_set
-    : v=visibility t=type list_decl_field
+decl_field_set[ListBody l]
+    : v=visibility t=type list_decl_field[$l,v,$t.tree]
       SEMI
     ;
 
@@ -556,22 +562,32 @@ visibility
     : /* epsilon */ {
         }
     | PROTECTED {
+
         }
     ;
 
-list_decl_field
-    : dv1=decl_field
-        (COMMA dv2=decl_field
+list_decl_field[ListBody l,Visibility v ,AbstractIdentifier t]
+    : dv1=decl_field[$v]{
+        $l.add($dv1.tree);
+    }
+        (COMMA dv2=decl_field[$v]{
+            $l.add($dv2.tree);
+        }
       )*
     ;
 
-decl_field
+decl_field[Visibility v,AbstractIdentifier t] returns[AbstractDeclField tree]
     : i=ident {
         }
       (EQUALS e=expr {
+        $tree = new DeclField($v,$t,$i.tree,new Initialization($e.tree));
+        setLocation($tree, $EQUALS);
         }
-      )? {
+      | {
+        $tree = new DeclField($v,$t,$i.tree,new NoInitialization());
+        setLocation($tree, $i.start);
         }
+        )
     ;
 
 decl_method

@@ -4,6 +4,8 @@ import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import org.apache.commons.lang.Validate;
+
 import java.io.PrintStream;
 
 /**
@@ -13,6 +15,19 @@ import java.io.PrintStream;
  * @date 01/01/2025
  */
 public class DeclClass extends AbstractDeclClass {
+
+    final private AbstractIdentifier className;
+    final private AbstractIdentifier extendsName;
+    final private ListBody classBody;
+
+    public DeclClass(AbstractIdentifier className, AbstractIdentifier extendsName, ListBody classBody) {
+        Validate.notNull(className);
+        Validate.notNull(classBody);
+        this.className = className;
+        this.extendsName = extendsName;
+        this.classBody = classBody;
+    }
+
 
     @Override
     public void decompile(IndentPrintStream s) {
