@@ -43,13 +43,24 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
         }
     }
 
-    void codeGenListDeclVar(DecacCompiler compiler){
-        //on ajoute d'abord l'instruction pour augmenter la pile
-        // on fera le TSTO après
-        compiler.addInstruction(new ADDSP(this.getList().size()));
-        for(AbstractDeclVar declVar: this.getList()){
+    /**
+     * On créer une méthode de génération de code
+     */
+    void codeGenListDeclVar(DecacCompiler compiler) {
+        // On commence par faire de la place dans la pile,
+        // autant qu'il y a de variables définies
+        int taille_pile = getList().size();
+        if (taille_pile > 0) {
+            // On utilise addFirst pour que l'instruction ADDSP soit avant
+            // l'instruction ; Main Program
+            compiler.addFirst(new ADDSP(taille_pile));
+        }
+
+        // Pour chaque variable on va appeler une nouvelle méthode de genCode
+        for (AbstractDeclVar declVar : this.getList()){
             declVar.codeGenDeclVar(compiler);
         }
     }
+
 
 }

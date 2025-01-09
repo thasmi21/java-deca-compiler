@@ -1,0 +1,15 @@
+// Description :
+//      tests d'une soustraction entre float
+//
+// Resultats :
+//      2.51000e+01
+
+{
+    float a = 30.9;
+    float b = 5.8;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+    println("La différence entre ", a, " et ", b, " vaut :", a-b);
+    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
+}

@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une addition simple
+//
+// Resultats :
+//      -5
+
+{
+    int a = 5;
+    println("L'opposé de ", a, " est ", -a);
+}

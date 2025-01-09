@@ -1,0 +1,12 @@
+// Description :
+//      tests opposé entre float
+//
+// Resultats :
+//      -2.54000e+01
+
+{
+    float a = 25.4;
+    println("Voici la valeur de a: ", a);
+
+    println("L'opposé de ", a, " est ", -a);
+}

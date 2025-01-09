@@ -1,0 +1,15 @@
+// Description :
+//      tests d'une multiplication entre float
+//
+// Resultats :
+//      5.92200e+01
+
+{
+    float a = 12.6;
+    float b = 4.7;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+    println("La différence entre ", a, " et ", b, " vaut :", a*b);
+    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
+}

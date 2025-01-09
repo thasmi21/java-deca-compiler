@@ -15,6 +15,10 @@ public class GPRegister extends Register {
     }
 
     private int number;
+    private boolean inUse = false;
+
+    public boolean isInUse() {return inUse;}
+    public void setInUse(boolean inUse) {this.inUse = inUse;}
 
     GPRegister(String name, int number) {
         super(name);

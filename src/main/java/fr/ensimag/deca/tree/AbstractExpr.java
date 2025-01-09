@@ -36,6 +36,17 @@ public abstract class AbstractExpr extends AbstractInst {
         return type;
     }
 
+    public int getEvalBooleanExpr(){
+        return 0;
+    }
+
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        throw new UnsupportedOperationException("Expression connot be a condition");
+    }
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        throw  new IllegalArgumentException("Expression connot be a condition");
+    }
+
     protected void setType(Type type) {
         Validate.notNull(type);
         this.type = type;
@@ -136,7 +147,8 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+
+        throw new UnsupportedOperationException("not yet implemented by us");
     }
 
     @Override
@@ -150,7 +162,7 @@ public abstract class AbstractExpr extends AbstractInst {
     * en question (registre ou adresse de pile)
     *
     * */
-    protected  void evalueExpr(DecacCompiler compiler, GPRegister register ){
+    protected void evalueExpr(DecacCompiler compiler, GPRegister register ){
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 

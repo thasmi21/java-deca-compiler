@@ -1,0 +1,16 @@
+// Descritpion :
+//      Test d'une expression while
+//
+// Resultats :
+//
+
+{
+    int compt = 0;
+    int somme = 0;
+    while (compt <= 10) {
+        somme = somme + 1;
+        compt = compt + 2;
+    }
+    println("On obtient une somme valant ", somme);
+
+}
