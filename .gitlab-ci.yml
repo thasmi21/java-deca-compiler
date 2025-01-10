@@ -1,4 +1,6 @@
 # Fichier .gitlab-ci.yml à placer à la racine de votre projet
+image: docker:latest
+
 stages:
   - test
 
