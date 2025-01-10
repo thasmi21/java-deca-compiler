@@ -36,8 +36,6 @@ public class Program extends AbstractProgram {
         LOG.debug("verify program: start");
         //getClasses().verifyListClass(compiler);
         main.verifyMain(compiler);
-        //decommenter la ligne au dessus par Victor
-        //throw new UnsupportedOperationException("not yet implemented");
         LOG.debug("verify program: end");
     }
 

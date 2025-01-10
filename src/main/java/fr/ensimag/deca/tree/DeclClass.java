@@ -53,7 +53,14 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        throw new UnsupportedOperationException("Not yet supported");
+        className.prettyPrint(s,prefix,false);
+        if (extendsName != null) {
+
+            extendsName.prettyPrint(s,prefix+" extends ",false);
+        }
+        if (classBody != null) {
+            classBody.prettyPrint(s,prefix,true);
+        }
     }
 
     @Override

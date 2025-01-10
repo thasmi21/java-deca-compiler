@@ -530,13 +530,16 @@ list_classes returns[ListDeclClass tree]
 
 class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
+        assert($name.tree!=null);
+        assert($superclass.tree!=null);
+        assert($class_body.tree!=null);
         $tree=new DeclClass($name.tree,$superclass.tree,$class_body.tree);
         }
     ;
 
 class_extension returns[AbstractIdentifier tree]
     : EXTENDS ident {
-        $tree= new Identifier($ident.tree);
+        $tree= new Identifier(SymbolTable.create($ident.text));
         }
     | /* epsilon */ {
         }
@@ -554,23 +557,24 @@ class_body returns[ListBody tree]
     ;
 
 decl_field_set[ListBody l]
-    : v=visibility t=type list_decl_field[$l,v,$t.tree]
+    : v=visibility t=type list_decl_field[$l,$v.v,$t.tree]
       SEMI
     ;
 
-visibility
+visibility returns[Visibility v]
     : /* epsilon */ {
+        $v=Visibility.PUBLIC;
         }
     | PROTECTED {
-
+        $v=Visibility.PROTECTED;
         }
     ;
 
 list_decl_field[ListBody l,Visibility v ,AbstractIdentifier t]
-    : dv1=decl_field[$v]{
+    : dv1=decl_field[$v,$t]{
         $l.add($dv1.tree);
     }
-        (COMMA dv2=decl_field[$v]{
+        (COMMA dv2=decl_field[$v,$t]{
             $l.add($dv2.tree);
         }
       )*
@@ -592,6 +596,7 @@ decl_field[Visibility v,AbstractIdentifier t] returns[AbstractDeclField tree]
 
 decl_method
 @init {
+
 }
     : type ident OPARENT params=list_params CPARENT (block {
         }
