@@ -1,0 +1,14 @@
+// Description :
+//      Test d'une expression if sans else ni else if
+//
+// Resultats :
+//      Je suis au bon endroit
+//      La vie est comme une boite de chocolats
+
+
+{
+    if(1==1){
+    println("Je suis au bon endroit");
+    }
+    println("La vie est comme une boite de chocolats");
+}

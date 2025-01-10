@@ -1,5 +1,5 @@
 // Description :
-//      tests d'une assignation du type x = 2
+//      tests d'assignations
 //
 // Resultats:
 //      8
@@ -20,5 +20,5 @@
     println("La nouvelle valeur de x est : ", x = 42);
     println("La nouvelle valeur de y est : ", y = 118);
 
-    //println("On teste si x vaut 2 : ", x == 2);
+    println("On teste si x vaut 2 : ", x == 2);
 }

@@ -6,11 +6,10 @@
 
 {
     int a = 63;
-    int b = 0;
+    int b = 9;
     int z = a / b;
     println("La valeur de a est: ", a);
     println("Voici la valeur de b: ", b);
 
     println("", a, " / ", b, " = ", a / b);
-    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
 }

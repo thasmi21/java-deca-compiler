@@ -1,0 +1,16 @@
+// Description :
+//      Test d'une expression if else if else
+//
+// Resultats :
+//      Egalité !
+
+{
+    int a = 5;
+    float b = 5.0;
+
+    if (a == b) {
+        print("Egalité !");
+    } else {
+        print("Différent !");
+    }
+}

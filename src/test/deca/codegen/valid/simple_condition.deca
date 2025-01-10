@@ -1,0 +1,42 @@
+// Description :
+//      Test de conditions booléennes
+// Résultats:
+//
+
+{
+    int a = 5;
+    int b = 10;
+
+    if (a < b) {
+        println("a est strictement plus petit que b");
+    } else {
+        println("a est plus grand ou égal à b");
+    }
+    if (a <= b) {
+            println("a plus petit ou egal à b");
+        } else {
+            println("a est strictement plus grand que b");
+        }
+    if (a >= b) {
+            println("a plus grand ou egal à b");
+        } else {
+            println("a est strictement plus petit que b");
+        }
+    if (a <= a) {
+            println("a est plus petit ou égal à  a");
+        } else {
+            println("a est strictement plus grand que a");
+        }
+    if (a >= a) {
+            println("a est plus grand ou égal à a");
+        } else {
+            println("a est strictement plus petit à a");
+        }
+    if (a > b) {
+            println("a est strictement plus grand que b");
+        } else {
+            println("a est plus petit ou égal à b");
+        }
+
+
+}

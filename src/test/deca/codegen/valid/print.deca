@@ -1,0 +1,11 @@
+// Description :
+//      Test de print, si ça saute pas de ligne
+//
+// Resultats :
+//
+
+{
+    print("Ceci est u");
+    print("ne phrase ");
+    print("écrite sur une seule ligne");
+}
