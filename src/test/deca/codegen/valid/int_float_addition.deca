@@ -1,0 +1,12 @@
+// Description :
+//      Test d'une addition entre un float et un Int
+//
+// Resultats :
+//
+
+{
+    int x = 2;
+    float y = 3;
+    float z = x + y;
+    println("", x, " + ", y, " = ", z);
+}
