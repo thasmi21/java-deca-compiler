@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fr.ensimag.ima.pseudocode.Register;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -71,39 +72,64 @@ public class CompilerOptions {
         int w=0;
         int d=0;
         for (int i = 0; i < args.length; i++) {
-            if(args[i].equals("-v") && v==0 && p==0) {
-                v=1;
-                arret=2;
-            } else if (args[i].equals("-p") && p==0 && v==0) {
-                p=1;
-                arret=1;
+            if(args[i].equals("-v")) {
+                if(v==0 && p==0) {
+                    v=1;
+                    arret=2;
+                }
+                else{
+                    throw new CLIException("l'option -v n'est utilisable qu'une seule fois ou sans l'option -p");
+                }
+            } else if (args[i].equals("-p") ) {
+                if(v==0 && p==0) {
+                    p=1;
+                    arret=1;
+                }
+                throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
             }
-            else if(args[i].equals("-r") && r==0) {
-                if(args.length>i+1) {
-                    int digit = Integer.parseInt(args[i+1]);
-                    if(4<=digit && digit<=16){
-                        r=1;
-                        //A faire
+            else if(args[i].equals("-r") ) {
+                if(r==0){
+                    if(args.length>i+1) {
+                        int digit = Integer.parseInt(args[i+1]);
+                        if(4<=digit && digit<=16){
+                            r=1;
+                            for(int j=15;j>=digit;j--){
+                                Register.getR(j).setInUse(true);
+                            }
+                        }
+                        else {
+                            throw new CLIException("l'option -r de deca nécéssite un entier en argument compris entre 4 et 16");
+                        }
                     }
                     else {
-                        throw new CLIException("l'option -r de deca nécéssite un entier en argument compris entre 4 et 16");
+                        throw new CLIException("l'option -r de deca nécéssite un entier en argument");
                     }
+
                 }
-                else {
-                    throw new CLIException("l'option -r de deca nécéssite un entier en argument");
+                else{
+                    throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
                 }
             }
-            else if(args[i].equals("-P") && P==0) {
-                P=1;
-                parallel = true;
-                //compilation en parallele à faire plus tard
+            else if(args[i].equals("-P")) {
+                if(P==0) {
+                    P=1;
+                    parallel = true;
+                }
+                else{
+                    throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
+                }
             }
             else if(args[i].equals("-n")&& n==0) {
                 n=1;
                 //A faire
             }
-            else if(args[i].equals("-w") && w==0) {
-                w=1;
+            else if(args[i].equals("-w")) {
+                if(w==0){
+                    w=1;
+                }
+                else{
+                    throw new CLIException("l'option -w n'est utilisable qu'une seule fois");
+                }
             }
             else if(args[i].equals("-d")){
                 if(d==0){
