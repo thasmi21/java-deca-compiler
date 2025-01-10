@@ -39,6 +39,7 @@ public class Minus extends AbstractOpArith {
         }
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new SUB(Register.R0, register));
+        GestionRegistre.IncCompteurTempUsage();
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
@@ -53,6 +54,7 @@ public class Minus extends AbstractOpArith {
         }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             compiler.addInstruction(new SUB(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
         }
 
         if (this.getType() instanceof IntType) {

@@ -57,6 +57,7 @@ public class Modulo extends AbstractOpArith {
         }
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new REM(Register.R0, register));
+        GestionRegistre.IncCompteurTempUsage();
         System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
@@ -72,6 +73,7 @@ public class Modulo extends AbstractOpArith {
         }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             compiler.addInstruction(new MUL(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
         }
         compiler.addInstruction(new WINT());
     }

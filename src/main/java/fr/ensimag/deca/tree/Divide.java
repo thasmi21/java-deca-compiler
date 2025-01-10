@@ -34,6 +34,7 @@ public class Divide extends AbstractOpArith {
         }
         else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            GestionRegistre.IncCompteurTempUsage();
             r1 = Register.R0;
         }
 
@@ -59,6 +60,7 @@ public class Divide extends AbstractOpArith {
 
         }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            GestionRegistre.IncCompteurTempUsage();
 
         }
 

@@ -28,6 +28,7 @@ public class Equals extends AbstractOpExactCmp {
     @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
@@ -46,6 +47,7 @@ public class Equals extends AbstractOpExactCmp {
 
         GPRegister register = Register.R1;
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_')+"if");
         Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
@@ -63,6 +65,7 @@ public class Equals extends AbstractOpExactCmp {
     public void genWhileCode(DecacCompiler compiler, Label label){
         GPRegister register = Register.R1;
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
         compiler.addInstruction(new SUB(GPRegister.R0, register));
 
         compiler.addInstruction(new CMP(0, register));

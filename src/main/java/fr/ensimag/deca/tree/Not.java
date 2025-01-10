@@ -66,15 +66,7 @@ public class Not extends AbstractUnaryExpr {
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
 
-        /*
-        if( !(getOperand() instanceof Identifier)){
-            int entier = this.getOperand().getEvalBooleanExpr();
-            compiler.addInstruction(new LOAD(entier, r));
-        }
-        else{
-            DAddr op = ((Identifier)getOperand()).getExpDefinition().getOperand();
-            compiler.addInstruction(new LOAD(op, r));
-        }*/
+
         getOperand().evalueExpr(compiler, r);
 
 

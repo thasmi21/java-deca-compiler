@@ -29,7 +29,7 @@ public final class GestionRegistre {
     private int getIndiceRegistreLB(){return indiceRegistreLB;}
     private int getIndiceRegistreSP(){return indiceRegistreSP;}
 
-    public static void setCompteurTempUsage(int indice){compteurTempUsage = indice;}
+    public static void IncCompteurTempUsage(){compteurTempUsage +=1;}
     private void setIndiceRegistreGB(int indice) {indiceRegistreGB = indice;}
     private void setIndiceRegistreLB(int indice) {indiceRegistreLB = indice;}
     private void setIndiceRegistreSP(int indice) {indiceRegistreSP = indice;}
