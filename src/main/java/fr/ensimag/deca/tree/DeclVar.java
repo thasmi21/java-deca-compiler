@@ -71,6 +71,7 @@ public class DeclVar extends AbstractDeclVar {
         }
         else {
             ((Initialization) initialization).getExpression().setType(arrayType);
+            initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
         }
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
         try {

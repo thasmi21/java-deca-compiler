@@ -16,79 +16,49 @@ public class Array extends AbstractExpr{
     private AbstractExpr[] coefficients;
 
 
-    // pour des assignations du type tab = new int[] {1,2,3...}
-    /*
-    public Array(String name, List<AbstractExpr> coefficients) {
-        this.name = removeIntegers(name);
-        this.dimension = getDimensionFromName(name);
-        this.size = getSizeFromName(name);
-        this.coefficients=coefficients;
-    }
-    */
-
-
-
-    public Array(ArrayList<Integer> sizes) {
+    public Array(ArrayList<Integer> sizes, List<AbstractExpr> coefficients) {
         Validate.notNull(sizes);
-        int size = sizes.get(0);
+        this.size = sizes.get(0);
+        if(size <= 0 ){
+            throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+        }
+        //this.coefficients = new AbstractExpr[size];
         if(sizes.size()!=2){
             sizes.remove(0);
-            if(size <= 0 ){
-                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-            }
-            this.size = size;
-            this.coefficients = new AbstractExpr[size];
+        }
+
+        if(coefficients != null){
+            this.coefficients = coefficients.toArray(new AbstractExpr[size]);
+        }
+        else {
+            this.coefficients = new AbstractExpr[sizes.size()];
             for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(sizes);
+                this.coefficients[i]= new Array(sizes, null);
             }
         }
-        else{
-            if(size <= 0 ){
-                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-            }
-            this.size = size;
-            this.coefficients = new AbstractExpr[size];
-            for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(sizes.get(1));
-            }
-        }
+
     }
 
-    public Array(int size) {
-        // size est-il utile ? je sais pas
+    public Array(int size, List<AbstractExpr> coefficients) {
         if (size <= 0) {
             throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
         }
         this.size = size;
-        this.coefficients = new AbstractExpr[size];
-        for (int i = 0; i < size; i++) {
-            this.coefficients[i] = null;
+        if(coefficients != null){
+            this.coefficients = coefficients.toArray(new AbstractExpr[size]);
+        }
+        else {
+            this.coefficients = new AbstractExpr[size];
+            for(int i = 0; i < size; i++){
+                this.coefficients[i] = null;
+            }
         }
     }
-
-
-/*
-    public Array(List<AbstractExpr> coefficients) {
-        this.dimension = 1;
-        this.size = coefficients.size();
-        //ça fonctionne pas psk je peux pas recup le type
-//        String name = ""+coefficients.get(0).();
-//        for (int i = 0; i < dimension; i++) {
-//            name = name + "[]";
-//        }
-//        this.name = name;
-        this.coefficients=coefficients;
-    }
-*/
-
 
     public int getSize() {
         return size;
     }
 
-
-
-    // Je vérifie que tous les coefficients du tableau sont du bon type
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         EnvironmentType envType = compiler.getEnvironmentType();
@@ -98,9 +68,18 @@ public class Array extends AbstractExpr{
         for (AbstractExpr coefficient : coefficients) {
             if (coefficient != null) {
                 coefficient.setType(envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType());
-                coefficient.verifyExpr(compiler, localEnv, currentClass);
+                if(coefficient instanceof ArrayLiteral){
+                    coefficient.verifyExpr(compiler, localEnv, currentClass);
+                }
+                else{
+                    Type typeCoeff = coefficient.verifyExpr(compiler, localEnv, currentClass);
+                    if(! typeCoeff.sameType(envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType())){
+                        throw new ContextualError("Le coefficient n'est pas du type souhaité.", getLocation());
+                    }
+                }
             }
         }
+        System.out.println(coefficients);
         return type;
     }
 

@@ -451,8 +451,8 @@ array returns[AbstractExpr tree]
     ;
 
 array_literal returns [AbstractExpr tree]
-    : OBRACE expr (COMMA expr)* CBRACE {
-        $tree = new ArrayLiteral($ctx.getText());
+    : OBRACE exp_list+=expr (COMMA exp_list+=expr)* CBRACE {
+        $tree = new ArrayLiteral($ctx.getText(), $exp_list);
         setLocation($tree, $OBRACE);
     }
     ;

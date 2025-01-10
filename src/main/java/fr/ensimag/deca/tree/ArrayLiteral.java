@@ -2,6 +2,7 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.*;
+import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tree.DeclVar;
@@ -34,12 +35,40 @@ public class ArrayLiteral extends AbstractExpr{
             this.dimension = getDimensionFromNameInit(name);
         }
         if(sizes.size()==1){
-            this.array = new Array(sizes.get(0));
+            this.array = new Array(sizes.get(0), null);
         }
         else {
-            this.array = new Array(sizes);
+            this.array = new Array(sizes, null);
         }
 
+    }
+
+    public Array getArray() {
+        return array;
+    }
+
+    public ArrayLiteral(String name, List<DecaParser.ExprContext> coefficients) {
+        this.sizes = new ArrayList<>();
+        this.name = name;
+        if(!thereIsInit()){
+            this.name = removeIntegers(name);
+            setSizeFromName(name);
+            this.dimension = getDimensionFromName(name);
+        }
+        else{
+            setSizeFromNameInit(name);
+            this.dimension = getDimensionFromNameInit(name);
+        }
+        ArrayList<AbstractExpr> coeffs= new ArrayList<>();
+        for(DecaParser.ExprContext coefficient : coefficients){
+            coeffs.add(coefficient.tree);
+        }
+        if(sizes.size()==1){
+            this.array = new Array(sizes.get(0), coeffs);
+        }
+        else {
+            this.array = new Array(sizes, coeffs);
+        }
     }
 
 
@@ -61,7 +90,7 @@ public class ArrayLiteral extends AbstractExpr{
         for (char caractere : name.toCharArray()) {
             if (caractere == '}') {
                 entreAccolades = false;
-                sizes.add(counter);
+                sizes.add(counter-1);
             }
             if (entreAccolades) {
                 counter += 1;
@@ -91,9 +120,11 @@ public class ArrayLiteral extends AbstractExpr{
         }
 
     }
-        public int getDimension() {
+
+    public int getDimension() {
         return dimension;
     }
+
 
     public int getDimensionFromName(String name) {
         int count = 0;
@@ -132,15 +163,22 @@ public class ArrayLiteral extends AbstractExpr{
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         EnvironmentType envType = compiler.getEnvironmentType();
+        Type type = null;
         if(!implicitDeclaration()){
-            Type type = envType.defOfType(compiler.createSymbol(removeBracesContent(name))).getType();
+            type = envType.defOfType(compiler.createSymbol(removeBracesContent(name))).getType();
             setType(type);
             array.setType(type);
-            // Vérification que tous les coefficients sont du bon type
             array.verifyExpr(compiler, localEnv, currentClass);
             return type;
+            // Vérification que tous les coefficients sont du bon type
         }
-        return null;
+        else{
+            array.setType(getType());
+            array.verifyExpr(compiler, localEnv, currentClass);
+            return this.getType();
+        }
+
+
     }
 
     public String removeBracesContent(String name){
