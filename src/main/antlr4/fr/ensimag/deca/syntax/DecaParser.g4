@@ -531,7 +531,6 @@ list_classes returns[ListDeclClass tree]
 class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
         assert($name.tree!=null);
-        assert($superclass.tree!=null);
         assert($class_body.tree!=null);
         $tree=new DeclClass($name.tree,$superclass.tree,$class_body.tree);
         }
@@ -549,9 +548,7 @@ class_body returns[ListBody tree]
     @init{
           $tree = new ListBody();
     }
-    : (m=decl_method {
-
-        }
+    : (m=decl_method[$tree]
       | decl_field_set[$tree]
       )*
     ;
@@ -594,21 +591,24 @@ decl_field[Visibility v,AbstractIdentifier t] returns[AbstractDeclField tree]
         )
     ;
 
-decl_method
-@init {
-
-}
+decl_method[ListBody l]
     : type ident OPARENT params=list_params CPARENT (block {
+        $l.add(new DeclMethod($type.tree,$ident.tree,$params.tree,$block.decls,$block.insts));
         }
       | ASM OPARENT code=multi_line_string CPARENT SEMI {
+        $l.add(new ASM($code.text,$code.location));
         }
-      ) {
-        }
+      )
     ;
 
-list_params
+list_params returns[ListParams tree]
+@init {
+    $tree=new ListParams();
+}
     : (p1=param {
+        $tree.add($p1.tree);
         } (COMMA p2=param {
+            $tree.add($p2.tree);
         }
       )*)?
     ;
@@ -624,7 +624,8 @@ multi_line_string returns[String text, Location location]
         }
     ;
 
-param
+param returns[AbstractParams tree]
     : type ident {
+        $tree=new Params($type.tree,$ident.tree);
         }
     ;

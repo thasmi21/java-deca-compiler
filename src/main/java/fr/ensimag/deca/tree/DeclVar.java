@@ -85,6 +85,6 @@ public class DeclVar extends AbstractDeclVar {
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         type.prettyPrint(s, prefix, false);
         varName.prettyPrint(s, prefix, false);
-initialization.prettyPrint(s, prefix, true);
+        initialization.prettyPrint(s, prefix, true);
     }
 }
