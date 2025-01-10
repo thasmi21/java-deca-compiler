@@ -67,7 +67,7 @@ public class FloatLiteral extends AbstractExpr {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register){
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(new ImmediateFloat(value), register));
     }
 

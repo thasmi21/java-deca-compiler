@@ -23,13 +23,7 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
         if(!(typeLeft.sameType(typeRight))) {
             throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
         }
-        Type typeRes;
-        if(typeLeft.isFloat() || typeRight.isFloat()) {
-            typeRes = compiler.environmentType.FLOAT;
-            }
-        else {
-            typeRes = compiler.environmentType.INT;
-        }
+        Type typeRes = compiler.environmentType.BOOLEAN;
         setType(typeRes);
         return typeRes;
     }

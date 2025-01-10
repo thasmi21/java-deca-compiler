@@ -8,6 +8,7 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.MUL;
 import fr.ensimag.ima.pseudocode.instructions.REM;
 import fr.ensimag.ima.pseudocode.instructions.SUB;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
@@ -28,12 +29,12 @@ public class Modulo extends AbstractOpArith {
             ClassDefinition currentClass) throws ContextualError {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.sameType(typeLeft)) {
+        if(typeRight.sameType(typeLeft) && typeLeft.isInt()) {
             setType(typeLeft);
             return typeLeft;
         }
         else{
-            throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+ typeRight, getLocation());
+            throw new ContextualError("Les deux opérandes ne sont pas du même type ou entiers : "+ typeLeft+ typeRight, getLocation());
         }
     }
 
@@ -54,17 +55,26 @@ public class Modulo extends AbstractOpArith {
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
+        GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+        compiler.addInstruction(new REM(Register.R0, register));
+        GestionRegistre.IncCompteurTempUsage();
         System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
     @Override
     public void codeGenPrint(DecacCompiler compiler){
+        GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        GPRegister r2 = Register.R1;
-        getLeftOperand().evalueExpr(compiler, r2 );
-        getRightOperand().evalueExpr(compiler, r1 );
-        compiler.addInstruction(new REM(r1, r2));
-        r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+        if(r1 != null){
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
+            compiler.addInstruction(new REM(r1, register));
+            r1.setInUse(false);
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstruction(new MUL(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
+        }
         compiler.addInstruction(new WINT());
     }
 

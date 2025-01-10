@@ -46,7 +46,7 @@ public class BooleanLiteral extends AbstractExpr {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register ) {
+    public void evalueExpr(DecacCompiler compiler, GPRegister register ) {
         int val = this.getValue()?1:0;
         compiler.addInstruction(new LOAD(val, register));
     }
