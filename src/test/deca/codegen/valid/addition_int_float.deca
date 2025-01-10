@@ -2,7 +2,7 @@
 //      tests d'une addition entre float et int
 //
 // Resultats :
-//      2.50000e+00 + 2.50000e+00 = 5.00000e+00
+//      2.50000e+00 + 2 = 4.50000e+00
 
 
 

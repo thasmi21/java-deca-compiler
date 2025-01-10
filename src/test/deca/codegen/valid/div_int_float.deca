@@ -2,7 +2,7 @@
 //      tests d'une division entre int et float
 //
 // Resultats :
-//      24
+//      1.50000e+00
 
 {
     int x = 6;

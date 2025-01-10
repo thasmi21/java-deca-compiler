@@ -2,7 +2,7 @@
 //      Test de print, si ça saute pas de ligne
 //
 // Resultats :
-//
+//  Ceci est une phrase écrite sur une seule ligne
 
 {
     print("Ceci est u");

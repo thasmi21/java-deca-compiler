@@ -2,11 +2,11 @@
 //      tests d'une soustraction entre int et float
 //
 // Resultats :
-//      24
+//      1.00000e+00
 
 {
     int x = 6;
-    int y = 5;
+    float y = 5.0;
 
     println("", x, " - ", y, " = ", x-y);
 }

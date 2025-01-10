@@ -2,7 +2,7 @@
 //      Test d'une expression while
 //
 // Resultats :
-//
+//      6
 
 {
     int compt = 0;
