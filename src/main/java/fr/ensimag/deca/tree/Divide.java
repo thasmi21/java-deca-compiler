@@ -5,6 +5,8 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
@@ -36,6 +38,7 @@ public class Divide extends AbstractOpArith {
             } else if (getLeftOperand().getType() instanceof FloatType && getRightOperand().getType() instanceof FloatType) {
                 compiler.addInstruction(new DIV(r1, register));
             }
+            compiler.labelDivZero(compiler);
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
@@ -50,6 +53,7 @@ public class Divide extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, r2 );
             getRightOperand().evalueExpr(compiler, r1 );
             compiler.addInstruction(new QUO(r1, r2));
+            compiler.labelDivZero(compiler);
             r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WINT());
         }else if (this.getType() instanceof FloatType) {
@@ -59,8 +63,20 @@ public class Divide extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, r2 );
             getRightOperand().evalueExpr(compiler, r1 );
             compiler.addInstruction(new DIV(r1, r2));
+            compiler.labelDivZero(compiler);
             r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WFLOAT());
         }
     }
+
+//    public void labelDivZero(DecacCompiler compiler){
+//        compiler.addInstruction(new BOV(new Label("division_by_zero")));
+//        if (!compiler.getlabelDefined()) {
+//            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
+//            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
+//            compiler.getToExecuteEnd().add(new Line(new WNL()));
+//            compiler.getToExecuteEnd().add(new Line(new ERROR()));
+//        }
+//        compiler.setlabelDefined(true);
+//    }
 }

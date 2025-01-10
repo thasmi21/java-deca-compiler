@@ -3,6 +3,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.AbstractLine;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -64,6 +65,10 @@ public class Program extends AbstractProgram {
 
         Line firstCom = new Line("start main program");
         compiler.addFirst(firstCom);
+
+        for (AbstractLine l : compiler.getToExecuteEnd()) {
+            compiler.add(l);
+        }
     }
 
     @Override

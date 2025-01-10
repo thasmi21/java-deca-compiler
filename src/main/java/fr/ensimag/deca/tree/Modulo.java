@@ -51,6 +51,7 @@ public class Modulo extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, register);
             getRightOperand().evalueExpr(compiler, r1 );
             compiler.addInstruction(new REM(r1, register));
+            compiler.labelDivZero(compiler);
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
@@ -64,6 +65,7 @@ public class Modulo extends AbstractOpArith {
         getLeftOperand().evalueExpr(compiler, r2 );
         getRightOperand().evalueExpr(compiler, r1 );
         compiler.addInstruction(new REM(r1, r2));
+        compiler.labelDivZero(compiler);
         r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
         compiler.addInstruction(new WINT());
     }
