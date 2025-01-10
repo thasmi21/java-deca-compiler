@@ -4,8 +4,7 @@ stages:
 
 run_tests:
   stage: test
-  # Utiliser une image qui contient les dépendances nécessaires pour vos tests
-  image: bash:latest
+  
   script:
     # Exécuter votre script de test
     - chmod +x ./src/test/script/non_regression_lex.sh
