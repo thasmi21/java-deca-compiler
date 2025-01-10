@@ -22,10 +22,14 @@ public final class GestionRegistre {
     private static int indiceRegistreGB = 0;
     private static int indiceRegistreLB = 0;
     private static int indiceRegistreSP = 0;
-    private int getIndiceRegistreGB(){return indiceRegistreGB;}
+    private static int compteurTempUsage = 0;
+
+    public static int getCompteurTempUsage(){return compteurTempUsage;}
+    public static int getIndiceRegistreGB(){return indiceRegistreGB;}
     private int getIndiceRegistreLB(){return indiceRegistreLB;}
     private int getIndiceRegistreSP(){return indiceRegistreSP;}
 
+    public static void setCompteurTempUsage(int indice){compteurTempUsage = indice;}
     private void setIndiceRegistreGB(int indice) {indiceRegistreGB = indice;}
     private void setIndiceRegistreLB(int indice) {indiceRegistreLB = indice;}
     private void setIndiceRegistreSP(int indice) {indiceRegistreSP = indice;}
@@ -47,7 +51,7 @@ public final class GestionRegistre {
                 return Register.getR(i);
             }
         }
-        indiceRegistreSP += 1;
+        //indiceRegistreSP += 1;
         // il faut retourner ici nulle et on saura
         // qu'on doit utiliser une adresse pile
         return null;

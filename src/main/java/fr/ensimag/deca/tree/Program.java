@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
@@ -60,6 +61,7 @@ public class Program extends AbstractProgram {
         // capable de la calculer par la suite
         Label stackFull = new Label("pile_pleine");
         compiler.addFirst(new BOV(stackFull));
+        int val = GestionRegistre.getIndiceRegistreGB() +
         compiler.addFirst(new TSTO(3));
 
         Line firstCom = new Line("start main program");
