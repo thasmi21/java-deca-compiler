@@ -50,7 +50,7 @@ public class CompilerOptions {
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
-        String chemin=null;
+        ArrayList<String> chemins=new ArrayList<>();
         if(args.length == 0) {
             return;
         }
@@ -104,29 +104,32 @@ public class CompilerOptions {
             }
             else if(args[i].equals("-w") && w==0) {
                 w=1;
-                // A faire
             }
             else if(args[i].equals("-d")){
                 if(d==0){
                     d=1;
-                    debug|=INFO;
+                    debug=INFO;
                 } else if (d==1) {
                     d=2;
-                    debug|=DEBUG;
+                    debug=DEBUG;
+                }
+                else if (d==2) {
+                    d+=1;
+                    debug=TRACE;
                 }
                 else {
-                    debug|=TRACE;
+                    throw new CLIException("Il faut au maximum 3 -d");
                 }
             }
-            else if(args.length!=i+1){
-                throw new CLIException("Le fichier doit être mis à la fin ou alors l'option n'est pas reconnue : " + args[i] + " Mettez la commande deca pour avoir toutes les options possibles.");
-            }
             else {
-                chemin = args[i];
+                chemins.add(args[i]);
             }
         }
         Logger logger = Logger.getRootLogger();
         // map command-line debug option to log4j's level.
+        if(w==1){
+            logger.setLevel(Level.WARN);
+        }
         switch (getDebug()) {
         case QUIET: break; // keep default
         case INFO:
@@ -140,6 +143,8 @@ public class CompilerOptions {
         }
         logger.info("Application-wide trace level set to " + logger.getLevel());
 
+
+
         boolean assertsEnabled = false;
         assert assertsEnabled = true; // Intentional side effect!!!
         if (assertsEnabled) {
@@ -151,14 +156,14 @@ public class CompilerOptions {
         //placement du fichier source
         //on va de manière incremental sans gèrer toutes les options pour l'intant
         //String chemin = args[0];
-        File fichier = new File(chemin);
-        if(fichier.exists() && fichier.isFile()){
-            sourceFiles.add(fichier);
-        }else{
-            throw new CLIException("Entrer un nom de fichier correct!");
+        for(String chemin : chemins){
+            File fichier = new File(chemin);
+            if(fichier.exists() && fichier.isFile()){
+                sourceFiles.add(fichier);
+            }else{
+                throw new CLIException("Entrer un nom de fichier correct!");
+            }
         }
-
-
     }
 
     protected void displayUsage() {
