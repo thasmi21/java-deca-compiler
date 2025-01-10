@@ -41,7 +41,7 @@ public class IntLiteral extends AbstractExpr {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register){
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(value, register));
 
     }

@@ -47,12 +47,12 @@ public class Assign extends AbstractBinaryExpr {
             return typeRight;
         }
         else{
-            throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+ typeRight, getLocation());
+            throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+" "+ typeRight, getLocation());
         }
     }
 
     /*@Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register) {
+    public void evalueExpr(DecacCompiler compiler, GPRegister register) {
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
         DAddr regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();

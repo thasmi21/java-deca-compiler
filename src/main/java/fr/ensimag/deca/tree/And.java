@@ -48,15 +48,31 @@ public class And extends AbstractOpBool {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register){
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 = register;
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            //getRightOperand().evalueExpr(compiler, r2);
+        }
         getLeftOperand().evalueExpr(compiler, r1);
-        getRightOperand().evalueExpr(compiler, r2);
+
+
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
         compiler.addInstruction(new CMP(0, r1));
         compiler.addInstruction(new BEQ(E));
+        if(r2EtaitNull){
+            // si r2 etait nul, il faut charger exp2 dans register
+            r2 = register;
+        }
+        getRightOperand().evalueExpr(compiler, r2);
         compiler.addInstruction(new CMP(0, r2));
         compiler.addInstruction(new BEQ(E));
         compiler.addInstruction(new LOAD(1, register));
@@ -64,8 +80,13 @@ public class And extends AbstractOpBool {
         compiler.addLabel(E);
         compiler.addInstruction(new LOAD(0, register));
         compiler.addLabel(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }
+
     }
 
     @Override

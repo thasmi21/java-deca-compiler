@@ -29,16 +29,21 @@ public class Not extends AbstractUnaryExpr {
         Type operandType = operand.verifyExpr(compiler, localEnv, currentClass);
         /*
         *  a revoir ici car on peut bien afficher !(a<=2) et pourtant "a<=2" n'est pas un boolean*/
-        /*if (!operandType.isBoolean()) {
-            throw new ContextualError("L'expression doit être un boolean!", getLocation());
-        }*/
+        if (!operandType.isBoolean()) {
+            throw new ContextualError("L'expression doit être un boolean pour le Not", getLocation());
+        }
         setType(operandType);
         return operandType;
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register ) {
+    public void evalueExpr(DecacCompiler compiler, GPRegister register ) {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNul = false;
+        if(r1 == null){
+            r1EtaitNul = true;
+            r1 = register;
+        }
         getOperand().evalueExpr(compiler, r1);
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
@@ -49,7 +54,10 @@ public class Not extends AbstractUnaryExpr {
         compiler.addLabel(E);
         compiler.addInstruction(new LOAD(1, register));
         compiler.addLabel(fin);
-        r1.setInUse(false);
+        if(!r1EtaitNul) {
+            r1.setInUse(false);
+        }
+
 
     }
 
@@ -58,15 +66,7 @@ public class Not extends AbstractUnaryExpr {
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
 
-        /*
-        if( !(getOperand() instanceof Identifier)){
-            int entier = this.getOperand().getEvalBooleanExpr();
-            compiler.addInstruction(new LOAD(entier, r));
-        }
-        else{
-            DAddr op = ((Identifier)getOperand()).getExpDefinition().getOperand();
-            compiler.addInstruction(new LOAD(op, r));
-        }*/
+
         getOperand().evalueExpr(compiler, r);
 
 

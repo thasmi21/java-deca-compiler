@@ -33,50 +33,53 @@ public class Divide extends AbstractOpArith {
         if (r1 != null){
             getLeftOperand().evalueExpr(compiler, register );
             getRightOperand().evalueExpr(compiler, r1 );
-            if (getLeftOperand().getType() instanceof IntType && getRightOperand().getType() instanceof IntType) {
-                compiler.addInstruction(new QUO(r1, register));
-            } else if (getLeftOperand().getType() instanceof FloatType && getRightOperand().getType() instanceof FloatType) {
-                compiler.addInstruction(new DIV(r1, register));
-            }
-            compiler.labelDivZero(compiler);
-            r1.setInUse(false); //on n'utilise plus r1
-            return;
         }
-        System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+        else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            GestionRegistre.IncCompteurTempUsage();
+            r1 = Register.R0;
+        }
+
+        //on verifie juste l'operande gauche car verifiyExpr aura verifie que les operandes sont de même type
+        if (getLeftOperand().getType() instanceof IntType ) {
+            compiler.addInstruction(new QUO(r1, register));
+        } else if (getLeftOperand().getType() instanceof FloatType) {
+            compiler.addInstruction(new DIV(r1, register));
+        }
+
+        compiler.labelDivZero(compiler);
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
     }
 
     @Override
     public void codeGenPrint(DecacCompiler compiler){
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
+
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            GestionRegistre.IncCompteurTempUsage();
+
+        }
+
         if (this.getType() instanceof IntType) {
-            GPRegister r1 = GestionRegistre.obtainFreeRegister();
-            GPRegister r2 = Register.R1;
-            getLeftOperand().evalueExpr(compiler, r2 );
-            getRightOperand().evalueExpr(compiler, r1 );
-            compiler.addInstruction(new QUO(r1, r2));
+
+            compiler.addInstruction(new QUO(r1, register));
             compiler.labelDivZero(compiler);
-            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WINT());
-        }else if (this.getType() instanceof FloatType) {
-            // Il faudra gérer l'option qui dit qu'on peut afficher un float en hexadecimal
-            GPRegister r1 = GestionRegistre.obtainFreeRegister();
-            GPRegister r2 = Register.R1;
-            getLeftOperand().evalueExpr(compiler, r2 );
-            getRightOperand().evalueExpr(compiler, r1 );
-            compiler.addInstruction(new DIV(r1, r2));
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstruction(new DIV(Register.R0, register));
             compiler.labelDivZero(compiler);
-            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WFLOAT());
         }
-    }
 
-//    public void labelDivZero(DecacCompiler compiler){
-//        compiler.addInstruction(new BOV(new Label("division_by_zero")));
-//        if (!compiler.getlabelDefined()) {
-//            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
-//            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
-//            compiler.getToExecuteEnd().add(new Line(new WNL()));
-//            compiler.getToExecuteEnd().add(new Line(new ERROR()));
-//        }
-//        compiler.setlabelDefined(true);
-//    }
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+    }
 }
