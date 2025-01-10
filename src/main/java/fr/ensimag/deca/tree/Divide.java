@@ -64,6 +64,7 @@ public class Divide extends AbstractOpArith {
         }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             GestionRegistre.IncCompteurTempUsage();
+            r1=Register.R0;
 
         }
 
@@ -73,7 +74,7 @@ public class Divide extends AbstractOpArith {
             compiler.labelDivZero(compiler);
             compiler.addInstruction(new WINT());
         } else if (this.getType() instanceof FloatType) {
-            compiler.addInstruction(new DIV(Register.R0, register));
+            compiler.addInstruction(new DIV(r1, register));
             compiler.labelDivZero(compiler);
             compiler.addInstruction(new WFLOAT());
         }
