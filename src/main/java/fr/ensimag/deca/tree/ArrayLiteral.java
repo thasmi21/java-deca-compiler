@@ -60,8 +60,10 @@ public class ArrayLiteral extends AbstractExpr{
             this.dimension = getDimensionFromNameInit(name);
         }
         ArrayList<AbstractExpr> coeffs= new ArrayList<>();
-        for(DecaParser.ExprContext coefficient : coefficients){
-            coeffs.add(coefficient.tree);
+        if(coefficients != null){
+            for(DecaParser.ExprContext coefficient : coefficients){
+                coeffs.add(coefficient.tree);
+            }
         }
         if(sizes.size()==1){
             this.array = new Array(sizes.get(0), coeffs);
@@ -90,9 +92,9 @@ public class ArrayLiteral extends AbstractExpr{
         for (char caractere : name.toCharArray()) {
             if (caractere == '}') {
                 entreAccolades = false;
-                sizes.add(counter-1);
+                sizes.add(counter+1);
             }
-            if (entreAccolades) {
+            if(entreAccolades && caractere== ','){
                 counter += 1;
             }
             if (caractere == '{') {
@@ -142,6 +144,9 @@ public class ArrayLiteral extends AbstractExpr{
             if (c == '{') {
                 count++;
             }
+            else{
+                return count;
+            }
         }
         return count;
     }
@@ -165,6 +170,9 @@ public class ArrayLiteral extends AbstractExpr{
         EnvironmentType envType = compiler.getEnvironmentType();
         Type type = null;
         if(!implicitDeclaration()){
+            if(!envType.getEnvTypes().containsKey(compiler.createSymbol(removeBracesContent(name)))){
+                throw new ContextualError("Type "+removeBracesContent(name)+" non existant !", getLocation());
+            }
             type = envType.defOfType(compiler.createSymbol(removeBracesContent(name))).getType();
             setType(type);
             array.setType(type);

@@ -19,24 +19,26 @@ public class Array extends AbstractExpr{
     public Array(ArrayList<Integer> sizes, List<AbstractExpr> coefficients) {
         Validate.notNull(sizes);
         this.size = sizes.get(0);
-        if(size <= 0 ){
-            throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
-        }
-        //this.coefficients = new AbstractExpr[size];
-        if(sizes.size()!=2){
+        if (sizes.size() != 2){
             sizes.remove(0);
-        }
-
-        if(coefficients != null){
-            this.coefficients = coefficients.toArray(new AbstractExpr[size]);
+            if(size <= 0 ){
+                throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
+            }
+            this.coefficients = new AbstractExpr[size];
+            for (int i = 0; i < size; i++) {
+                this.coefficients[i] = new Array(sizes, null);
+            }
         }
         else {
-            this.coefficients = new AbstractExpr[sizes.size()];
-            for(int i = 0; i < size; i++){
-                this.coefficients[i]= new Array(sizes, null);
+            this.coefficients = new AbstractExpr[size];
+            for (int i = 0; i < size; i++) {
+                this.coefficients[i] = new Array(sizes.get(1), null);
             }
         }
 
+        if(coefficients != null && coefficients.size() != 0){
+            this.coefficients = coefficients.toArray(new AbstractExpr[size]);
+        }
     }
 
     public Array(int size, List<AbstractExpr> coefficients) {
@@ -64,22 +66,25 @@ public class Array extends AbstractExpr{
         EnvironmentType envType = compiler.getEnvironmentType();
         String name=getType().getName().getName();
         Type type = envType.defOfType(compiler.createSymbol(name)).getType();
+        if(type.sameType(getBaseType(compiler,type))){
+           throw new ContextualError("L'array n'est pas du bon type !", coefficients[0].getLocation() );
+        }
+        Type typeChild = envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType();
         // Vérification que tous les coefficients sont du bon type
         for (AbstractExpr coefficient : coefficients) {
             if (coefficient != null) {
-                coefficient.setType(envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType());
-                if(coefficient instanceof ArrayLiteral){
+                coefficient.setType(typeChild);
+                if(coefficient instanceof ArrayLiteral || coefficient instanceof Array){
                     coefficient.verifyExpr(compiler, localEnv, currentClass);
                 }
                 else{
                     Type typeCoeff = coefficient.verifyExpr(compiler, localEnv, currentClass);
-                    if(! typeCoeff.sameType(envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType())){
-                        throw new ContextualError("Le coefficient n'est pas du type souhaité.", getLocation());
+                    if(! typeChild.sameType(typeCoeff)){
+                        throw new ContextualError("Le coefficient n'est pas du type souhaité. Type voulu : "+typeChild+". Type reçu : "+typeCoeff, coefficient.getLocation());
                     }
                 }
             }
         }
-        System.out.println(coefficients);
         return type;
     }
 

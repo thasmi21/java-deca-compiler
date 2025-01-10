@@ -53,9 +53,9 @@ public class DeclVar extends AbstractDeclVar {
 
         // Construction du nouveau type (en prenant en compte la variable)
         Type baseType = getBaseType(compiler, identType);
-        Type arrayType = baseType;
-        String arrayTypeName = arrayType.getName().getName();
-        for (int i = 0; i < dimTotal; i++) {
+        Type arrayType = identType;
+        String arrayTypeName = identType.getName().getName();
+        for (int i = dimType; i < dimTotal; i++) {
             arrayTypeName += "[]";
             SymbolTable.Symbol arraySymbol = compiler.createSymbol(arrayTypeName);
             arrayType = new ArrayType(arraySymbol,baseType,i+1);

@@ -7,6 +7,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import java.io.PrintStream;
+import static fr.ensimag.deca.tree.DeclVar.countArrayDimensions;
 
 import org.apache.commons.lang.Validate;
 
@@ -193,7 +194,7 @@ public class  Identifier extends AbstractIdentifier {
         EnvironmentType env = compiler.getEnvironmentType();
         String fullName = getName().getName();
         String baseName = WithoutBrackets(fullName);
-
+        int dim = countArrayDimensions(fullName);
         // Vérifie que le type de base (sans crochets) est défini
         Symbol baseSymbol = compiler.createSymbol(baseName);
         //setName(baseSymbol);
@@ -205,13 +206,16 @@ public class  Identifier extends AbstractIdentifier {
         // Récupération du type de base
         Type baseType = baseTypeDef.getType();
         Type currentType = baseType;
-
+        String currentName = baseName;
         // Construction progressive des types tableaux
-        for (int i = 0; i < getDimensions(); i++) {
-            Symbol arraySymbol = compiler.createSymbol(fullName);
-            currentType = new ArrayType(arraySymbol, baseType, i + 1);
-            TypeDefinition currentTypeDef = new TypeDefinition(currentType, getLocation());
-            env.setTypeDefinition(arraySymbol, currentTypeDef);
+        for (int i = 0; i < dim; i++) {
+            currentName += "[]";
+            SymbolTable.Symbol arraySymbol = compiler.createSymbol(currentName);
+            currentType = new ArrayType(arraySymbol,baseType,i+1);
+            // Ajouter le type tableau dans l'environnement global s'il n'existe pas déjà
+            if (env.defOfType(arraySymbol) == null) {
+                compiler.getEnvironmentType().setTypeDefinition(arraySymbol, new TypeDefinition(currentType, getLocation()));
+            }
         }
 
         // Associez le dernier type tableau à l'identifiant

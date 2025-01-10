@@ -380,12 +380,10 @@ select_expr returns[AbstractExpr tree]
     : e=primary_expr {
             assert($e.tree != null);
             $tree = $e.tree;
-
         }
     | e1=select_expr DOT i=ident {
             assert($e1.tree != null);
             assert($i.tree != null);
-
         }
         (o=OPARENT args=list_expr CPARENT {
             // we matched "e1.i(args)"
@@ -402,10 +400,11 @@ primary_expr returns[AbstractExpr tree]
             assert($ident.tree != null);
             $tree = $ident.tree;
         }
-    | m=ident OPARENT args=list_expr CPARENT {
-            assert($args.tree != null);
-            assert($m.tree != null);
-        }
+//    | m=ident OPARENT args=list_expr CPARENT {
+//            assert($args.tree != null);
+//            assert($m.tree != null);
+//            $tree = $m.tree;
+//        }
     | OPARENT expr CPARENT {
          assert($expr.tree != null);
          $tree=$expr.tree;
@@ -441,17 +440,18 @@ primary_expr returns[AbstractExpr tree]
 
 array returns[AbstractExpr tree]
     : IDENT (OCROCHET INT CCROCHET)+ {
-        $tree = new ArrayLiteral($ctx.getText());
+        $tree = new ArrayLiteral($ctx.getText(), null);
         setLocation($tree, $IDENT);
     }
     | IDENT (OCROCHET CCROCHET)+ array_literal {
-        $tree = new ArrayLiteral($ctx.getText());
+        $tree = new ArrayLiteral($ctx.getText(), $array_literal.exp);
         setLocation($tree, $IDENT);
     }
     ;
 
-array_literal returns [AbstractExpr tree]
+array_literal returns [AbstractExpr tree,  List<ExprContext> exp]
     : OBRACE exp_list+=expr (COMMA exp_list+=expr)* CBRACE {
+        $exp = $exp_list;
         $tree = new ArrayLiteral($ctx.getText(), $exp_list);
         setLocation($tree, $OBRACE);
     }

@@ -31,7 +31,8 @@ public class ArrayType extends Type{
 
     @Override
     public boolean sameType(Type otherType) {
-        return otherType instanceof ArrayType;
+
+        return otherType instanceof ArrayType && ((ArrayType) otherType).dataType == dataType && ((ArrayType) otherType).dimensions == dimensions;
     }
 
 }

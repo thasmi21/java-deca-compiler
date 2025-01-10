@@ -33,7 +33,7 @@ public class Initialization extends AbstractInitialization {
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
         Type typeExpr = expression.verifyExpr(compiler, localEnv, currentClass);
-        if (typeExpr!= null && !typeExpr.sameType(t)) {
+        if (!typeExpr.sameType(t)) {
             throw new ContextualError("Types incompatibles dans l'initialisation ! (attendu "+t+" ), (trouvé "+typeExpr+")",getLocation());
         }
     }
