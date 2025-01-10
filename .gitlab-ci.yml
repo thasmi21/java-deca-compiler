@@ -10,7 +10,7 @@ build:
   script:
     # Exécuter votre script de test
     - chmod +x ./src/test/script/non_regression_lex.sh
-    - ./src/test/script/non_regression_lex.sh
+    - bash ./src/test/script/non_regression_lex.sh
   # Définir quand la pipeline doit s'exécuter
   rules:
     # Sur chaque push
