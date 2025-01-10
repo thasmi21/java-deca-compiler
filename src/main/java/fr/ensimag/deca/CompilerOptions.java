@@ -119,9 +119,13 @@ public class CompilerOptions {
                     throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
                 }
             }
-            else if(args[i].equals("-n")&& n==0) {
-                n=1;
-                //A faire
+            else if(args[i].equals("-n")) {
+                if(n==0) {
+                    n=1;
+                }
+                else {
+                    throw new CLIException("l'option -n n'est utilisable qu'une seule fois");
+                }
             }
             else if(args[i].equals("-w")) {
                 if(w==0){
