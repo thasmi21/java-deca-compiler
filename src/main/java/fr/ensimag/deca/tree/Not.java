@@ -29,9 +29,9 @@ public class Not extends AbstractUnaryExpr {
         Type operandType = operand.verifyExpr(compiler, localEnv, currentClass);
         /*
         *  a revoir ici car on peut bien afficher !(a<=2) et pourtant "a<=2" n'est pas un boolean*/
-        /*if (!operandType.isBoolean()) {
-            throw new ContextualError("L'expression doit être un boolean!", getLocation());
-        }*/
+        if (!operandType.isBoolean()) {
+            throw new ContextualError("L'expression doit être un boolean pour le Not", getLocation());
+        }
         setType(operandType);
         return operandType;
     }

@@ -37,7 +37,7 @@ public final class GestionRegistre {
     * un dictionnaire sur mes registre libre. je pense je vais ajouer un champs
     * */
     public static GPRegister obtainFreeRegister(){
-        for(int i=2; i<=16; i++){
+        for(int i=2; i<=15; i++){
             if(!Register.getR(i).isInUse()){
                 Register.getR(i).setInUse(true);
                 return Register.getR(i);
