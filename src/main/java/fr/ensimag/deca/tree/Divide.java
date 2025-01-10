@@ -47,7 +47,7 @@ public class Divide extends AbstractOpArith {
 
         if(r1 != null){
             r1.setInUse(false);
-        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+        }
     }
 
     @Override
