@@ -1,10 +1,14 @@
 package fr.ensimag.deca.codegen;
 
 
+import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.tree.AbstractExpr;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
 
 /*
 * Classe pour demander un régistre libre et le liberer après si besoin
@@ -50,5 +54,17 @@ public final class GestionRegistre {
     }
 
 
+    /*
+    * Ecris les instructions pour evaluer l'expression droite dans register,
+    * mettre la valeur de register dans la pile,
+    * evaluer expression gauche dans register,
+    * retirer la valeur de la pile (POP) dans r0
+    * evaluer l'expression */
+    public static void pushETpop(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
+        rigthExpr.evalueExpr(compiler, register );
+        compiler.addInstruction(new PUSH(register));
+        leftExpr.evalueExpr(compiler, register );
+        compiler.addInstruction(new POP(Register.R0));
+    }
 
 }

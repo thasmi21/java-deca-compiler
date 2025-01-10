@@ -233,7 +233,7 @@ public class Identifier extends AbstractIdentifier {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register ) {
+    public void evalueExpr(DecacCompiler compiler, GPRegister register ) {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(op, register));
     }

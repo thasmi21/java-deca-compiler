@@ -41,7 +41,7 @@ public class Or extends AbstractOpBool {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register){
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
         transform.evalueExpr(compiler, register);
     }

@@ -5,10 +5,7 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.FLOAT;
-import fr.ensimag.ima.pseudocode.instructions.OPP;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
  * Conversion of an int into a float. Used for implicit conversions.
@@ -39,19 +36,11 @@ public class ConvFloat extends AbstractUnaryExpr {
             compiler.addInstruction(new FLOAT(r1,register));
             r1.setInUse(false); //on n'utilise plus r1
             return;
-            // On appelle ensuite l'instruction assembleur qui permet de convertir un int en float
-//            if (this.getType() instanceof FloatType) {
-//                // Si on a déjà un float, pas besoin d'utiliser une instruction assembleur inutilement
-//                // donc on ne fait rien
-//                r1.setInUse(false); //on n'utilise plus r1
-//                return;
-//            } else if (this.getType() instanceof IntType) {
-//                compiler.addInstruction(new FLOAT(r1,register));
-//                r1.setInUse(false); //on n'utilise plus r1
-//                return;
-//            }
         }
-        System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+        getOperand().evalueExpr(compiler, register );
+        compiler.addInstruction(new LOAD(register, Register.R0));
+        compiler.addInstruction(new FLOAT(Register.R0,register));
+        //System.out.println("Pas de registre dispo conv"); // à retirer, il faudra prendre un espace pile alors
     }
 
     @Override
@@ -60,28 +49,17 @@ public class ConvFloat extends AbstractUnaryExpr {
         // Si on a un int on va d'abord le convertir puis l'afficher
         // On cherche un registre libre
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        // On evalue l'exression dans l'operand
-        getOperand().evalueExpr(compiler,r1);
-        // On ajoute l'instruction assembleur qui permet de convertir un entier en float
-        compiler.addInstruction(new FLOAT(r1, Register.R1));
-        r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
-        compiler.addInstruction(new WFLOAT());
-//        if (this.getType() instanceof IntType) {
-//            // On cherche un registre libre
-//            GPRegister r1 = GestionRegistre.obtainFreeRegister();
-//            // On evalue l'exression dans l'operand
-//            getOperand().evalueExpr(compiler,r1);
-//            // On ajoute l'instruction assembleur qui permet de convertir un entier en float
-//            compiler.addInstruction(new FLOAT(r1, Register.R1));
-//            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
-//            compiler.addInstruction(new WFLOAT());
-//        }else if (this.getType() instanceof FloatType) {
-//            // Ici on a déjà un float donc on a juste à l'afficher
-//            // On recupere la valeur de notre float et on la met directement dans R1
-//            getOperand().evalueExpr(compiler,Register.R1);
-//            // Pas besoin de faire d'instruction assembleur
-//            compiler.addInstruction(new WFLOAT());
-//        }
+        if (r1 != null){
+            // On evalue l'exression dans l'operand
+            getOperand().evalueExpr(compiler,r1);
+            // On ajoute l'instruction assembleur qui permet de convertir un entier en float
+            compiler.addInstruction(new FLOAT(r1, Register.R1));
+            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            compiler.addInstruction(new WFLOAT());
+        }
+        //Normalement on ne devrait jamais se retrouver dans un cas ou on affiche ceci
+        //sauf si on fait un cast;
+
     }
 
     @Override

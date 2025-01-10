@@ -32,7 +32,7 @@ public class ReadInt extends AbstractReadExpr {
     }
 
     @Override
-    protected void evalueExpr(DecacCompiler compiler, GPRegister register){
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new RINT());
         compiler.addInstruction(new LOAD(Register.R1, register));
     }
