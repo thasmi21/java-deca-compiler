@@ -455,6 +455,10 @@ array_literal returns [AbstractExpr tree,  List<ExprContext> exp]
         $tree = new ArrayLiteral($ctx.getText(), $exp_list);
         setLocation($tree, $OBRACE);
     }
+    | OBRACE CBRACE {
+        $tree = new ArrayLiteral($ctx.getText(), null);
+        setLocation($tree, $OBRACE);
+    }
     ;
 
 type returns[AbstractIdentifier tree]

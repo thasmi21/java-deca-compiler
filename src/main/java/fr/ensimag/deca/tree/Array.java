@@ -42,7 +42,11 @@ public class Array extends AbstractExpr{
     }
 
     public Array(int size, List<AbstractExpr> coefficients) {
-        if (size <= 0) {
+        if(size ==0 ){
+            this.size = 0;
+            this.coefficients = new AbstractExpr[0];
+        }
+        if (size < 0) {
             throw new IllegalArgumentException("La taille du tableau doit être strictement positive !");
         }
         this.size = size;

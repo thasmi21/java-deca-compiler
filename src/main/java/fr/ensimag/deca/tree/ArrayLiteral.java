@@ -92,7 +92,7 @@ public class ArrayLiteral extends AbstractExpr{
         for (char caractere : name.toCharArray()) {
             if (caractere == '}') {
                 entreAccolades = false;
-                sizes.add(counter+1);
+                sizes.add(counter);
             }
             if(entreAccolades && caractere== ','){
                 counter += 1;
@@ -181,6 +181,12 @@ public class ArrayLiteral extends AbstractExpr{
             // Vérification que tous les coefficients sont du bon type
         }
         else{
+            if(getType() instanceof ArrayType){
+                Type typeA = (ArrayType)getType();
+                if (typeA.getDimensions() != dimension){
+                throw new ContextualError("Le type devrait être "+typeA, getLocation());
+                };
+            }
             array.setType(getType());
             array.verifyExpr(compiler, localEnv, currentClass);
             return this.getType();
