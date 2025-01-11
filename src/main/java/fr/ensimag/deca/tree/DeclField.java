@@ -32,8 +32,27 @@ public class DeclField extends AbstractDeclField {
 
 
     @Override
-    protected void verifyBody(DecacCompiler compiler,
+    protected void verifyClassMembers(DecacCompiler compiler,
                                    EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+        Type t = type.verifyType(compiler);
+        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
+        if (t.isVoid()) {
+            throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
+        }
+        initialization.verifyInitialization(compiler,t, localEnv, currentClass);
+        try {
+            localEnv.declare(this.varName.getName(), varDef);
+        } catch(EnvironmentExp.DoubleDefException e) {
+            throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+        }
+        this.varName.setDefinition(varDef);
+        this.varName.setType(t);
+    }
+
+    @Override
+    protected void verifyClassBody(DecacCompiler compiler,
+                                            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError{
+
     }
 
 

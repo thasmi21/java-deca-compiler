@@ -1,9 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import org.apache.commons.lang.Validate;
 
@@ -34,10 +32,28 @@ public class DeclMethod extends AbstractBody {
 
 
     @Override
-    protected void verifyBody(DecacCompiler compiler,
+    protected void verifyClassMembers(DecacCompiler compiler,
                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+        Type t = this.type.verifyType(compiler);
+        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
+        try {
+            localEnv.declare(this.varName.getName(), varDef);
+        } catch(EnvironmentExp.DoubleDefException e) {
+            throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+        }
+        this.varName.setDefinition(varDef);
+        this.varName.setType(t);
+        params.verifyParams(compiler,new EnvironmentExp(null));
     }
 
+    @Override
+    protected void verifyClassBody(DecacCompiler compiler,
+                                   EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError{
+        EnvironmentExp environmentExp=new EnvironmentExp(null);
+        params.verifyParams(compiler,environmentExp);
+        declVar.verifyListDeclVar(compiler,environmentExp,currentClass);
+        inst.verifyListInst(compiler,environmentExp,currentClass,varName.getType());
+    }
 
     @Override
     public void codeGenBody(DecacCompiler compiler){

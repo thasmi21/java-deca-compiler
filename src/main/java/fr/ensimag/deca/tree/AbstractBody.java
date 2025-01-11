@@ -12,8 +12,11 @@ public abstract class AbstractBody extends Tree{
     /**
      * Implements non-terminal "main" of [SyntaxeContextuelle] in pass 3
      */
-    protected abstract void verifyBody(DecacCompiler compiler,
+    protected abstract void verifyClassMembers(DecacCompiler compiler,
                                        EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError;
+
+    protected abstract void verifyClassBody(DecacCompiler compiler,
+                                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError;
 }
 
 

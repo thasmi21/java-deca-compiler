@@ -3,6 +3,8 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
+import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import org.apache.commons.lang.Validate;
 
@@ -31,23 +33,42 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("class { ... A FAIRE ... }");
+        className.decompile(s);
+        if (extendsName != null) {
+            extendsName.decompile(s);
+        }
+        if (classBody != null){
+            classBody.decompile(s);
+        }
     }
 
     @Override
     protected void verifyClass(DecacCompiler compiler) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        EnvironmentType envType = compiler.getEnvironmentType();
+        if(extendsName != null) {
+            envType.putClass(className.getName(),extendsName.getName(),getLocation());
+        }
+        else {
+            envType.putClass(className.getName(),getLocation());
+        }
     }
 
     @Override
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        EnvironmentExp environmentExp;
+        if (extendsName != null) {
+            environmentExp= new EnvironmentExp(extendsName.getClassDefinition().getMembers());
+        }
+        else{
+            environmentExp = new EnvironmentExp(null);
+        }
+        classBody.verifyClassMembers(compiler,environmentExp,className.getClassDefinition());
     }
     
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+
     }
 
 
@@ -55,7 +76,6 @@ public class DeclClass extends AbstractDeclClass {
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         className.prettyPrint(s,prefix,false);
         if (extendsName != null) {
-
             extendsName.prettyPrint(s,prefix+" extends ",false);
         }
         if (classBody != null) {
@@ -65,7 +85,13 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("Not yet supported");
+        className.iterChildren(f);
+        if (extendsName != null) {
+            extendsName.iterChildren(f);
+        }
+        if (classBody != null){
+            classBody.iterChildren(f);
+        }
     }
 
 }

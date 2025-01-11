@@ -3,10 +3,8 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
@@ -27,7 +25,7 @@ public class Params extends AbstractParams {
 
     @Override
     protected void verifyParams(DecacCompiler compiler,
-                                 EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
+                                 EnvironmentExp localEnv) throws ContextualError {
         Type t = this.type.verifyType(compiler);
         VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
         if (t.isVoid()) {

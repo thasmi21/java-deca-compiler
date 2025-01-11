@@ -414,12 +414,11 @@ select_expr returns[AbstractExpr tree]
     : e=primary_expr {
             assert($e.tree != null);
             $tree = $e.tree;
-
         }
     | e1=select_expr DOT i=ident {
             assert($e1.tree != null);
             assert($i.tree != null);
-
+            $tree=new Dot($e1.tree,$i.tree);
         }
         (o=OPARENT args=list_expr CPARENT {
             // we matched "e1.i(args)"
@@ -435,11 +434,11 @@ primary_expr returns[AbstractExpr tree]
     : ident {
             assert($ident.tree != null);
             $tree = $ident.tree;
-
         }
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);
             assert($m.tree != null);
+
         }
     | OPARENT expr CPARENT {
          assert($expr.tree != null);
@@ -505,9 +504,12 @@ literal returns[AbstractExpr tree]
         setLocation($tree, $FALSE);
         }
     | THIS {
-
+        $tree = new This();
+        setLocation($tree,$THIS);
         }
     | NULL {
+        $tree = new Null();
+        setLocation($tree,$NULL);
         }
     ;
 

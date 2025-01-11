@@ -28,10 +28,17 @@ public class ListBody extends TreeList<AbstractBody>{
      * @param currentClass
      *          corresponds to "class" attribute (null in the main bloc).
      */
-    void verifyListDeclField(DecacCompiler compiler, EnvironmentExp localEnv,
+    void verifyClassMembers(DecacCompiler compiler, EnvironmentExp localEnv,
                              ClassDefinition currentClass) throws ContextualError {
         for(AbstractBody body : this.getList()){
-            body.verifyBody(compiler, localEnv, currentClass);
+            body.verifyClassMembers(compiler, localEnv, currentClass);
+        }
+    }
+
+    protected void verifyClassBody(DecacCompiler compiler,
+                                            EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError{
+        for(AbstractBody body : this.getList()){
+            body.verifyClassBody(compiler, localEnv, currentClass);
         }
     }
 

@@ -24,10 +24,13 @@ public class ASM extends AbstractBody {
     }
 
 
+    @Override
+    protected void verifyClassBody(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
 
+    }
 
     @Override
-    protected void verifyBody(DecacCompiler compiler,
+    protected void verifyClassMembers(DecacCompiler compiler,
                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
     }
 

@@ -26,13 +26,10 @@ public class ListParams extends TreeList<AbstractParams> {
      *      the "env_exp" attribute
      *   in postcondition, its "current" dictionary corresponds to
      *      the "env_exp_r" attribute
-     * @param currentClass
-     *          corresponds to "class" attribute (null in the main bloc).
      */
-    void verifyListDeclVar(DecacCompiler compiler, EnvironmentExp localEnv,
-                           ClassDefinition currentClass) throws ContextualError {
+    void verifyParams(DecacCompiler compiler, EnvironmentExp localEnv) throws ContextualError {
         for(AbstractParams param : this.getList()){
-            param.verifyParams(compiler, localEnv, currentClass);
+            param.verifyParams(compiler, localEnv);
         }
     }
 
