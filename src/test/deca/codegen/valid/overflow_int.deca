@@ -4,10 +4,10 @@
 // Resultats :
 //
 
-{
-    int i = 1;
-    while(true){
-        i=i*(i+1);
-        println("",i);
-    }
-}
+//{
+//    int i = 1;
+//    while(true){
+//        i=i*(i+1);
+//        println("",i);
+//    }
+//}

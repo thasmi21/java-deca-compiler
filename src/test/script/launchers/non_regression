@@ -1,0 +1,51 @@
+#!/bin/sh
+for i in ./src/test/deca/codegen/valid/*.deca
+do
+echo "$i"
+# Remplacer <executable> par test_synt ou test_lex
+# ou test_context ou decac
+decac -P "$i"
+done
+
+
+for j in ./src/test/deca/codegen/valid/*.ass
+do
+# Remplacer <executable> par test_synt ou test_lex
+# ou test_context ou decac
+ima "$j" > "${j%.ass}.res"
+res_attendu="./src/test/deca/codegen/valid/resultats/$(basename "${j%.ass}.res")"
+ALL_PASSED=true
+if [ -f "$res_attendu" ]; then
+        diff_output=$(diff -u "$res_attendu" "${j%.ass}.res")
+        if [ -z "$diff_output" ]; then
+            echo "TEST: $(basename "$j") OK"
+        else
+            echo "❌ TEST: $(basename "$j") PAS OK"
+            echo "Diff:"
+            echo "$diff_output"
+            ALL_PASSED=false
+        fi
+    else
+        echo "⚠️ Warning: No reference file found for $(basename "$j")"
+    fi
+done
+if [ "$ALL_PASSED" = true ]; then
+    echo "Tous les tests de non regressions ont reussi !"
+else
+    echo "Certains tests ont échoué. Il faut regarder les différences."
+fi
+
+#for i in ./src/test/deca/codegen/invalid/*.deca
+#do
+#echo "$i"
+## Remplacer <executable> par test_synt ou test_lex
+## ou test_context ou decac
+#decac -P "$i"
+#done
+#
+#for j in ./src/test/deca/codegen/invalid/*.ass
+#do
+## Remplacer <executable> par test_synt ou test_lex
+## ou test_context ou decac
+#ima "$j" > "${j%.ass}.res"
+#done
