@@ -4,6 +4,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -68,8 +69,13 @@ public class GreaterOrEqual extends AbstractOpIneq {
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         GestionRegistre.IncCompteurTempUsage();
         compiler.addInstruction(new SUB(GPRegister.R0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
 
-        compiler.addInstruction(new CMP(0, register));
         compiler.addInstruction(new BGE(label));
     }
 

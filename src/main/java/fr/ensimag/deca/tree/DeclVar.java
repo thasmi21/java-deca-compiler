@@ -44,7 +44,7 @@ public class DeclVar extends AbstractDeclVar {
         if (t.isVoid()) {
               throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
         }
-        initialization.verifyInitialization(compiler,t, localEnv, currentClass);c
+        initialization.verifyInitialization(compiler,t, localEnv, currentClass);
         try {
             localEnv.declare(this.varName.getName(), varDef);
         } catch(EnvironmentExp.DoubleDefException e) {
