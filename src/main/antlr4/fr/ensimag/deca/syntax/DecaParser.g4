@@ -213,13 +213,16 @@ assign_expr returns[AbstractExpr tree]
             if (! ($e.tree instanceof AbstractLValue)) {
                 throw new InvalidLValue(this, $ctx);
             }
-
             assert($e.tree != null);
+
             $tree = $e.tree;
         }
         EQUALS e2=assign_expr {
             assert($e.tree != null);
             assert($e2.tree != null);
+            if($e.tree instanceof GetArray){
+                  $tree = new SetArray((GetArray) $e.tree, $e2.tree);
+            }
             $tree = new Assign((AbstractLValue)$e.tree, $e2.tree);
             setLocation($tree,$EQUALS);
         }
@@ -399,11 +402,11 @@ primary_expr returns[AbstractExpr tree]
             assert($ident.tree != null);
             $tree = $ident.tree;
         }
-//    | m=ident OPARENT args=list_expr CPARENT {
-//            assert($args.tree != null);
-//            assert($m.tree != null);
-//            $tree = $m.tree;
-//        }
+    | m=ident OPARENT args=list_expr CPARENT {
+            assert($args.tree != null);
+            assert($m.tree != null);
+            $tree = $m.tree;
+        }
     | OPARENT expr CPARENT {
          assert($expr.tree != null);
          $tree=$expr.tree;
@@ -435,6 +438,16 @@ primary_expr returns[AbstractExpr tree]
             assert($literal.tree != null);
             $tree=$literal.tree;
         }
+    | get_array {
+            assert($get_array.tree != null);
+            $tree=$get_array.tree;
+    }
+    ;
+
+get_array returns[AbstractExpr tree]
+    :ident (OCROCHET list_int+=expr CCROCHET)* {
+          $tree = new GetArray($ident.tree, $list_int);
+    }
     ;
 
 array returns[AbstractExpr tree]

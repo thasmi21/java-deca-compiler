@@ -49,7 +49,6 @@ public class EnvironmentType {
     }
 
     public TypeDefinition defOfType(Symbol s) {
-
         return envTypes.get(s);
     }
 

@@ -41,6 +41,10 @@ public class Array extends AbstractExpr{
         }
     }
 
+    public AbstractExpr getCoefficients(int index) {
+        return coefficients[index];
+    }
+
     public Array(int size, List<AbstractExpr> coefficients) {
         if(size ==0 ){
             this.size = 0;
