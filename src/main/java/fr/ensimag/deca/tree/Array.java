@@ -71,7 +71,7 @@ public class Array extends AbstractExpr{
         String name=getType().getName().getName();
         Type type = envType.defOfType(compiler.createSymbol(name)).getType();
         if(type.sameType(getBaseType(compiler,type))){
-           throw new ContextualError("L'array n'est pas du bon type !", coefficients[0].getLocation() );
+           throw new ContextualError("L'array n'est pas de la bonne dimension !", coefficients[0].getLocation() );
         }
         Type typeChild = envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType();
         // Vérification que tous les coefficients sont du bon type

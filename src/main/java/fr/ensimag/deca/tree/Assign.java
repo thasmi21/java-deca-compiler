@@ -29,6 +29,7 @@ public class Assign extends AbstractBinaryExpr {
         Type typeRight;
         if(getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
             getRightOperand().setType(typeLeft);
+            getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             return typeLeft;
         }
         else {
@@ -58,6 +59,7 @@ public class Assign extends AbstractBinaryExpr {
             Type typeRight;
             if (getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
                 getRightOperand().setType(typeLeft);
+                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
                 this.setType(typeLeft);
             } else {
                 typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);

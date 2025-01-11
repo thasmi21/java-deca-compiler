@@ -75,7 +75,6 @@ list_decl returns[ListDeclVar tree]
 
 
 decl_var_set[ListDeclVar l]
-    //:type_array list_decl_array[$l,$type_array.tree] SEMI
     :type list_decl_var[$l,$type.tree] SEMI
     ;
 
