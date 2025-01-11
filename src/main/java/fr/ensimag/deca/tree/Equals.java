@@ -4,6 +4,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -32,7 +33,12 @@ public class Equals extends AbstractOpExactCmp {
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
-        compiler.addInstruction(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
         compiler.addInstruction(new BEQ(E));
         compiler.addInstruction(new LOAD(0, register));
         compiler.addInstruction(new BRA(fin));
@@ -51,7 +57,12 @@ public class Equals extends AbstractOpExactCmp {
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_')+"if");
         Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
-        compiler.addInstruction(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
         compiler.addInstruction(new BEQ(E));
         elseIns.codeGenListInst(compiler);
         compiler.addInstruction(new BRA(fin));
@@ -68,7 +79,12 @@ public class Equals extends AbstractOpExactCmp {
         GestionRegistre.IncCompteurTempUsage();
         compiler.addInstruction(new SUB(GPRegister.R0, register));
 
-        compiler.addInstruction(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
         compiler.addInstruction(new BEQ(label));
     }
 

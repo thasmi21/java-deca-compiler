@@ -34,7 +34,12 @@ public class GreaterOrEqual extends AbstractOpIneq {
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
-        compiler.addInstruction(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
         compiler.addInstruction(new BGE(E));
         compiler.addInstruction(new LOAD(0, register));
         compiler.addInstruction(new BRA(fin));
@@ -53,7 +58,12 @@ public class GreaterOrEqual extends AbstractOpIneq {
         compiler.addInstruction(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_')+"if");
         Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
-        compiler.addInstruction(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstruction(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstruction(new CMP(0, register));
+        }
         compiler.addInstruction(new BGE(E));
         elseIns.codeGenListInst(compiler);
         compiler.addInstruction(new BRA(fin));
