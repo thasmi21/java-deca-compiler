@@ -18,20 +18,13 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         if(!(typeLeft.sameType(typeRight)) && !(typeLeft.isFloat() || typeLeft.isInt()) && !(typeRight.isFloat() || typeRight.isInt())) {
             throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
         }
         if(typeLeft.isFloat() || typeRight.isFloat()) {
-            this.setType(compiler.environmentType.FLOAT);
-            if(typeLeft.isFloat()){
-                type=typeLeft;
-            }
-            else{
-                type=typeRight;
-            }
+            this.setType(compiler.environmentType.BOOLEAN);
             //Pour ajouter l'enrichissement Convfloat
             if(!typeLeft.isFloat()){
                 setLeftOperand(new ConvFloat(getLeftOperand()));
@@ -43,9 +36,8 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
             }
         }
         else {
-            this.setType(compiler.environmentType.INT);
-            type = typeLeft;
+            this.setType(compiler.environmentType.BOOLEAN);
         }
-        return type;
+        return compiler.environmentType.BOOLEAN;
     }
 }

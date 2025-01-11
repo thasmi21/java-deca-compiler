@@ -16,7 +16,7 @@
     }
 
 
-    if(a<=c){
+    if(a<=c || a<c){
         print("a inférieur à c ");
 
         if(a<c){
@@ -24,7 +24,7 @@
         }
     }
 
-    if(a!=c){
+    if(a!=c && a==b){
         print("a est diférent de c");
         if(a==b){
             println(" mais égale à b.");
