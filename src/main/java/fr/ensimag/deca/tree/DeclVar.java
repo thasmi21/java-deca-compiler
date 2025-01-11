@@ -1,10 +1,15 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
+import fr.ensimag.deca.codegen.MemoryOperand;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
+import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
@@ -52,16 +57,17 @@ public class DeclVar extends AbstractDeclVar {
     @Override
     public void codeGenDeclVar(DecacCompiler compiler){
             //throw new UnsupportedOperationException("Not Yet implemented by us");
-        this.varName.getExpDefinition().setOperand(new RegisterOffset(1, Register.GB));
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
         if(initialization instanceof Initialization){
             //prendre un registre libre;
             //evaluer l'expression et charger dans le registre
             //puis affecter
-            GPRegister r = Register.getR(3);
+            GPRegister r = GestionRegistre.obtainFreeRegister();
             ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
             //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
             compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+            r.setInUse(false); //il faut verifier après que r ne sera jamais nul
         }
     }
 
@@ -69,6 +75,9 @@ public class DeclVar extends AbstractDeclVar {
     public void decompile(IndentPrintStream s) {
         type.decompile(s);
         varName.decompile(s);
+        if (initialization instanceof Initialization) {
+            s.print("= ");
+        }
         initialization.decompile(s);
         s.println(";");
     }

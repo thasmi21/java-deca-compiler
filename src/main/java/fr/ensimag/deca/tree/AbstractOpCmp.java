@@ -20,17 +20,24 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
             ClassDefinition currentClass) throws ContextualError {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(!(typeLeft.isInt() || typeLeft.isFloat()) || !(typeRight.isInt() || typeRight.isFloat()) ) {
-            throw new ContextualError("L'une des deux opérandes n'est pas un nombre (int ou float)! Op gauche : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
+        if(!(typeLeft.sameType(typeRight)) && !(typeLeft.isFloat() || typeLeft.isInt()) && !(typeRight.isFloat() || typeRight.isInt())) {
+            throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
         }
-        Type typeRes;
         if(typeLeft.isFloat() || typeRight.isFloat()) {
-            typeRes = compiler.environmentType.FLOAT;
+            this.setType(compiler.environmentType.BOOLEAN);
+            //Pour ajouter l'enrichissement Convfloat
+            if(!typeLeft.isFloat()){
+                setLeftOperand(new ConvFloat(getLeftOperand()));
+                getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
             }
-        else {
-            typeRes = compiler.environmentType.INT;
+            if(!typeRight.isFloat()){
+                setRightOperand(new ConvFloat(getRightOperand()));
+                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
         }
-        setType(typeRes);
-        return typeRes;
+        else {
+            this.setType(compiler.environmentType.BOOLEAN);
+        }
+        return compiler.environmentType.BOOLEAN;
     }
 }

@@ -8,15 +8,19 @@ import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
 import fr.ensimag.deca.tree.LocationException;
-import fr.ensimag.ima.pseudocode.AbstractLine;
-import fr.ensimag.ima.pseudocode.IMAProgram;
-import fr.ensimag.ima.pseudocode.Instruction;
-import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+
+import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.ERROR;
+import fr.ensimag.ima.pseudocode.instructions.WNL;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.log4j.Logger;
@@ -39,6 +43,21 @@ import org.apache.log4j.Logger;
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private EnvironmentType envType = new EnvironmentType(this);
+    private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
+    private boolean labelDefined = false;
+
+    public boolean getlabelDefined() {
+        return labelDefined;
+    }
+
+    public void setlabelDefined(boolean labelDefined) {
+        this.labelDefined = labelDefined;
+    }
+
+    public ArrayList<AbstractLine> getToExecuteEnd() {
+        return toExecuteEnd;
+    }
+
     /**
      * Portable newline character.
      */
@@ -98,6 +117,14 @@ public class DecacCompiler {
      */
     public void addInstruction(Instruction instruction) {
         program.addInstruction(instruction);
+    }
+
+    public void addFirst(Instruction instruction) {
+        program.addFirst(instruction);
+    }
+
+    public void addFirst(Line l) {
+        program.addFirst(l);
     }
 
     /**
@@ -213,7 +240,7 @@ public class DecacCompiler {
             return false;
         }
 
-        addComment("start main program");
+        //addComment("start main program");
         prog.codeGenProgram(this);
         addComment("end main program");
         LOG.debug("Generated assembly code:" + nl + program.display());
@@ -261,4 +288,14 @@ public class DecacCompiler {
         return parser.parseProgramAndManageErrors(err);
     }
 
+    public void labelDivZero(DecacCompiler compiler){
+        compiler.addInstruction(new BOV(new Label("division_by_zero")));
+        if (!compiler.getlabelDefined()) {
+            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
+            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
+            compiler.getToExecuteEnd().add(new Line(new WNL()));
+            compiler.getToExecuteEnd().add(new Line(new ERROR()));
+        }
+        compiler.setlabelDefined(true);
+    }
 }

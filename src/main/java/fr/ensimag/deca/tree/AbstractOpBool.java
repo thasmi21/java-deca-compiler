@@ -22,14 +22,13 @@ public abstract class AbstractOpBool extends AbstractBinaryExpr {
             ClassDefinition currentClass) throws ContextualError {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.isBoolean() && typeLeft.isBoolean()){
-            this.setType(compiler.environmentType.BOOLEAN);
-            return typeLeft;
+        if(!typeLeft.sameType(typeRight) && !typeLeft.isBoolean()) {
+            throw new ContextualError("Une des  operandes est sans type",getLocation());
         }
-        else {
-            throw new ContextualError("Les deux opérandes ne sont pas tout deux des booleans !"+typeLeft+typeRight, getLocation());
-        }
-
+        this.setType(compiler.environmentType.BOOLEAN);
+        return compiler.environmentType.BOOLEAN;
     }
+
+
 
 }

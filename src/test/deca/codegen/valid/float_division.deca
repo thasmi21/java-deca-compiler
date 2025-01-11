@@ -1,0 +1,17 @@
+// Description :
+//      tests d'une division entre float
+//
+// Resultats :
+//      6.30000e+01 / 9.00000e+00 = 7.00000e+00
+
+
+{
+    float a = 63.0;
+    float b = 9.0;
+    float z = a / b;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+
+    println("", a, " / ", b, " = ", a / b);
+}

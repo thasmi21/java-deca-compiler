@@ -1,0 +1,12 @@
+// Description :
+//      tests du modulo
+//
+// Resultats :
+//      2
+
+{
+    int x = 32;
+    int y = 5;
+    int z = x % y;
+    println(" Calcul : " , x, " % ", y, " = ", x % y);
+}

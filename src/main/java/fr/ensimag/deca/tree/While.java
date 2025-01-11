@@ -8,6 +8,8 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.instructions.BRA;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -36,7 +38,14 @@ public class While extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+        Label debut = new Label(this.toString().replace('@', '_'));
+        Label cond = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstruction(new BRA(cond));
+        compiler.addLabel(debut);
+        getBody().codeGenListInst(compiler);
+        compiler.addLabel(cond);
+        condition.genWhileCode(compiler, debut);
+
     }
 
     @Override
@@ -44,6 +53,7 @@ public class While extends AbstractInst {
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         this.condition.verifyCondition(compiler,localEnv,currentClass);
+        this.condition.verifyInst(compiler, localEnv, currentClass, returnType);
         this.body.verifyListInst(compiler,localEnv,currentClass,returnType);
     }
 

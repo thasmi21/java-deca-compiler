@@ -5,6 +5,11 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.instructions.ERROR;
+import fr.ensimag.ima.pseudocode.instructions.WNL;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -17,16 +22,12 @@ public class Main extends AbstractMain {
     
     private ListDeclVar declVariables;
     private ListInst insts;
-
-    //par Victor pour essayer un truc
-    //private EnvironmentExp localEnv;
     public Main(ListDeclVar declVariables,
             ListInst insts) {
         Validate.notNull(declVariables);
         Validate.notNull(insts);
         this.declVariables = declVariables;
         this.insts = insts;
-        //this.localEnv = new EnvironmentExp(null);
     }
 
     @Override
@@ -50,7 +51,14 @@ public class Main extends AbstractMain {
         declVariables.codeGenListDeclVar(compiler);
 
         compiler.addComment("Beginning of main instructions:");
+        //compiler.addLabel(new Label(insts.toString().replace('@', '_')));
         insts.codeGenListInst(compiler);
+
+        // Il faudrait aussi que l'on puisse ajouter au debut du programme .ass l'instruction TSTO avec le bon #d calculé
+        // Il doit y avoir une méthode qui permet d'ajouter une instruction en début de programme
+        // Ajouter en début de programme :
+        // TSTO #d ; taille maximale de la pile que l'on peut calculer qu'a la fin de la génération de code
+        // BOV pile_pleine ; Instruction de branchement pour sauter à l'etiquette en cas de débordement
     }
     
     @Override

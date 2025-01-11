@@ -1,0 +1,12 @@
+// Description :
+//      tests d'une division entre int et float
+//
+// Resultats :
+//      1.50000e+00
+
+{
+    int x = 6;
+    float y = 4.0;
+
+    println("", x, " / ", y, " = ", x/y);
+}
