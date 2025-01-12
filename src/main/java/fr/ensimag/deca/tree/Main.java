@@ -33,7 +33,7 @@ public class Main extends AbstractMain {
 
     @Override
     protected void verifyMain(DecacCompiler compiler) throws ContextualError {
-        EnvironmentExp localEnv = new EnvironmentExp(null);
+        EnvironmentExp localEnv = compiler.environmentType.getEnvironmentMain();
         LOG.debug("verify Main: start");
         declVariables.verifyListDeclVar(compiler,localEnv, null);
         insts.verifyListInst(compiler,localEnv,null, null);

@@ -2,7 +2,10 @@ package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.DecacCompiler;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.Location;
 
@@ -16,37 +19,72 @@ import fr.ensimag.deca.tree.Location;
  */
 public class EnvironmentType {
 
+    private Set<Symbol> S;
     private final Map<Symbol, TypeDefinition> envTypes;
+    private EnvironmentExp envExp;
     public EnvironmentType(DecacCompiler compiler) {
-        
+
+        envExp = new EnvironmentExp(null);
         envTypes = new HashMap<Symbol, TypeDefinition>();
-        
+        S = new HashSet<Symbol>();
+
+        Symbol objetSymb=compiler.createSymbol("objet");
+        OBJET=new ClassType(objetSymb);
+        S.add(objetSymb);
+
         Symbol intSymb = compiler.createSymbol("int");
         INT = new IntType(intSymb);
         envTypes.put(intSymb, new TypeDefinition(INT, Location.BUILTIN));
+        S.add(intSymb);
 
         Symbol floatSymb = compiler.createSymbol("float");
         FLOAT = new FloatType(floatSymb);
         envTypes.put(floatSymb, new TypeDefinition(FLOAT, Location.BUILTIN));
+        S.add(floatSymb);
 
         Symbol voidSymb = compiler.createSymbol("void");
         VOID = new VoidType(voidSymb);
         envTypes.put(voidSymb, new TypeDefinition(VOID, Location.BUILTIN));
+        S.add(voidSymb);
 
         Symbol booleanSymb = compiler.createSymbol("boolean");
         BOOLEAN = new BooleanType(booleanSymb);
         envTypes.put(booleanSymb, new TypeDefinition(BOOLEAN, Location.BUILTIN));
+        S.add(booleanSymb);
 
         Symbol stringSymb = compiler.createSymbol("string");
         STRING = new StringType(stringSymb);
         // not added to envTypes, it's not visible for the user.
+        S.add(stringSymb);
         
     }
 
+    public void putClass(Symbol symbol,Symbol extend,Location location)throws ContextualError{
+        if (S.contains(symbol) || !S.contains(extend)) {
+            throw new ContextualError("Cannot put a type of " + symbol + " and extend " + extend,location);
+        }
+        TypeDefinition type = envTypes.get(extend);
+        if(type.isClass()){
+            S.add(symbol);
+            ClassDefinition classDef = (ClassDefinition)type;
+            envTypes.put(symbol, new ClassType(symbol,location,classDef).getDefinition());
+        }
+        else {
+            throw new ContextualError("Cannot put a type of " + symbol + " and extend " + extend,location);
+        }
+    }
 
+    public void putClass(Symbol symbol,Location location)throws ContextualError{
+        if (envTypes.containsKey(symbol)) {
+            throw new ContextualError("Cannot put a type of " + symbol,location);
+        }
+        S.add(symbol);
+        envTypes.put(symbol, new ClassType(symbol,location,OBJET.getDefinition()).getDefinition());
+    }
 
-
-
+    public EnvironmentExp getEnvironmentMain() {
+        return envExp;
+    }
 
     public Map<Symbol, TypeDefinition> getEnvTypes() {
         return envTypes;
@@ -62,4 +100,5 @@ public class EnvironmentType {
     public final FloatType   FLOAT;
     public final StringType  STRING;
     public final BooleanType BOOLEAN;
+    public final ClassType    OBJET;
 }

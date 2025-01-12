@@ -1,10 +1,7 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.ClassType;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import org.apache.commons.lang.Validate;
 
@@ -51,32 +48,43 @@ public class DeclClass extends AbstractDeclClass {
         else {
             envType.putClass(className.getName(),getLocation());
         }
+        EnvironmentExp environmentExp=compiler.getEnvironmentType().getEnvironmentMain();
+        Type type = envType.getEnvTypes().get(className.getName()).getType();
+        VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
+        try {
+            environmentExp.declare(className.getName(), varDef);
+        } catch(EnvironmentExp.DoubleDefException e) {
+            throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
+        }
+        className.setDefinition(varDef);
+        className.setType(type);
     }
 
     @Override
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
-        EnvironmentExp environmentExp;
-        if (extendsName != null) {
-            environmentExp= new EnvironmentExp(extendsName.getClassDefinition().getMembers());
+        EnvironmentExp environmentExp=((ClassDefinition)(compiler.getEnvironmentType().getEnvTypes().get(className.getName()))).getMembers();
+        TypeDefinition typeDefinition= compiler.getEnvironmentType().getEnvTypes().get(className.getName());
+        if(typeDefinition != null && typeDefinition.isClass()) {
+            ClassDefinition classDefinition = (ClassDefinition)typeDefinition;
+            classBody.verifyClassMembers(compiler,environmentExp,classDefinition);
         }
         else{
-            environmentExp = new EnvironmentExp(null);
+            throw new ContextualError(className.getName().getName()+"n'est pas une classe",getLocation());
         }
-        classBody.verifyClassMembers(compiler,environmentExp,className.getClassDefinition());
     }
     
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
-        EnvironmentExp environmentExp;
-        if (extendsName != null) {
-            environmentExp= new EnvironmentExp(extendsName.getClassDefinition().getMembers());
+        EnvironmentExp environmentExp=((ClassDefinition)(compiler.getEnvironmentType().getEnvTypes().get(className.getName()))).getMembers();
+        TypeDefinition typeDefinition= compiler.getEnvironmentType().getEnvTypes().get(className.getName());
+        if(typeDefinition != null && typeDefinition.isClass()) {
+            ClassDefinition classDefinition = (ClassDefinition)typeDefinition;
+            classBody.verifyClassBody(compiler,environmentExp,classDefinition);
         }
         else{
-            environmentExp = new EnvironmentExp(null);
+            throw new ContextualError(className.getName().getName()+"n'est pas une classe",getLocation());
         }
-        classBody.verifyClassMembers(compiler,environmentExp,className.getClassDefinition());
-        classBody.verifyClassBody(compiler,environmentExp,className.getClassDefinition());
     }
 
 
