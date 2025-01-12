@@ -510,7 +510,7 @@ literal returns[AbstractExpr tree]
     | NULL {
         }
     ;
-
+//method_array returns[AbstractExpr]
 
 ident returns[AbstractIdentifier tree]
     :
