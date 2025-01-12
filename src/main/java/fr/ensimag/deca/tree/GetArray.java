@@ -7,7 +7,13 @@ import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateInteger;
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.ADD;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
+import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -77,5 +83,20 @@ public class GetArray extends AbstractLValue {
     protected void codeGenPrint(DecacCompiler compiler) {
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        identifier.evalueExpr(compiler, r1);
+
+        compiler.addInstruction(new LOAD(identifier.getExpDefinition().getOperand(), register));
+        int indice = listIndex.get(0).getValue();
+        compiler.addInstruction(new LOAD(new ImmediateInteger(indice),r1));
+
+        compiler.addInstruction(new ADD(r1,register));
+
+        compiler.addInstruction(new LOAD(new RegisterOffset(0,register), Register.R1));
+        if (identifier.getType().isInt()) {
+            compiler.addInstruction(new WINT());
+        } else if (identifier.getType().isFloat()) {
+            compiler.addInstruction(new WFLOAT());
+        }
+        r1.setInUse(false);
     }
 }

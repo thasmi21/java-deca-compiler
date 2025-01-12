@@ -492,6 +492,7 @@ method_array returns[String name]
 get_array returns[AbstractExpr tree]
     :ident (OCROCHET list_int+=expr CCROCHET)+ {
           $tree = new GetArray($ident.tree, $list_int);
+          setLocation($tree, $ident.start);
     }
     ;
 
