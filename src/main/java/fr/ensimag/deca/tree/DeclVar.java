@@ -94,7 +94,7 @@ public class DeclVar extends AbstractDeclVar {
         }
         this.varName.setName(compiler.createSymbol(varNameWoBrackets));
         this.varName.setDefinition(varDef);
-        //this.varName.setType(arrayType);
+        this.varName.setType(arrayType);
     }
 
     @Override
@@ -103,14 +103,28 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
         if(initialization instanceof Initialization){
-            //prendre un registre libre;
-            //evaluer l'expression et charger dans le registre
-            //puis affecter
-            GPRegister r = GestionRegistre.obtainFreeRegister();
-            ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
-            //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
-            compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-            r.setInUse(false); //il faut verifier après que r ne sera jamais nul
+            if(!(((Initialization) initialization).getExpression() instanceof ArrayLiteral)){
+                //prendre un registre libre;
+                //evaluer l'expression et charger dans le registre
+                //puis affecter
+                GPRegister r = GestionRegistre.obtainFreeRegister();
+                ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
+                //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
+                compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+                r.setInUse(false); //il faut verifier après que r ne sera jamais nul
+            }
+            else {
+                ArrayLiteral tabLiteral = (ArrayLiteral) (((Initialization) initialization).getExpression());
+                Array tab = tabLiteral.getArray();
+                int tailleTableau = tab.getCoefficients().length;
+                int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(tailleTableau);
+                for(int i=0 ; i < tailleTableau ; i++) {
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    tab.getCoefficients(i).evalueExpr(compiler, r);
+                    compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP+i+1, Register.GB)));
+                    r.setInUse(false);
+                }
+            }
         }
     }
     // méthode qui récupère le type de base, par ex(int[][][] -> int)

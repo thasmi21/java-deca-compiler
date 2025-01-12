@@ -1,10 +1,13 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Register;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -63,5 +66,16 @@ public class GetArray extends AbstractLValue {
     @Override
     protected void iterChildren(TreeFunction f) {
 
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+
+    }
+
+    @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
     }
 }

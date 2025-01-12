@@ -45,6 +45,10 @@ public class Array extends AbstractExpr{
         return coefficients[index];
     }
 
+    public AbstractExpr[] getCoefficients() {
+        return coefficients;
+    }
+
     public Array(int size, List<AbstractExpr> coefficients) {
         if(size ==0 ){
             this.size = 0;
@@ -137,4 +141,11 @@ public class Array extends AbstractExpr{
 
     }
 
+    public String toString(){
+        System.out.println("[");
+        for (AbstractExpr coefficient : coefficients) {
+            System.out.print(coefficient+",");
+        }
+        return "]";
+    }
 }

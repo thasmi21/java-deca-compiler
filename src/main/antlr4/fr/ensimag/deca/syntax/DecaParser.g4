@@ -483,11 +483,14 @@ method_array returns[String name]
     | SCALARDIV {
         $name = "scalarDiv";
     }
+    | TOSTRING {
+        $name = "toString";
+    }
     ;
 
 
 get_array returns[AbstractExpr tree]
-    :ident (OCROCHET list_int+=expr CCROCHET)* {
+    :ident (OCROCHET list_int+=expr CCROCHET)+ {
           $tree = new GetArray($ident.tree, $list_int);
     }
     ;
