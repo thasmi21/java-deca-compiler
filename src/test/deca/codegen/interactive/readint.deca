@@ -1,0 +1,10 @@
+// Descritpion :
+//      Test de la fonction readint()
+//
+// Resultats :
+//      32
+
+{
+    int a = readInt();
+    println("Vous avez choisi le nombre ", a);
+}

@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 
 /**
  * List of declarations (e.g. int x; float y,z).
@@ -17,7 +18,10 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        for (AbstractDeclVar i : getList()) {
+            i.decompile(s);
+            s.println();
+        }
     }
 
     /**
@@ -38,6 +42,25 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
                     if(declVar instanceof DeclVar) {
                         declVar.verifyDeclVar(compiler, localEnv, currentClass);
                     }
+        }
+    }
+
+    /**
+     * On créer une méthode de génération de code
+     */
+    void codeGenListDeclVar(DecacCompiler compiler) {
+        // On commence par faire de la place dans la pile,
+        // autant qu'il y a de variables définies
+        int taille_pile = getList().size();
+        if (taille_pile > 0) {
+            // On utilise addFirst pour que l'instruction ADDSP soit avant
+            // l'instruction ; Main Program
+            compiler.addFirst(new ADDSP(taille_pile));
+        }
+
+        // Pour chaque variable on va appeler une nouvelle méthode de genCode
+        for (AbstractDeclVar declVar : this.getList()){
+            declVar.codeGenDeclVar(compiler);
         }
     }
 

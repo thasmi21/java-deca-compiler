@@ -100,7 +100,7 @@ fragment DEC : NUM '.' NUM ;
 fragment FLOATDEC : (DEC | DEC EXP) ('F' | 'f')? ;
 fragment DIGITTHEX : [0-9A-Fa-f] ;
 fragment NUMHEX : DIGITTHEX+ ;
-fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM ('F' | 'f' | ' ');
+fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') SIGN (NUM ('F' | 'f') | NUM) ;
 
 
 // FLOAT est prioritaire sur DEC

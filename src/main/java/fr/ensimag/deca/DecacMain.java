@@ -3,6 +3,9 @@ package fr.ensimag.deca;
 import java.io.File;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.concurrent.*;
+
 /**
  * Main class for the command-line Deca compiler.
  *
@@ -12,7 +15,7 @@ import org.apache.log4j.Logger;
 public class DecacMain {
     private static Logger LOG = Logger.getLogger(DecacMain.class);
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         // example log4j message.
         LOG.info("Decac compiler started");
         boolean error = false;
@@ -26,17 +29,51 @@ public class DecacMain {
             System.exit(1);
         }
         if (options.getPrintBanner()) {
-            throw new UnsupportedOperationException("decac -b not yet implemented");
+            System.out.println("gr1/gl06 :  \n" +
+                    "  HURSTEL Mathis\n" +
+                    "  SULLET Benjamin\n" +
+                    "  TRAORÉ Fiè Victor\n" +
+                    "  ZIVKOVIC Lucas\n" +
+                    "  ZOUGGARI Samy");
         }
         if (options.getSourceFiles().isEmpty()) {
-            throw new UnsupportedOperationException("decac without argument not yet implemented");
+            if(!options.getPrintBanner()) {
+                System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
+                    ". -b (banner) : affiche une bannière indiquant le nom de l'équipe\n" +
+                    ". -p (parse) : arrête decac après l'étape de construction de\n" +
+                    "l'arbre, et affiche la décompilation de ce dernier\n" +
+                    "(i.e. s'il n'y a qu'un fichier source à\n" +
+                    "compiler, la sortie doit être un programme\n" +
+                    "deca syntaxiquement correct)\n" +
+                    ". -v (verification) : arrête decac après l'étape de vérifications\n" +
+                    "(ne produit aucune sortie en l'absence d'erreur)\n" +
+                    ". -n (no check) : supprime les tests à l'exécution spécifiés dans\n" +
+                    "les points 11.1 et 11.3 de la sémantique de Deca.\n" +
+                    ". -r X (registers) : limite les registres banalisés disponibles à\n" +
+                    "R0 ... R{X-1}, avec 4 <= X <= 16\n" +
+                    ". -d (debug) : active les traces de debug. Répéter\n" +
+                    "l'option plusieurs fois pour avoir plus de\n" +
+                    "traces.\n" +
+                    ". -P (parallel) : s'il y a plusieurs fichiers sources,\n" +
+                    "lance la compilation des fichiers en\n" +
+                    "parallèle (pour accélérer la compilation)");
+            }
+
         }
         if (options.getParallel()) {
             // A FAIRE : instancier DecacCompiler pour chaque fichier à
             // compiler, et lancer l'exécution des méthodes compile() de chaque
             // instance en parallèle. Il est conseillé d'utiliser
             // java.util.concurrent de la bibliothèque standard Java.
-            throw new UnsupportedOperationException("Parallel build not yet implemented");
+            ArrayList<Thread> threads = new ArrayList<>();
+            for (File source : options.getSourceFiles()) {
+                Thread thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source)));
+                threads.add(thread);
+                thread.start();
+            }
+            for (Thread thread : threads) {
+                thread.join();
+            }
         } else {
             for (File source : options.getSourceFiles()) {
                 DecacCompiler compiler = new DecacCompiler(options, source);

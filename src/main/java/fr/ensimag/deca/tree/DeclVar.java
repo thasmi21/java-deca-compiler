@@ -1,12 +1,21 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
+import fr.ensimag.deca.codegen.MemoryOperand;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
+
 /**
  * @author gl06
  * @date 01/01/2025
@@ -14,9 +23,9 @@ import org.apache.commons.lang.Validate;
 public class DeclVar extends AbstractDeclVar {
 
     
-    final protected AbstractIdentifier type;
-    final protected AbstractIdentifier varName;
-    final protected AbstractInitialization initialization;
+    final private AbstractIdentifier type;
+    final private AbstractIdentifier varName;
+    final private AbstractInitialization initialization;
 
     public DeclVar(AbstractIdentifier type, AbstractIdentifier varName, AbstractInitialization initialization) {
         Validate.notNull(type);
@@ -45,6 +54,10 @@ public class DeclVar extends AbstractDeclVar {
         // Vérification du type vide
         if (identType.isVoid()) {
             throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
+        }
+        EnvironmentType envType = compiler.getEnvironmentType();
+        if(envType.getEnvTypes().containsKey(varName.getName())) {
+            throw new ContextualError("La variable ne peut pas avoir le nom d'un type existant !", getLocation());
         }
         //Dimension de la variable + du type
         int dimVar = countArrayDimensions(this.varName.getName().getName());
@@ -75,7 +88,7 @@ public class DeclVar extends AbstractDeclVar {
         }
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
         try {
-            localEnv.declare(compiler.createSymbol(varNameWoBrackets), varDef);
+            localEnv.declare(this.varName.getName(), varDef);
         } catch(EnvironmentExp.DoubleDefException e) {
             throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
         }
@@ -84,6 +97,22 @@ public class DeclVar extends AbstractDeclVar {
         //this.varName.setType(arrayType);
     }
 
+    @Override
+    public void codeGenDeclVar(DecacCompiler compiler){
+            //throw new UnsupportedOperationException("Not Yet implemented by us");
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
+        //initialiser l'adresse
+        if(initialization instanceof Initialization){
+            //prendre un registre libre;
+            //evaluer l'expression et charger dans le registre
+            //puis affecter
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
+            //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
+            compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+            r.setInUse(false); //il faut verifier après que r ne sera jamais nul
+        }
+    }
     // méthode qui récupère le type de base, par ex(int[][][] -> int)
     public static Type getBaseType(DecacCompiler compiler,Type type) throws ContextualError {
         String typeName = type.getName().getName();
@@ -95,7 +124,13 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        type.decompile(s);
+        varName.decompile(s);
+        if (initialization instanceof Initialization) {
+            s.print("= ");
+        }
+        initialization.decompile(s);
+        s.println(";");
     }
 
     @Override

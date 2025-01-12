@@ -1,0 +1,11 @@
+// Description:
+//      Déclaraion de deux variables sur la même ligne
+//
+// Résultats:
+//
+
+{
+    int a = 1, b = 2;
+    println("Val a :",a);
+    println("Val b :",b);
+}

@@ -1,0 +1,14 @@
+// Description :
+//      tests d'une division par zéro entre int
+//
+// Resultats :
+//      Erreur: Division by zero
+
+
+{
+    int a = 63;
+    int b = 0;
+    int z = a / b;
+
+    println("", a, " / ", b, " = ", z);
+}

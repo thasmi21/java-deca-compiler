@@ -1,0 +1,16 @@
+// Description :
+//      tests d'une addition entre float et int
+//
+// Resultats :
+//      2.50000e+00 + 2 = 4.50000e+00
+
+
+
+{
+    float a = 2.5;
+    int b = 2;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+    println("",a, " + ", b, " = ", a+b);
+}

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fr.ensimag.ima.pseudocode.Register;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -36,16 +37,129 @@ public class CompilerOptions {
         return Collections.unmodifiableList(sourceFiles);
     }
 
+    public int getArret(){
+        return arret;
+    }
+
     private int debug = 0;
     private boolean parallel = false;
     private boolean printBanner = false;
     private List<File> sourceFiles = new ArrayList<File>();
+    private int arret=0;
+
 
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
+        ArrayList<String> chemins=new ArrayList<>();
+        if(args.length == 0) {
+            return;
+        }
+        if(args[0].equals("-b")) {
+            if(args.length > 1) {
+                throw new CLIException("deca -b n'a pas d'argument!!");
+            }
+            else {
+                printBanner = true;
+                return;
+            }
+        }
+        int v=0;
+        int p=0;
+        int r=0;
+        int P=0;
+        int n=0;
+        int w=0;
+        int d=0;
+        for (int i = 0; i < args.length; i++) {
+            if(args[i].equals("-v")) {
+                if(v==0 && p==0) {
+                    v=1;
+                    arret=2;
+                }
+                else{
+                    throw new CLIException("l'option -v n'est utilisable qu'une seule fois ou sans l'option -p");
+                }
+            } else if (args[i].equals("-p") ) {
+                if(v==0 && p==0) {
+                    p=1;
+                    arret=1;
+                }
+                throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
+            }
+            else if(args[i].equals("-r") ) {
+                if(r==0){
+                    if(args.length>i+1) {
+                        int digit = Integer.parseInt(args[i+1]);
+                        if(4<=digit && digit<=16){
+                            r=1;
+                            for(int j=15;j>=digit;j--){
+                                Register.getR(j).setInUse(true);
+                            }
+                        }
+                        else {
+                            throw new CLIException("l'option -r de deca nécéssite un entier en argument compris entre 4 et 16");
+                        }
+                    }
+                    else {
+                        throw new CLIException("l'option -r de deca nécéssite un entier en argument");
+                    }
+
+                }
+                else{
+                    throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
+                }
+            }
+            else if(args[i].equals("-P")) {
+                if(P==0) {
+                    P=1;
+                    parallel = true;
+                }
+                else{
+                    throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
+                }
+            }
+            else if(args[i].equals("-n")) {
+                if(n==0) {
+                    n=1;
+                }
+                else {
+                    throw new CLIException("l'option -n n'est utilisable qu'une seule fois");
+                }
+            }
+            else if(args[i].equals("-w")) {
+                if(w==0){
+                    w=1;
+                }
+                else{
+                    throw new CLIException("l'option -w n'est utilisable qu'une seule fois");
+                }
+            }
+            else if(args[i].equals("-d")){
+                if(d==0){
+                    d=1;
+                    debug=INFO;
+                } else if (d==1) {
+                    d=2;
+                    debug=DEBUG;
+                }
+                else if (d==2) {
+                    d+=1;
+                    debug=TRACE;
+                }
+                else {
+                    throw new CLIException("Il faut au maximum 3 -d");
+                }
+            }
+            else {
+                chemins.add(args[i]);
+            }
+        }
         Logger logger = Logger.getRootLogger();
         // map command-line debug option to log4j's level.
+        if(w==1){
+            logger.setLevel(Level.WARN);
+        }
         switch (getDebug()) {
         case QUIET: break; // keep default
         case INFO:
@@ -59,6 +173,8 @@ public class CompilerOptions {
         }
         logger.info("Application-wide trace level set to " + logger.getLevel());
 
+
+
         boolean assertsEnabled = false;
         assert assertsEnabled = true; // Intentional side effect!!!
         if (assertsEnabled) {
@@ -69,15 +185,15 @@ public class CompilerOptions {
 
         //placement du fichier source
         //on va de manière incremental sans gèrer toutes les options pour l'intant
-        String chemin = args[0];
-        File fichier = new File(chemin);
-        if(fichier.exists() && fichier.isFile()){
-            sourceFiles.add(fichier);
-        }else{
-            System.out.println("Entrer un nom de fichier correct!");
+        //String chemin = args[0];
+        for(String chemin : chemins){
+            File fichier = new File(chemin);
+            if(fichier.exists() && fichier.isFile()){
+                sourceFiles.add(fichier);
+            }else{
+                throw new CLIException("Entrer un nom de fichier correct!");
+            }
         }
-
-        //throw new UnsupportedOperationException("not yet implemented");
     }
 
     protected void displayUsage() {

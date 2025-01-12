@@ -18,14 +18,30 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+        Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(!(typeLeft.isInt() || typeLeft.isFloat()) || !(typeRight.isInt() || typeRight.isFloat()) ) {
-            throw new ContextualError("L'une des deux opérandes n'est pas un nombre (int ou float)! Op gauche : "+ typeLeft+", Op droit : "+ typeRight, getLocation());
+
+        if(!(typeLeft.sameType(typeRight) || (typeLeft.isFloat() && typeRight.isInt())  || (typeRight.isFloat() && typeLeft.isInt()))) {
+            throw new ContextualError("Les deux opérandes ne sont pas comparables : Op gauche: "+ typeLeft+", Op droit : "+ typeRight, getLocation());
         }
-        Type typeRes;
-        typeRes = compiler.environmentType.BOOLEAN;
-        setType(typeRes);
-        return typeRes;
+
+        if( this instanceof AbstractOpIneq &&( getLeftOperand().getType().isBoolean() || getRightOperand().getType().isBoolean())){
+            throw new ContextualError("Impossible de faire ce type de comparaison avec des booleans ", getLocation());
+        }
+
+        if(!typeLeft.isFloat() && typeRight.isFloat()){
+            setLeftOperand(new ConvFloat(getLeftOperand()));
+            getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+        }
+        if(!typeRight.isFloat() && typeLeft.isFloat()){
+            setRightOperand(new ConvFloat(getRightOperand()));
+            getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+        }
+
+
+        this.setType(compiler.environmentType.BOOLEAN);
+
+        return compiler.environmentType.BOOLEAN;
     }
 }

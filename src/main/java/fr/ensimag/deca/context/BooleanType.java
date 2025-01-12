@@ -1,5 +1,5 @@
 package fr.ensimag.deca.context;
-import fr.ensimag.deca.tree.Location;
+
 import fr.ensimag.deca.tools.SymbolTable;
 
 /**
@@ -20,10 +20,9 @@ public class BooleanType extends Type {
 
     @Override
     public boolean sameType(Type otherType) {
-        return otherType instanceof BooleanType;
+
+        return (otherType instanceof BooleanType);
     }
-
-
 
 
 }

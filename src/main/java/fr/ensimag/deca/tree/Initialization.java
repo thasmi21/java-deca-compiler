@@ -26,6 +26,9 @@ public class Initialization extends AbstractInitialization {
     public Initialization(AbstractExpr expression) {
         Validate.notNull(expression);
         this.expression = expression;
+
+        //bonne positionnement de la Localisation de l'initialisation
+        this.setLocation(expression.getLocation());
     }
 
     @Override
@@ -34,14 +37,14 @@ public class Initialization extends AbstractInitialization {
             throws ContextualError {
         Type typeExpr = expression.verifyExpr(compiler, localEnv, currentClass);
         if (!typeExpr.sameType(t)) {
-            throw new ContextualError("Types incompatibles dans l'initialisation ! (attendu "+t+" ), (trouvé "+typeExpr+")",getLocation());
+            throw new ContextualError("Types incompatibles dans l'initialisation ! (attendu "+t+" ), (trouvé "+typeExpr+")",expression.getLocation());
         }
     }
 
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        expression.decompile(s);
     }
 
     @Override

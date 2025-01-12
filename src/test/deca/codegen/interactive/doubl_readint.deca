@@ -1,0 +1,11 @@
+// Descritpion :
+//
+//
+//
+//
+
+{
+    int x;
+    x = readInt() + readInt();
+    println("Val x :", x);
+}

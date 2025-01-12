@@ -7,8 +7,11 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import java.io.PrintStream;
+
+import fr.ensimag.ima.pseudocode.Register;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -33,6 +36,17 @@ public abstract class AbstractExpr extends AbstractInst {
         return type;
     }
 
+    public int getEvalBooleanExpr(){
+        return 0;
+    }
+
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        throw new UnsupportedOperationException("Expression connot be a condition");
+    }
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        throw  new IllegalArgumentException("Expression connot be a condition");
+    }
+
     protected void setType(Type type) {
         Validate.notNull(type);
         this.type = type;
@@ -42,9 +56,9 @@ public abstract class AbstractExpr extends AbstractInst {
     @Override
     protected void checkDecoration() {
         //commenter par Victor
-        /*if (getType() == null) {
+        if (getType() == null) {
             throw new DecacInternalError("Expression " + decompile() + " has no Type decoration");
-        }*/
+        }
     }
 
     /**
@@ -133,14 +147,24 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+
+        throw new UnsupportedOperationException("not yet implemented by us");
     }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
+
+    /*
+    * une methode qui prend un registre, effectue
+    * l'evaluation de l'expression et le met dans le registre
+    * en question (registre ou adresse de pile)
+    *
+    * */
+    public void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
 
     @Override
     protected void decompileInst(IndentPrintStream s) {

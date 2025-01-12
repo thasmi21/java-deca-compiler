@@ -1,0 +1,18 @@
+// Description :
+//      tests d'une addition et d'une multiplication
+//
+// Resultats :
+//      6
+//      30
+
+{
+    int i = 2;
+    int j = 4;
+    int k = 7;
+    println("La valeur de i est: ", i);
+    println("Voici la valeur de j: ", j);
+
+    println("", i, " + ", j, " = ", i+j);
+
+    println("",i, " + ", j, " * ", k, " = ", i+j*k);
+}

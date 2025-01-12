@@ -164,24 +164,36 @@ inst returns[AbstractInst tree]
 
 if_then_else returns[IfThenElse tree]
 @init {
-    
+
+
+    ListInst dernierElseBranche = new ListInst();
+    IfThenElse aActualiser;
+
 }
     : if1=IF OPARENT condition=expr CPARENT OBRACE li_if=list_inst CBRACE {
         assert($condition.tree!=null);
         assert($li_if.tree!=null);
-        $tree= new IfThenElse($condition.tree,$li_if.tree,new ListInst());
+        $tree= new IfThenElse($condition.tree,$li_if.tree,dernierElseBranche);
+        aActualiser = $tree;
+        setLocation($tree,$if1);
         }
       (ELSE elsif=IF OPARENT elsif_cond=expr CPARENT OBRACE elsif_li=list_inst CBRACE {
         assert($elsif_cond.tree!=null);
         assert($elsif_li.tree!=null);
-        $tree = new IfThenElse($elsif_cond.tree,$elsif_li.tree,new ListInst());
-        setLocation($tree,$ELSE);
+        IfThenElse new_branch = new IfThenElse($elsif_cond.tree, $elsif_li.tree, dernierElseBranche);
+        setLocation(new_branch, $ELSE);
+         ListInst l = new ListInst();
+        l.add(new_branch);
+        aActualiser.setElseBranch(l);
+        aActualiser = new_branch;
         }
       )*
       (ELSE OBRACE li_else=list_inst CBRACE {
         assert($li_else.tree!=null);
-
-        setLocation($tree,$ELSE);
+        for(AbstractInst ins: $li_else.tree.getList()){
+            dernierElseBranche.add(ins);
+        }
+        //dernierElseBranche = $li_else.tree;
         }
       )?
     ;
@@ -543,7 +555,6 @@ literal returns[AbstractExpr tree]
         $tree= $array_literal.tree;
     }
     ;
-
 
 ident returns[AbstractIdentifier tree]
     :

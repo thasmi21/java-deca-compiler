@@ -1,0 +1,10 @@
+// Descritpion :
+//      Test de la fonction readFloat()
+//
+// Resultats :
+//      156.87
+
+{
+    float a = readFloat();
+    println("Vous avez choisi le nombre ", a);
+}

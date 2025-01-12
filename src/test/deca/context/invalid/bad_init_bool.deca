@@ -1,0 +1,9 @@
+// Description:
+//      Initialisation d'un boolean avec un identificateur non définie
+//
+// Resultats:
+//      Ligne 10: Identifier resto not defined
+
+{
+    boolean vers = resto;
+}
