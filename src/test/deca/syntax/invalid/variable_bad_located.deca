@@ -1,0 +1,9 @@
+// Descritpion:
+//      Variable définie en dehors du main
+//Resultats :
+//
+
+int a = 2;
+{
+    print("Petit problème");
+}

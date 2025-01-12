@@ -1,0 +1,9 @@
+// Descritpion:
+//      Typage incorrect
+//
+//      Ligne 7 : Identificateur de type non déclaré
+
+{
+    inti prenom = "Zinedine";
+    println("Je m'appelle ", prenom);
+}

@@ -1,0 +1,11 @@
+// Description:
+//      On declare une variable juste après un if
+//
+// Résultats:
+//      Ligne 8:
+
+{
+    if int x (true){
+        println("Faux");
+    }
+}

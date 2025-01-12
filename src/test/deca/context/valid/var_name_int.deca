@@ -1,0 +1,8 @@
+// Descritpion:
+//      On donne le nom int à une variable;
+// Résultats:
+//      Ligne 2
+
+{
+    float int = 1.2;
+}

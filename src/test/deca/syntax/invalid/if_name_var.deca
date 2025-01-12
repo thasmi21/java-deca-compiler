@@ -1,0 +1,9 @@
+// Descritpion:
+//      On essaye d'appeler une variable par if
+//
+// Résultats:
+//      Lignes 8
+
+{
+    float if = 1.2;
+}

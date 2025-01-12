@@ -1,0 +1,10 @@
+// Descritpion:
+//      On initialise une variable avant de l'avoir définie
+//
+// Résultats:
+//      Ligne 9:
+
+{
+    x = 3;
+    int x;
+}
