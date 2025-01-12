@@ -25,9 +25,9 @@ public class This extends AbstractExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
-        Type intType = compiler.environmentType.INT;
-        this.setType(intType);
-        return intType;
+        Type classType = currentClass.getType();
+        this.setType(classType);
+        return classType;
     }
 
     @Override

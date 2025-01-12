@@ -2,10 +2,7 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
@@ -28,10 +25,24 @@ public class Dot extends AbstractLValue {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
-        //A faire
-        Type booleanType = compiler.environmentType.BOOLEAN;
-        this.setType(booleanType);
-        return booleanType;
+        Type type=select_expr.verifyExpr(compiler, localEnv, currentClass);
+        if(type instanceof ClassType){
+            ClassType classType = (ClassType)type;
+            EnvironmentExp environmentExp= classType.getDefinition().getMembers();
+            ExpDefinition expDefinition = environmentExp.get(identifier.getName());
+            if (expDefinition != null) {
+                Type type1 = identifier.verifyExpr(compiler,localEnv,currentClass);
+                this.setType(type1);
+                return type1;
+            }
+            else{
+                throw new ContextualError(select_expr.prettyPrint() + "n'a pas d'argument " + identifier.prettyPrint(),getLocation());
+            }
+        }
+        else{
+            throw new ContextualError(select_expr.prettyPrint() + "n'est pas une classe il ne peut donc avoir d'argument",getLocation());
+        }
+
     }
 
     @Override
