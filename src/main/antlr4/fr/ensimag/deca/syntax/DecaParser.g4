@@ -204,6 +204,11 @@ expr returns[AbstractExpr tree]
             assert($assign_expr.tree != null);
             $tree=$assign_expr.tree;
         }
+    | expr DOT method_array OPARENT (par=expr)? CPARENT {
+                assert($expr.tree != null);
+                assert($method_array.name != null);
+                $tree= new CallMethodArray($expr.tree,$method_array.name, $par.tree);
+        }
     ;
 
 assign_expr returns[AbstractExpr tree]
@@ -443,6 +448,31 @@ primary_expr returns[AbstractExpr tree]
             $tree=$get_array.tree;
     }
     ;
+
+method_array returns[String name]
+    :SORT {
+        $name = 'sort';
+    }
+    | TRANSPOSE {
+        $name = 'transpose';
+    }
+    | TRACE {
+         $name = 'trace';
+    }
+    | DET {
+         $name = 'det';
+    }
+    | ISINVERSIBLE {
+        $name = 'isInversible';
+    }
+    SCALARMULT {
+        $name = 'scalarMult';
+    }
+    | SCALARDIV {
+        $name = 'scalarDiv';
+    }
+    ;
+
 
 get_array returns[AbstractExpr tree]
     :ident (OCROCHET list_int+=expr CCROCHET)* {

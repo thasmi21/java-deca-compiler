@@ -146,3 +146,19 @@ EOL : ( '\t' |'\r'| '\n');
 COMMA : ',';
 
 MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
+
+// méthodes pour le calcul matriciel
+
+SORT : 'sort';
+
+TRANSPOSE : 'transpose' ;
+
+SCALARMULT : 'scalarmult';
+
+SCALARDIV : 'scalardiv';
+
+TRACE : 'trace';
+
+DET : 'det';
+
+ISINVERSIBLE : 'isInversible';
