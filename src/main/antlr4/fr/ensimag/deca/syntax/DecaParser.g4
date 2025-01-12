@@ -451,25 +451,25 @@ primary_expr returns[AbstractExpr tree]
 
 method_array returns[String name]
     :SORT {
-        $name = 'sort';
+        $name = "sort";
     }
     | TRANSPOSE {
-        $name = 'transpose';
+        $name = "transpose";
     }
     | TRACE {
-         $name = 'trace';
+         $name = "trace";
     }
     | DET {
-         $name = 'det';
+         $name = "det";
     }
     | ISINVERSIBLE {
-        $name = 'isInversible';
+        $name = "isInversible";
     }
     SCALARMULT {
-        $name = 'scalarMult';
+        $name = "scalarMult";
     }
     | SCALARDIV {
-        $name = 'scalarDiv';
+        $name = "scalarDiv";
     }
     ;
 
