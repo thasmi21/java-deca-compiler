@@ -31,7 +31,7 @@ public class Dot extends AbstractLValue {
             EnvironmentExp environmentExp= classType.getDefinition().getMembers();
             ExpDefinition expDefinition = environmentExp.get(identifier.getName());
             if (expDefinition != null) {
-                Type type1 = identifier.verifyExpr(compiler,localEnv,currentClass);
+                Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
                 this.setType(type1);
                 return type1;
             }

@@ -48,7 +48,7 @@ public class DeclClass extends AbstractDeclClass {
         else {
             envType.putClass(className.getName(),getLocation());
         }
-        EnvironmentExp environmentExp=compiler.getEnvironmentType().getEnvironmentMain();
+        EnvironmentExp environmentExp=compiler.environmentType.getEnvironmentMain();
         Type type = envType.getEnvTypes().get(className.getName()).getType();
         VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
         try {
