@@ -25,7 +25,7 @@ public class NoOperation extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        s
+        
     }
 
     @Override
