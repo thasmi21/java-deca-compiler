@@ -85,7 +85,9 @@ public class CompilerOptions {
                     p=1;
                     arret=1;
                 }
-                throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
+                else{
+                    throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
+                }
             }
             else if(args[i].equals("-r") ) {
                 if(r==0){
