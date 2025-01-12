@@ -172,6 +172,8 @@ public class Identifier extends AbstractIdentifier {
             ClassDefinition currentClass) throws ContextualError {
         ExpDefinition def = localEnv.get(name);
         if (def != null) {
+            this.setDefinition(def);
+            this.setType(def.getType());
             return def.getType();
         }
         // 🔹 2️⃣ Vérifier si c'est un type connu dans `env_types`

@@ -40,6 +40,7 @@ public class GetArray extends AbstractLValue {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Symbol symbolIdentifier = identifier.getName();
+        identifier.verifyExpr(compiler, localEnv, currentClass);
         ExpDefinition defIdentifier = localEnv.get(symbolIdentifier);
         if(defIdentifier == null){
             throw new ContextualError(symbolIdentifier + "non déclaré", getLocation());
@@ -55,6 +56,8 @@ public class GetArray extends AbstractLValue {
             symboleTypeCoeff = compiler.createSymbol(type.getName().getName().substring(0, type.getName().getName().length() - 2*i));
         }
         Type typeVoulu = envType.defOfType(symboleTypeCoeff).getType();
+        this.setType(compiler.environmentType.INT);
+        //identifier.setType(compiler.environmentType.INT);
         return typeVoulu;
     }
 
