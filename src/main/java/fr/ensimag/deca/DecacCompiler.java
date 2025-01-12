@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
  */
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
-    private EnvironmentType envType = new EnvironmentType(this);
+
     private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
     private boolean labelDefined = false;
 
@@ -153,11 +153,13 @@ public class DecacCompiler {
  
 
     /** The global environment for types (and the symbolTable) */
-    public final EnvironmentType environmentType = new EnvironmentType(this);
-    public final SymbolTable symbolTable = new SymbolTable();
 
-    public Symbol createSymbol(String name) {
-        return SymbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
+    public final SymbolTable symbolTable = new SymbolTable();
+    public final EnvironmentType environmentType = new EnvironmentType(this);
+    private EnvironmentType envType = new EnvironmentType(this);
+
+    public  Symbol createSymbol(String name) {
+        return this.symbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
     }
 
     /**
