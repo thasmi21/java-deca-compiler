@@ -4,8 +4,8 @@
 // Resultats :
 //
 
-{
-    while (true) {
-        println("On n'apprend pas au vieux singe à faire la grimace");
-    }
-}
+//{
+//    while (true) {
+//        println("On n'apprend pas au vieux singe à faire la grimace");
+//    }
+//}

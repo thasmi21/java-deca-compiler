@@ -20,5 +20,5 @@
     println("La nouvelle valeur de x est : ", x = 42);
     println("La nouvelle valeur de y est : ", y = 118);
 
-    println("On teste si x vaut 2 : ", x == 2);
+    //println("On teste si x vaut 2 : ", x == 2);
 }

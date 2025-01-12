@@ -511,7 +511,6 @@ literal returns[AbstractExpr tree]
         }
     ;
 
-
 ident returns[AbstractIdentifier tree]
     :
      IDENT OCROCHET CCROCHET {
