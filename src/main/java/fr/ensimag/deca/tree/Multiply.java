@@ -42,6 +42,9 @@ public class Multiply extends AbstractOpArith {
         }
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new MUL(Register.R0, register));
+        if (this.getType().isFloat()) {
+            compiler.labelOverflow(compiler);
+        }
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 

@@ -1,0 +1,16 @@
+// Descritpion:
+//      On va créer une classe qui hérite donc forcément de objet mais qui
+//      ne va contenir que des champs et aucune méthode
+//
+// Résultats:
+//
+
+public class Simple {
+    int a;
+    int b;
+}
+{
+    Simple deb = new Simple();
+    println("Valeur de a : ", deb.a);
+    println("Valeur de b : ", deb.b);
+}
