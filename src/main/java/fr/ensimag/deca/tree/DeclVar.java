@@ -56,9 +56,7 @@ public class DeclVar extends AbstractDeclVar {
             throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
         }
         EnvironmentType envType = compiler.getEnvironmentType();
-        if(envType.getEnvTypes().containsKey(varName.getName())) {
-            throw new ContextualError("La variable ne peut pas avoir le nom d'un type existant !", getLocation());
-        }
+
         //Dimension de la variable + du type
         int dimVar = countArrayDimensions(this.varName.getName().getName());
         int dimType = countArrayDimensions(this.type.getName().getName());
@@ -117,11 +115,11 @@ public class DeclVar extends AbstractDeclVar {
                 ArrayLiteral tabLiteral = (ArrayLiteral) (((Initialization) initialization).getExpression());
                 Array tab = tabLiteral.getArray();
                 int tailleTableau = tab.getCoefficients().length;
-                int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(tailleTableau);
+                int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(tailleTableau-1);
                 for(int i=0 ; i < tailleTableau ; i++) {
                     GPRegister r = GestionRegistre.obtainFreeRegister();
                     tab.getCoefficients(i).evalueExpr(compiler, r);
-                    compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP+i+1, Register.GB)));
+                    compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP-tailleTableau+i+1, Register.GB)));
                     r.setInUse(false);
                 }
             }

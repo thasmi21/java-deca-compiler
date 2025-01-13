@@ -6,6 +6,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.REM;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
@@ -117,17 +118,28 @@ public class Assign extends AbstractBinaryExpr {
         return "=";
     }
 
-    @Override
     public void codeGenInst(DecacCompiler compiler) {
         // On prend un registre libre
         //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
-        DAddr regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
+        DAddr regAdresse;
+
         // On prend ensuite un registre libre
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         // On y stock la valeur contenue dans l'opérand droite
         getRightOperand().evalueExpr(compiler, reg);
+
+        if(getLeftOperand() instanceof GetArray){
+            DAddr regAdresseBase = ((GetArray)getLeftOperand()).getIdentifier().getExpDefinition().getOperand();
+            int i = ((GetArray)getLeftOperand()).getListIndex().get(0).getValue();
+            RegisterOffset identifierOffset = (RegisterOffset) regAdresseBase;
+            Register baseRegister = identifierOffset.getRegister();
+            regAdresse = new RegisterOffset(i+1, baseRegister);
+        }
+        else{
+            regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
+        }
         // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
         compiler.addInstruction(new STORE(reg, regAdresse));
         reg.setInUse(false);

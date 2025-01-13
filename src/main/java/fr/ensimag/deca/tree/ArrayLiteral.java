@@ -20,29 +20,6 @@ public class ArrayLiteral extends AbstractExpr{
     private ArrayList<Integer> sizes;
     private Array array;
 
-
-    // pour des assignations du type tab = new int[]
-    public ArrayLiteral(String name) {
-        this.sizes = new ArrayList<>();
-        this.name = name;
-        if(!thereIsInit()){
-            this.name = removeIntegers(name);
-            setSizeFromName(name);
-            this.dimension = getDimensionFromName(name);
-        }
-        else{
-            setSizeFromNameInit(name);
-            this.dimension = getDimensionFromNameInit(name);
-        }
-        if(sizes.size()==1){
-            this.array = new Array(sizes.get(0), null);
-        }
-        else {
-            this.array = new Array(sizes, null);
-        }
-
-    }
-
     public Array getArray() {
         return array;
     }

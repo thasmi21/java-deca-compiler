@@ -176,7 +176,6 @@ public class Identifier extends AbstractIdentifier {
             this.setType(def.getType());
             return def.getType();
         }
-        // 🔹 2️⃣ Vérifier si c'est un type connu dans `env_types`
         TypeDefinition typeDef = compiler.getEnvironmentType().defOfType(name);
         if (typeDef != null) {
             ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
@@ -190,8 +189,6 @@ public class Identifier extends AbstractIdentifier {
             }
             return typeDef.getType();
         }
-
-        // 🔹 3️⃣ Si l'identifiant n'est trouvé ni dans `localEnv` ni dans `env_types`, lever une erreur
         throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
     }
 

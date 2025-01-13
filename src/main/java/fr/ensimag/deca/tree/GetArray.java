@@ -6,24 +6,19 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.ADD;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.*;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetArray extends AbstractLValue {
+public class GetArray extends Identifier {
     private AbstractIdentifier identifier;
     private List<IntLiteral> listIndex;
 
     public GetArray(AbstractIdentifier identifier, List<DecaParser.ExprContext> ListIndex) {
+        super(identifier.getName());
         this.identifier = identifier;
         List<IntLiteral> liste= new ArrayList<>();
         for(DecaParser.ExprContext coefficient : ListIndex) {
@@ -36,6 +31,15 @@ public class GetArray extends AbstractLValue {
         }
         this.listIndex = liste;
     }
+
+    public List<IntLiteral> getListIndex() {
+        return listIndex;
+    }
+
+    public AbstractIdentifier getIdentifier() {
+        return identifier;
+    }
+
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
@@ -57,7 +61,14 @@ public class GetArray extends AbstractLValue {
         }
         Type typeVoulu = envType.defOfType(symboleTypeCoeff).getType();
         this.setType(compiler.environmentType.INT);
-        //identifier.setType(compiler.environmentType.INT);
+        Definition varDef = new VariableDefinition(typeVoulu,getLocation());
+        String name = symbolIdentifier.getName();
+        for(int i = 0; i< listIndex.size(); i++) {
+            name= name+"["+listIndex.get(i).getValue()+"]";
+        }
+        Symbol varSymbol = compiler.createSymbol(name);
+        this.setName(varSymbol);
+        this.setDefinition(varDef);
         return typeVoulu;
     }
 
@@ -69,7 +80,7 @@ public class GetArray extends AbstractLValue {
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         identifier.prettyPrint(s, prefix, true);
-        //index.prettyPrint(s, prefix, true);
+        listIndex.get(0).prettyPrint(s, prefix, true);
     }
 
     @Override
@@ -83,21 +94,33 @@ public class GetArray extends AbstractLValue {
     }
 
     @Override
-    protected void codeGenPrint(DecacCompiler compiler) {
-        GPRegister register = Register.R1;
-        GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        identifier.evalueExpr(compiler, r1);
-
-        compiler.addInstruction(new LOAD(identifier.getExpDefinition().getOperand(), register));
+    public void evalueExpr(DecacCompiler compiler, GPRegister register){
         int indice = listIndex.get(0).getValue();
-        compiler.addInstruction(new LOAD(new ImmediateInteger(indice),r1));
+        DAddr idAdresse =  identifier.getExpDefinition().getOperand();
+        RegisterOffset identifierOffset = (RegisterOffset) idAdresse;
 
-        compiler.addInstruction(new ADD(r1,register));
+        Register baseRegister = identifierOffset.getRegister();
+        int baseOffset = identifierOffset.getOffset();
+        RegisterOffset effectiveAdress = new RegisterOffset(baseOffset+indice,baseRegister);
 
-        compiler.addInstruction(new LOAD(new RegisterOffset(0,register), Register.R1));
-        if (identifier.getType().isInt()) {
+        compiler.addInstruction(new LOAD(effectiveAdress,register));
+    }
+
+    @Override
+    public void codeGenPrint(DecacCompiler compiler) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        int indice = listIndex.get(0).getValue();
+        DAddr idAdresse=  identifier.getExpDefinition().getOperand();
+        RegisterOffset identifierOffset = (RegisterOffset) idAdresse;
+
+        Register baseRegister = identifierOffset.getRegister();
+        int baseOffset = identifierOffset.getOffset();
+        RegisterOffset effectiveAdress = new RegisterOffset(baseOffset+indice,baseRegister);
+
+        compiler.addInstruction(new LOAD(effectiveAdress,Register.R1));
+        if (listIndex.get(0) instanceof IntLiteral) {
             compiler.addInstruction(new WINT());
-        } else if (identifier.getType().isFloat()) {
+        } else if (listIndex.get(0).getType().isFloat()) {
             compiler.addInstruction(new WFLOAT());
         }
         r1.setInUse(false);
