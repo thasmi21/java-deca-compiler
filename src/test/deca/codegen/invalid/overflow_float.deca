@@ -5,9 +5,9 @@
 //
 
 {
-    float i = 1.0;
+    float i = 3.40282e+38;
     while(true){
-        i=i*(i+1.0);
+        i=i*(1+1);
         println("",i);
     }
     // ça se bloque a 1.13424e+26
