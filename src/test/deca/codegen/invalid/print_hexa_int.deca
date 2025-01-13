@@ -1,0 +1,9 @@
+//Description :
+//Print d'un entier en hexadecimal, doit renvoyer une erreur
+// Résultat :
+// Erreur
+
+{
+    int a = 10;
+    printlnx("Val a", a);
+}
