@@ -34,6 +34,9 @@ public class Multiply extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, r1 );
             getRightOperand().evalueExpr(compiler, register );
             compiler.addInstruction(new MUL(r1, register));
+            if (this.getType().isFloat()) {
+                compiler.labelOverflow(compiler);
+            }
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
