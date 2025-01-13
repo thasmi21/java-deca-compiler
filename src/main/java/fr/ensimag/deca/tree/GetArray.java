@@ -94,17 +94,25 @@ public class GetArray extends Identifier {
     }
 
     @Override
-    public void evalueExpr(DecacCompiler compiler, GPRegister register){
-        int indice = listIndex.get(0).getValue();
-        DAddr idAdresse =  identifier.getExpDefinition().getOperand();
+    public void evalueExpr(DecacCompiler compiler, GPRegister register) {
+        // Récupération de l'adresse de base de l'identifiant
+        DAddr idAdresse = identifier.getExpDefinition().getOperand();
         RegisterOffset identifierOffset = (RegisterOffset) idAdresse;
-
         Register baseRegister = identifierOffset.getRegister();
         int baseOffset = identifierOffset.getOffset();
-        RegisterOffset effectiveAdress = new RegisterOffset(baseOffset+indice,baseRegister);
-
-        compiler.addInstruction(new LOAD(effectiveAdress,register));
+        // Vérification si l'indice est une constante ou une expression dynamique
+        if (listIndex.get(0) instanceof IntLiteral) {
+            int indice = listIndex.get(0).getValue();
+            compiler.addInstruction(new LEA(new RegisterOffset(baseOffset + indice, baseRegister), register));
+        } else {
+            GPRegister tempRegister = GestionRegistre.obtainFreeRegister();
+            listIndex.get(0).evalueExpr(compiler, tempRegister);
+            compiler.addInstruction(new LEA(new RegisterOffset(baseOffset, baseRegister), register));
+            compiler.addInstruction(new ADD(tempRegister, register));
+            tempRegister.setInUse(false);
+        }
     }
+
 
     @Override
     public void codeGenPrint(DecacCompiler compiler) {

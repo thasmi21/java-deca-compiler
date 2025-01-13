@@ -118,30 +118,28 @@ public class Assign extends AbstractBinaryExpr {
         return "=";
     }
 
+    @Override
     public void codeGenInst(DecacCompiler compiler) {
         // On prend un registre libre
         //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
         DAddr regAdresse;
-
         // On prend ensuite un registre libre
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         // On y stock la valeur contenue dans l'opérand droite
         getRightOperand().evalueExpr(compiler, reg);
-
         if(getLeftOperand() instanceof GetArray){
-            DAddr regAdresseBase = ((GetArray)getLeftOperand()).getIdentifier().getExpDefinition().getOperand();
-            int i = ((GetArray)getLeftOperand()).getListIndex().get(0).getValue();
-            RegisterOffset identifierOffset = (RegisterOffset) regAdresseBase;
-            Register baseRegister = identifierOffset.getRegister();
-            regAdresse = new RegisterOffset(i+1, baseRegister);
+            GPRegister regGet = GestionRegistre.obtainFreeRegister();
+            getLeftOperand().evalueExpr(compiler, regGet);
+            compiler.addInstruction(new STORE(reg, new RegisterOffset(0, regGet)));
         }
         else{
             regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
+            compiler.addInstruction(new STORE(reg, regAdresse));
         }
         // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
-        compiler.addInstruction(new STORE(reg, regAdresse));
+
         reg.setInUse(false);
     }
 
