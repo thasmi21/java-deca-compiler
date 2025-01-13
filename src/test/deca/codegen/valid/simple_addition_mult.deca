@@ -1,8 +1,9 @@
 // Description :
-//      tests d'une addition simple
+//      tests d'une addition et d'une multiplication
 //
 // Resultats :
 //      6
+//      30
 
 {
     int i = 2;
@@ -10,8 +11,8 @@
     int k = 7;
     println("La valeur de i est: ", i);
     println("Voici la valeur de j: ", j);
-    //println(i);
-    println("La somme de ", i, " et ", j, " vaut :", i+j);
 
-    println("", i, " + ", j, " * ", k, " = ", i+j*k);
+    println("", i, " + ", j, " = ", i+j);
+
+    println("",i, " + ", j, " * ", k, " = ", i+j*k);
 }

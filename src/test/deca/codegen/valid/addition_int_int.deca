@@ -1,0 +1,16 @@
+// Description :
+//      tests d'une addition entre int et int
+//
+// Resultats :
+//      4 + 2 = 6
+
+
+
+{
+    int a = 4;
+    int b = 2;
+    println("La valeur de a est: ", a);
+    println("Voici la valeur de b: ", b);
+
+    println("",a, " + ", b, " = ", a+b);
+}

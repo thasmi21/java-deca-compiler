@@ -1,0 +1,17 @@
+// Description :
+//      Test d'une expression if else if else
+//
+// Resultats :
+//      je suis dans un else if
+
+{
+    if(1==2){
+        println("je ne suis pas au bon endroit");
+    }
+    else if(1==1){
+        println("je suis dans un else if");
+    }
+    else{
+        println("je ne suis pas au bon endroit");
+    }
+}

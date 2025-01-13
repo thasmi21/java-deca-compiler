@@ -1,7 +1,6 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.codegen.GestionRegistre;
-import fr.ensimag.deca.codegen.MemoryOperand;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
@@ -75,6 +74,9 @@ public class DeclVar extends AbstractDeclVar {
     public void decompile(IndentPrintStream s) {
         type.decompile(s);
         varName.decompile(s);
+        if (initialization instanceof Initialization) {
+            s.print("= ");
+        }
         initialization.decompile(s);
         s.println(";");
     }
@@ -91,6 +93,6 @@ public class DeclVar extends AbstractDeclVar {
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         type.prettyPrint(s, prefix, false);
         varName.prettyPrint(s, prefix, false);
-initialization.prettyPrint(s, prefix, true);
+        initialization.prettyPrint(s, prefix, true);
     }
 }

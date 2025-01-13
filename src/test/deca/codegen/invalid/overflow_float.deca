@@ -1,0 +1,14 @@
+// Description :
+//      Test de la surcharge d'un registre avec des floats
+//
+// Resultats :
+//
+
+{
+    float i = 3.40282e+38;
+    while(true){
+        i=i*(2);
+        println("",i);
+    }
+    // ça se bloque a 1.13424e+26
+}

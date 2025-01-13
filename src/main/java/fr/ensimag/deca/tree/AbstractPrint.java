@@ -50,8 +50,15 @@ public abstract class AbstractPrint extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        for (AbstractExpr a : getArguments().getList()) {
-            a.codeGenPrint(compiler);
+        if(getPrintHex()){
+            for (AbstractExpr a : getArguments().getList()) {
+                a.codeGenPrintX(compiler);
+            }
+        }
+        else{
+            for (AbstractExpr a : getArguments().getList()) {
+                a.codeGenPrint(compiler);
+            }
         }
     }
 
@@ -61,7 +68,14 @@ public abstract class AbstractPrint extends AbstractInst {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("print" + getSuffix() +"(" +arguments.decompile()+");");
+        s.print("print" + getSuffix() +"(");
+        int i = 0;
+        for (AbstractExpr a : arguments.getList()) {
+            i+=1;
+            a.decompile(s);
+            if(i!=arguments.getList().size()) {s.print(",");}
+        }
+        s.println(");");
     }
 
     @Override

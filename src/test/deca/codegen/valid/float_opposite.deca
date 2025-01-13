@@ -6,7 +6,6 @@
 
 {
     float a = 25.4;
-    println("Voici la valeur de a: ", a);
 
     println("L'opposé de ", a, " est ", -a);
 }

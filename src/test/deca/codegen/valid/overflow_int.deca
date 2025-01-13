@@ -1,0 +1,13 @@
+// Description :
+//      Test de la surcharge d'un registre
+//
+// Resultats :
+//
+
+//{
+//    int i = 1;
+//    while(true){
+//        i=i*(i+1);
+//        println("",i);
+//    }
+//}

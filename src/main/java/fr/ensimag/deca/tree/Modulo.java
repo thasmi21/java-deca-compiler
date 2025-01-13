@@ -52,6 +52,7 @@ public class Modulo extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, register);
             getRightOperand().evalueExpr(compiler, r1 );
             compiler.addInstruction(new REM(r1, register));
+            compiler.labelDivZero(compiler);
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
@@ -75,6 +76,7 @@ public class Modulo extends AbstractOpArith {
             compiler.addInstruction(new MUL(Register.R0, register));
             GestionRegistre.IncCompteurTempUsage();
         }
+        compiler.labelDivZero(compiler);
         compiler.addInstruction(new WINT());
     }
 

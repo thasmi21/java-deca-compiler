@@ -1,0 +1,14 @@
+// Description :
+//      tests d'une division par zero entre float
+//
+// Resultats :
+//      Erreur: Division by zero
+
+
+{
+    float a = 63.0;
+    float b = 0.0;
+    float z = a / b;
+
+    println("", a, " / ", b, " = ", z);
+}

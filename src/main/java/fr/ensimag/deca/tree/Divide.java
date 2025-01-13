@@ -5,6 +5,8 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
@@ -45,6 +47,7 @@ public class Divide extends AbstractOpArith {
             compiler.addInstruction(new DIV(r1, register));
         }
 
+        compiler.labelDivZero(compiler);
         if(r1 != null){
             r1.setInUse(false);
         }
@@ -61,14 +64,18 @@ public class Divide extends AbstractOpArith {
         }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             GestionRegistre.IncCompteurTempUsage();
+            r1=Register.R0;
 
         }
 
         if (this.getType() instanceof IntType) {
+
             compiler.addInstruction(new QUO(r1, register));
+            compiler.labelDivZero(compiler);
             compiler.addInstruction(new WINT());
         } else if (this.getType() instanceof FloatType) {
-            compiler.addInstruction(new DIV(Register.R0, register));
+            compiler.addInstruction(new DIV(r1, register));
+            compiler.labelDivZero(compiler);
             compiler.addInstruction(new WFLOAT());
         }
 

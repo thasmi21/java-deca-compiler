@@ -2,7 +2,9 @@
 //      tests d'une addition entre float
 //
 // Resultats :
-//      5.00000e+00
+//      2.50000e+00 + 2.50000e+00 = 5.00000e+00
+
+
 
 {
     float a = 2.5;
@@ -10,6 +12,5 @@
     println("La valeur de a est: ", a);
     println("Voici la valeur de b: ", b);
 
-    println("La somme de ", a, " et ", b, " vaut :", a+b);
-    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
+    println("",a, " + ", b, " = ", a+b);
 }

@@ -149,6 +149,7 @@ inst returns[AbstractInst tree]
         }
     | SEMI {
         $tree = new NoOperation();
+        setLocation($tree, $SEMI);
         }
     | PRINT OPARENT list_expr CPARENT SEMI {
             assert($list_expr.tree != null);
@@ -511,16 +512,15 @@ literal returns[AbstractExpr tree]
         }
     ;
 
-
 ident returns[AbstractIdentifier tree]
     :
      IDENT OCROCHET CCROCHET {
-             $tree = new Identifier(SymbolTable.create($IDENT.text+$OCROCHET.text+$CCROCHET.text));
+             $tree = new Identifier(getDecacCompiler().createSymbol($IDENT.text+$OCROCHET.text+$CCROCHET.text));
              setLocation($tree, $IDENT);
            }
      |
      IDENT  {
-        $tree = new Identifier(SymbolTable.create($IDENT.text));
+        $tree = new Identifier(getDecacCompiler().createSymbol($IDENT.text));
         setLocation($tree,$IDENT);
         }
 

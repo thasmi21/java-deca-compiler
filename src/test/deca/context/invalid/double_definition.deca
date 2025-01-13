@@ -1,0 +1,9 @@
+// Descritpion:
+//      On définie deux fois la même variable
+//
+// Résultats:
+//      Ligne 8:
+
+{
+    int x, x=3;
+}

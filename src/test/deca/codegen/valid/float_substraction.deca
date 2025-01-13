@@ -10,6 +10,5 @@
     println("La valeur de a est: ", a);
     println("Voici la valeur de b: ", b);
 
-    println("La différence entre ", a, " et ", b, " vaut :", a-b);
-    //println("", i, " + ", j, " * ", k, " = ", i+j*k);
+    println("", a, " - ", b, " = ", a-b);
 }

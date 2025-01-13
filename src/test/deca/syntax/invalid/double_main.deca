@@ -1,0 +1,12 @@
+// Descritpion:
+//      Déclaration de Deux main
+//
+// Résultats:
+//
+
+{
+    int a = 1;
+}
+{
+    float b = 1.0;
+}

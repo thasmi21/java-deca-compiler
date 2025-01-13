@@ -1,0 +1,12 @@
+// Description :
+//      tests d'une soustraction entre int et float
+//
+// Resultats :
+//      1.00000e+00
+
+{
+    int x = 6;
+    float y = 5.0;
+
+    println("", x, " - ", y, " = ", x-y);
+}

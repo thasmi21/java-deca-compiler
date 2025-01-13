@@ -1,0 +1,34 @@
+// Description :
+//      Test d'une expression if else if else
+//
+// Resultats :
+//      Egalité ! a inférieur à c même strictement. a est diférent de c mais égale à b.
+
+{
+    int a = 5;
+    float b = 5.0;
+    float c=6.0;
+
+    if (a == b) {
+        print("Egalité ! ");
+    } else {
+        println("Différent ! ");
+    }
+
+
+    if(a<=c || a<c){
+        print("a inférieur à c ");
+
+        if(a<c){
+            println("même strictement.");
+        }
+    }
+
+    if(a!=c && a==b){
+        print("a est diférent de c");
+        if(a==b){
+            println(" mais égale à b.");
+        }
+    }
+
+}

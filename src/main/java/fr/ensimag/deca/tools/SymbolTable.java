@@ -16,7 +16,7 @@ import java.util.Map;
  * @date 01/01/2025
  */
 public class SymbolTable {
-    private static Map<String, Symbol> map = new HashMap<String, Symbol>();
+    private  Map<String, Symbol> map = new HashMap<String, Symbol>();
 
     /**
      * Create or reuse a symbol.
@@ -24,7 +24,7 @@ public class SymbolTable {
      * If a symbol already exists with the same name in this table, then return
      * this Symbol. Otherwise, create a new Symbol and add it to the table.
      */
-    public static Symbol create(String name) {
+    public  Symbol create(String name) {
 
         if(map.containsKey(name)){
             //System.out.println("Reusing symbol "+name);  // Debugging
