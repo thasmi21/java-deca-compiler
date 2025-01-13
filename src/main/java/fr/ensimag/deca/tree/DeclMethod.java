@@ -27,6 +27,7 @@ public class DeclMethod extends AbstractBody {
         this.params = params;
         this.declVar = declVar;
         this.inst = inst;
+        this.setLocation(type.getLocation());
     }
 
 
@@ -35,15 +36,26 @@ public class DeclMethod extends AbstractBody {
     protected void verifyClassMembers(DecacCompiler compiler,
                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type t = this.type.verifyType(compiler);
-        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
+        params.verifyParams(compiler,new EnvironmentExp(null));
+        Signature signature= new Signature();
+        for(AbstractParams param:params.getList()){
+            if(param instanceof Params){
+                Params p = (Params)param;
+                signature.add(p.getType());
+            }
+            else{
+                throw new ContextualError("l'argument n'est pas un param",getLocation());
+            }
+        }
+        MethodDefinition methodDefinition = new MethodDefinition(t,getLocation(),signature,currentClass.getNumberOfMethods());
+        currentClass.incNumberOfMethods();
         try {
-            localEnv.declare(this.varName.getName(), varDef);
+            localEnv.declare(this.varName.getName(), methodDefinition);
         } catch(EnvironmentExp.DoubleDefException e) {
             throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
         }
-        this.varName.setDefinition(varDef);
+        this.varName.setDefinition(methodDefinition);
         this.varName.setType(t);
-        params.verifyParams(compiler,new EnvironmentExp(null));
     }
 
     @Override

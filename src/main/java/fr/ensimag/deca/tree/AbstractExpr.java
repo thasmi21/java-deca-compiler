@@ -114,13 +114,15 @@ public abstract class AbstractExpr extends AbstractInst {
         Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
 
         // Vérification : une expression de type void ne peut pas être utilisée comme instruction
+        //pas sur à vérifier pose des problème à la construction des fonctions
+        /*
         if (exprType.isVoid()) {
             throw new ContextualError(
                     "Une expression de type void ne peut pas être utilisée comme instruction.",
                     this.getLocation()
             );
         }
-
+        */
     }
 
     /**

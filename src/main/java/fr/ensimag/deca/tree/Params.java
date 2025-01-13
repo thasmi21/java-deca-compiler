@@ -66,4 +66,9 @@ public class Params extends AbstractParams {
         type.prettyPrint(s, prefix, false);
         varName.prettyPrint(s, prefix, true);
     }
+
+
+    public Type getType() {
+        return varName.getType();
+    }
 }

@@ -418,14 +418,16 @@ select_expr returns[AbstractExpr tree]
     | e1=select_expr DOT i=ident {
             assert($e1.tree != null);
             assert($i.tree != null);
-            $tree=new Dot($e1.tree,$i.tree);
+
         }
         (o=OPARENT args=list_expr CPARENT {
             // we matched "e1.i(args)"
             assert($args.tree != null);
+            $tree=new Dot($e1.tree,$i.tree,$args.tree);
         }
         | /* epsilon */ {
-            // we matched "e.i"
+            $tree=new Dot($e1.tree,$i.tree);
+            setLocation($tree,$i.start);
         }
         )
     ;
@@ -538,6 +540,7 @@ list_classes returns[ListDeclClass tree]
     :
       (c1=class_decl {
         $tree.add($c1.tree);
+
         }
       )*
     ;
@@ -547,12 +550,14 @@ class_decl returns[AbstractDeclClass tree]
         assert($name.tree!=null);
         assert($class_body.tree!=null);
         $tree=new DeclClass($name.tree,$superclass.tree,$class_body.tree);
+        setLocation($tree,$CLASS);
         }
     ;
 
 class_extension returns[AbstractIdentifier tree]
     : EXTENDS ident {
         $tree= new Identifier(SymbolTable.create($ident.text));
+        setLocation($tree,$EXTENDS);
         }
     | /* epsilon */ {
         }
@@ -562,7 +567,9 @@ class_body returns[ListBody tree]
     @init{
           $tree = new ListBody();
     }
-    : (m=decl_method[$tree]
+    : (m=decl_method[$tree]{
+        setLocation($tree,$m.start);
+    }
       | decl_field_set[$tree]
       )*
     ;
@@ -607,10 +614,14 @@ decl_field[Visibility v,AbstractIdentifier t] returns[AbstractDeclField tree]
 
 decl_method[ListBody l]
     : type ident OPARENT params=list_params CPARENT (block {
-        $l.add(new DeclMethod($type.tree,$ident.tree,$params.tree,$block.decls,$block.insts));
+         DeclMethod m = new DeclMethod($type.tree,$ident.tree,$params.tree,$block.decls,$block.insts);
+         setLocation(m, $type.start);
+        $l.add(m);
         }
       | ASM OPARENT code=multi_line_string CPARENT SEMI {
-        $l.add(new ASM($code.text,$code.location));
+        ASM as = new ASM($code.text,$code.location);
+        setLocation(as,$ASM);
+        $l.add(as);
         }
       )
     ;

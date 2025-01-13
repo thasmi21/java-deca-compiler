@@ -14,10 +14,18 @@ public class Dot extends AbstractLValue {
 
     private AbstractExpr select_expr;
     private AbstractIdentifier identifier;
+    private ListExpr args;
 
     public Dot(AbstractExpr select_expr, AbstractIdentifier identifier) {
         this.select_expr = select_expr;
         this.identifier = identifier;
+        this.args = null;
+    }
+
+    public Dot(AbstractExpr select_expr,AbstractIdentifier identifier,ListExpr args) {
+        this.select_expr = select_expr;
+        this.identifier = identifier;
+        this.args = args;
     }
 
 
@@ -26,14 +34,40 @@ public class Dot extends AbstractLValue {
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
         Type type=select_expr.verifyExpr(compiler, localEnv, currentClass);
-        if(type instanceof ClassType){
+        if(type.isClass()){
             ClassType classType = (ClassType)type;
             EnvironmentExp environmentExp= classType.getDefinition().getMembers();
             ExpDefinition expDefinition = environmentExp.get(identifier.getName());
             if (expDefinition != null) {
-                Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
-                this.setType(type1);
-                return type1;
+                if(expDefinition.isField()){
+                    Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                    this.setType(type1);
+                    return type1;
+                }
+                else if(expDefinition.isMethod()) {
+                    MethodDefinition methodDefinition = (MethodDefinition)expDefinition;
+                    int n=methodDefinition.getSignature().size();
+                    if(n!=args.getList().size()){
+                        throw new ContextualError(select_expr.prettyPrint() + "n'a pas le bon nombre d'argument " + identifier.prettyPrint(),getLocation());
+                    }
+                    Type type2;
+                    int i=0;
+                    for(AbstractExpr arg : args.getList()) {
+                        type2=arg.verifyExpr(compiler, localEnv, classType.getDefinition());
+                        if(type2.sameType(methodDefinition.getSignature().paramNumber(i))){
+                            i++;
+                        }
+                        else{
+                            throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                        }
+                    }
+                    Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                    this.setType(type1);
+                    return type1;
+                }
+                else{
+                    throw new ContextualError(select_expr.prettyPrint() + "n'est pas une méthode ou un field " + identifier.prettyPrint(),getLocation());
+                }
             }
             else{
                 throw new ContextualError(select_expr.prettyPrint() + "n'a pas d'argument " + identifier.prettyPrint(),getLocation());
@@ -62,7 +96,13 @@ public class Dot extends AbstractLValue {
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         select_expr.prettyPrint(s,prefix,false);
-        identifier.prettyPrint(s,prefix,true);
+        if(args != null) {
+            identifier.prettyPrint(s,prefix,false);
+            args.prettyPrint(s,prefix,true);
+        }
+        else{
+            identifier.prettyPrint(s,prefix,true);
+        }
     }
 
 
