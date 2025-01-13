@@ -1,0 +1,10 @@
+// Descritpion:
+//      Déclaration d'une variable de type void
+//
+// Resultats:
+//      Ligne 9: La variable ne peut pas être de type void
+
+{
+    boolean verif = true;
+    void car = 3;
+}
