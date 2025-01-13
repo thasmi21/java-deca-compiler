@@ -118,7 +118,7 @@ public class CompilerOptions {
                     parallel = true;
                 }
                 else{
-                    throw new CLIException("l'option -r n'est utilisable qu'une seule fois");
+                    throw new CLIException("l'option -P n'est utilisable qu'une seule fois");
                 }
             }
             else if(args[i].equals("-n")) {
