@@ -43,6 +43,10 @@ public class StringLiteral extends AbstractStringLiteral {
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new WSTR(new ImmediateString(value)));
     }
+    @Override
+    protected void codeGenPrintX(DecacCompiler compiler) {
+        compiler.addInstruction(new WSTR(new ImmediateString(value)));
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {

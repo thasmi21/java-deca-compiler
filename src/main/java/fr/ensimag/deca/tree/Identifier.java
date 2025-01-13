@@ -199,8 +199,21 @@ public class Identifier extends AbstractIdentifier {
             compiler.addInstruction(new LOAD(op, Register.getR(1)));
             compiler.addInstruction(new WFLOAT());
         }
+    }
 
-
+    @Override
+    public void codeGenPrintX(DecacCompiler compiler){
+        //on recupere sa valeur et on charge
+        //Mais si c'est une classe par exemple il faut gérer cela.
+        //Pour l'instant j'essaie jeuste de faire le cas ou c'est un int
+        DAddr op = this.getExpDefinition().getOperand();
+        if (this.getType() instanceof FloatType) {
+            compiler.addInstruction(new LOAD(op, Register.getR(1)));
+            compiler.addInstruction(new WFLOATX());
+        }
+        else {
+            throw new RuntimeException("on ne peut print qu'un float en hexadecimal !");
+        }
     }
 
     @Override

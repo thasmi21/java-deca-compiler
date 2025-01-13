@@ -97,5 +97,10 @@ public class IntLiteral extends AbstractExpr {
         compiler.addInstruction(new LOAD(this.getValue(),Register.R1));
         compiler.addInstruction(new WINT());
     }
+    @Override
+    protected void codeGenPrintX(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(this.getValue(),Register.R1));
+        compiler.addInstruction(new WINT());
+    }
 
 }
