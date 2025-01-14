@@ -63,6 +63,23 @@ public class Modulo extends AbstractOpArith {
     }
 
     @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if(r1 != null){
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
+            compiler.addInstruction(new REM(r1, register));
+            r1.setInUse(false);
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstruction(new MUL(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
+        }
+        compiler.labelDivZero(compiler);
+    }
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();

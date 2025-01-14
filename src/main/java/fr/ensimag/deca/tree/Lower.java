@@ -89,6 +89,24 @@ public class Lower extends AbstractOpIneq {
     }
 
     @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        GPRegister r2 = GestionRegistre.obtainFreeRegister();
+
+        getLeftOperand().evalueExpr(compiler, r1);
+        getRightOperand().evalueExpr(compiler, r2);
+        Label E = new Label(this.toString().replace('@', '_')+"pt");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_pt");
+        compiler.addInstruction(new CMP(r2, r1));
+        compiler.addInstruction(new BLT(E));
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        compiler.addLabel(fin);
+        r1.setInUse(false);
+        r2.setInUse(false);
+    }
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         GPRegister r2 = GestionRegistre.obtainFreeRegister();

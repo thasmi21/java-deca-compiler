@@ -54,6 +54,26 @@ public class Divide extends AbstractOpArith {
     }
 
     @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExpr(compiler, register );
+            getRightOperand().evalueExpr(compiler, r1 );
+
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            GestionRegistre.IncCompteurTempUsage();
+            r1=Register.R0;
+
+        }
+        compiler.labelDivZero(compiler);
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+    }
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();

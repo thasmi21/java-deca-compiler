@@ -96,6 +96,23 @@ public class Not extends AbstractUnaryExpr {
     protected String getOperatorName() {
         return "!";
     }
+
+    @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+
+        getOperand().evalueExpr(compiler, r1);
+
+        Label E = new Label(this.toString().replace('@', '_')+"pt");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_pt");
+        compiler.addInstruction(new CMP(0, r1));
+        compiler.addInstruction(new BNE(E));
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        compiler.addLabel(fin);
+        r1.setInUse(false);
+    }
+
     @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
