@@ -4,6 +4,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
+import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
@@ -43,11 +44,33 @@ public class Plus extends AbstractOpArith {
     }
 
     @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null) {
+            getLeftOperand().evalueExpr(compiler, r1);
+            getRightOperand().evalueExpr(compiler, register);
+            compiler.addInstruction(new ADD(r1, register));
+        } else {
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstruction(new ADD(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
+        }
+
+        if (r1 != null) {
+            r1.setInUse(false);
+        }
+    }
+
+
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler) {
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         if (this.getLeftOperand() instanceof ArrayLiteral && this.getRightOperand() instanceof ArrayLiteral) {
             Array tableauDroit = ((ArrayLiteral) this.getRightOperand()).getArray();
+
             Array tableauGauche = ((ArrayLiteral) this.getLeftOperand()).getArray();
             int tailleTableauDroit = tableauDroit.getSize();
             int tailleTableauGauche = tableauGauche.getSize();

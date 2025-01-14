@@ -1,15 +1,12 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.codegen.GestionRegistre;
-import fr.ensimag.deca.codegen.MemoryOperand;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
-import fr.ensimag.ima.pseudocode.instructions.ADDSP;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
@@ -84,29 +81,32 @@ public class DeclVar extends AbstractDeclVar {
         }
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
         if(dimTotal>0) {
-            if (initialization instanceof Initialization && ((Initialization) initialization).getExpression() instanceof ArrayLiteral) {
-                ArrayDefinition arrayDef = new ArrayDefinition(arrayType, this.getLocation(), ((ArrayLiteral) ((Initialization) initialization).getExpression()).getArray());
-                try {
-                    localEnv.declare(this.varName.getName(), arrayDef);
-                } catch(EnvironmentExp.DoubleDefException e) {
-                    throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
-                }
-                this.varName.setName(compiler.createSymbol(varNameWoBrackets));
-                this.varName.setDefinition(arrayDef);
-                this.varName.setType(arrayType);
-            } else {
-                VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
-                try {
-                    localEnv.declare(this.varName.getName(), varDef);
-                } catch(EnvironmentExp.DoubleDefException e) {
-                    throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
-                }
-                this.varName.setName(compiler.createSymbol(varNameWoBrackets));
-                this.varName.setDefinition(varDef);
-                this.varName.setType(arrayType);
+            ArrayDefinition arrayDef;
+            if (initialization instanceof Initialization) {
+                arrayDef = new ArrayDefinition(arrayType, this.getLocation(), ((Initialization) initialization));
             }
+            else{
+                arrayDef = new ArrayDefinition(arrayType, this.getLocation(), null);
+            }
+            try {
+                localEnv.declare(this.varName.getName(), arrayDef);
+            } catch (EnvironmentExp.DoubleDefException e) {
+                throw new ContextualError("La variable " + varName.getName() + " est déjà définie !", this.getLocation());
+            }
+            this.varName.setName(compiler.createSymbol(varNameWoBrackets));
+            this.varName.setDefinition(arrayDef);
+            this.varName.setType(arrayType);
+        }else {
+            VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
+            try {
+                localEnv.declare(this.varName.getName(), varDef);
+            } catch(EnvironmentExp.DoubleDefException e) {
+                throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+            }
+            this.varName.setName(compiler.createSymbol(varNameWoBrackets));
+            this.varName.setDefinition(varDef);
+            this.varName.setType(arrayType);
         }
-
     }
 
     @Override
@@ -115,7 +115,7 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
         if(initialization instanceof Initialization){
-            if(!(((Initialization) initialization).getExpression() instanceof ArrayLiteral)){
+            if(!(((Initialization) initialization).getExpression().getType() instanceof ArrayType)){
                 //prendre un registre libre;
                 //evaluer l'expression et charger dans le registre
                 //puis affecter

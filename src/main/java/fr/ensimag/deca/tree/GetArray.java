@@ -119,7 +119,7 @@ public class GetArray extends Identifier {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         int indice = listIndex.get(0).getValue();
         ArrayDefinition arrayDef = (ArrayDefinition) identifier.getExpDefinition();
-        int size = arrayDef.getArray().getSize();
+        int size = ((ArrayLiteral)arrayDef.getInitialization().getExpression()).getArray().getSize();
         if(!(0<=indice && indice < size)) {
             throw new RuntimeException("Index out of bounds");
         }

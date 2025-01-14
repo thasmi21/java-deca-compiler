@@ -130,9 +130,10 @@ public class Assign extends AbstractBinaryExpr {
         // On y stock la valeur contenue dans l'opérand droite
         getRightOperand().evalueExpr(compiler, reg);
         if(getLeftOperand() instanceof GetArray){
+            DAddr idAdresse= ((GetArray) getLeftOperand()).getIdentifier().getExpDefinition().getOperand();
             GPRegister regGet = GestionRegistre.obtainFreeRegister();
             getLeftOperand().evalueExpr(compiler, regGet);
-            compiler.addInstruction(new STORE(reg, new RegisterOffset(0, regGet)));
+            compiler.addInstruction(new STORE(reg, idAdresse));
         }
         else{
             regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
