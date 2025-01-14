@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une soustraction entre int et int
+//
+//
+
+
+
+{
+    6 - 1;
+}

@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une addition entre int et int
+//
+//
+
+
+
+{
+    1+2;
+}

@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une addition entre float et float
+//
+
+
+
+
+{
+    1.0+4.0;
+}
