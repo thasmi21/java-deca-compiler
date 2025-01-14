@@ -50,5 +50,9 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         LOG.debug("verify listClass: end");
     }
 
+    public void codeGenListClass(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("To be implemented");
+        //int nb_class = Program.getClasses();
+    }
 
 }
