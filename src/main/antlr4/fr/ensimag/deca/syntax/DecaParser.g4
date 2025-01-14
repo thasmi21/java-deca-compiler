@@ -495,6 +495,7 @@ literal returns[AbstractExpr tree]
             System.err.print(tokenLocation($fd));
             System.err.print(e.getMessage());
         }
+        setLocation($tree, $fd);
     }
     | STRING {
         String letexte = $STRING.text.substring(1, $STRING.text.length() - 1);
