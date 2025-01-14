@@ -48,7 +48,14 @@ public class Program extends AbstractProgram {
     @Override
     public void codeGenProgram(DecacCompiler compiler) {
         // A FAIRE: compléter ce squelette très rudimentaire de code
-        compiler.addComment("Declaration des classes");
+        // Il faudrait une méthode qui calcule de combien on doit ADDSP
+        // On a : ADDSP = nb_var_glob + pour chaque class ( @table_super_class + @Code_methods_Object.equals + @Code_method_de_la_class)
+        int toAddStack = compiler.toADDSP(compiler);
+        compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
+        // 3 varGlo + 2classObject + 2 ClassSimple
+        compiler.addComment("--------------------------------------------------");
+        compiler.addComment("       Construction des tables des methodes       ");
+        compiler.addComment("--------------------------------------------------");
         classes.codeGenListClass(compiler);
         compiler.addComment("Main program");
         main.codeGenMain(compiler);

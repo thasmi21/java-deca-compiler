@@ -60,25 +60,21 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
 
     public void codeGenListClass(DecacCompiler compiler) {
         //throw new UnsupportedOperationException("To be implemented");
-        // Il faudrait une méthode qui calcule de combien on doit ADDSP
-        // On a : ADDSP = nb_var_glob + pour chaque class ( @table_super_class + @Code_methods_Object.equals + @Code_method_de_la_class)
-        compiler.toADDSP(compiler);
-        compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
-        // 3 varGlo + 2classObject + 2 ClassSimple
         // On commence par construire la table des méthodes de Object quoi qu'il arrive
         compiler.addComment("Construction de la table des methodes de Object");
-        compiler.addInstruction(new LOAD(null, Register.R0));
+        compiler.addInstruction(new LOAD(new NullOperand(), Register.R0));
         compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(1, Register.GB)));
         compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.Object.equals")), Register.R0));
         compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(2, Register.GB)));
 
         for (AbstractDeclClass c : getList()) {
-            //TODO
+            // Ceci correspond à la passe 1
+            declareTableMethode(compiler,c);
         }
-        throw new UnsupportedOperationException("Not Finish yet");
+        //throw new UnsupportedOperationException("Not Finish yet");
     }
 
-    public void declareTableMethode(DecacCompiler compiler, AbstractDeclClass c) throws ContextualError {
+    public void declareTableMethode(DecacCompiler compiler, AbstractDeclClass c) {
         // Pour class on veut récupérer si elle en a ses super class
         // Si elle n'en a pas sa super class va être Object
         String debComment = "Construction de la table des méthode de ";
@@ -89,10 +85,10 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
             TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get(((DeclClass) c).getSymbol());
             if(nom instanceof ClassDefinition){
                 ClassDefinition classDef = (ClassDefinition) nom;
-                String endComment = classDef.getNature(); // J'espère que cela récupère le nom de la classe
+                String endComment = String.valueOf(classDef.getType()); // J'espère que cela récupère le nom de la classe
                 compiler.addComment(debComment + endComment);
                 ClassDefinition parent = classDef.getSuperClass();
-                if (parent.getSuperClass() == null) { // Si la classe n'hérite que de Object
+                if (parent == null) { // Si la classe n'hérite que de Object
                     RegisterOffset regOff =  new RegisterOffset(1, Register.GB);
                     // Si on rentre dans cette boucle c'est que la class c n'hérite que de Object
                     compiler.addInstruction(new LEA(regOff,Register.R0));
