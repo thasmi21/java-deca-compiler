@@ -118,6 +118,11 @@ public class GetArray extends Identifier {
     public void codeGenPrint(DecacCompiler compiler) {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         int indice = listIndex.get(0).getValue();
+        ArrayDefinition arrayDef = (ArrayDefinition) identifier.getExpDefinition();
+        int size = arrayDef.getArray().getSize();
+        if(!(0<=indice && indice < size)) {
+            throw new RuntimeException("Index out of bounds");
+        }
         DAddr idAdresse=  identifier.getExpDefinition().getOperand();
         RegisterOffset identifierOffset = (RegisterOffset) idAdresse;
 

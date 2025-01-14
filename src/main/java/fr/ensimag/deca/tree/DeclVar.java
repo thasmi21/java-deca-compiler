@@ -75,8 +75,6 @@ public class DeclVar extends AbstractDeclVar {
                 compiler.getEnvironmentType().setTypeDefinition(arraySymbol, new TypeDefinition(arrayType, getLocation()));
             }
         }
-        VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
-
         if (!(initialization instanceof Initialization && ((Initialization) initialization).getExpression() instanceof ArrayLiteral && ((ArrayLiteral) ((Initialization) initialization).getExpression()).implicitDeclaration())){
             initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
         }
@@ -85,14 +83,30 @@ public class DeclVar extends AbstractDeclVar {
             initialization.verifyInitialization(compiler, arrayType, localEnv, currentClass);
         }
         String varNameWoBrackets = withoutBrackets(varName.getName().getName());
-        try {
-            localEnv.declare(this.varName.getName(), varDef);
-        } catch(EnvironmentExp.DoubleDefException e) {
-            throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+        if(dimTotal>0) {
+            if (initialization instanceof Initialization && ((Initialization) initialization).getExpression() instanceof ArrayLiteral) {
+                ArrayDefinition arrayDef = new ArrayDefinition(arrayType, this.getLocation(), ((ArrayLiteral) ((Initialization) initialization).getExpression()).getArray());
+                try {
+                    localEnv.declare(this.varName.getName(), arrayDef);
+                } catch(EnvironmentExp.DoubleDefException e) {
+                    throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+                }
+                this.varName.setName(compiler.createSymbol(varNameWoBrackets));
+                this.varName.setDefinition(arrayDef);
+                this.varName.setType(arrayType);
+            } else {
+                VariableDefinition varDef = new VariableDefinition(arrayType, this.getLocation());
+                try {
+                    localEnv.declare(this.varName.getName(), varDef);
+                } catch(EnvironmentExp.DoubleDefException e) {
+                    throw new ContextualError("La variable "+varName.getName()+" est déjà définie !",this.getLocation());
+                }
+                this.varName.setName(compiler.createSymbol(varNameWoBrackets));
+                this.varName.setDefinition(varDef);
+                this.varName.setType(arrayType);
+            }
         }
-        this.varName.setName(compiler.createSymbol(varNameWoBrackets));
-        this.varName.setDefinition(varDef);
-        this.varName.setType(arrayType);
+
     }
 
     @Override
