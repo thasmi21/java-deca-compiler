@@ -59,6 +59,16 @@ public class EnvironmentType {
         
     }
 
+//    private int nbClasses;
+//
+//    public int getNbClasses() {
+//        return nbClasses;
+//    }
+//
+//    public void setNbClasses(int nbClasses) {
+//        this.nbClasses = nbClasses;
+//    }
+
     public void putClass(Symbol symbol,Symbol extend,Location location)throws ContextualError{
         if (S.contains(symbol) || !S.contains(extend)) {
             throw new ContextualError("Cannot put a type of " + symbol + " and extend " + extend,location);
@@ -68,6 +78,7 @@ public class EnvironmentType {
             S.add(symbol);
             ClassDefinition classDef = (ClassDefinition)type;
             envTypes.put(symbol, new ClassType(symbol,location,classDef).getDefinition());
+            //setNbClasses(getNbClasses()+1); // On a une classe de plus
         }
         else {
             throw new ContextualError("Cannot put a type of " + symbol + " and extend " + extend,location);
@@ -80,6 +91,7 @@ public class EnvironmentType {
         }
         S.add(symbol);
         envTypes.put(symbol, new ClassType(symbol,location,OBJET.getDefinition()).getDefinition());
+        //setNbClasses(getNbClasses()+1); // On ajoute une nouvelle classe
     }
 
     public EnvironmentExp getEnvironmentMain() {

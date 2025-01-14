@@ -298,4 +298,17 @@ public class DecacCompiler {
         }
         compiler.setlabelDefined(true);
     }
+
+    /**
+     * Method that calculate how much we need to add to the SP
+     * @param compiler
+     * @return The int value to add to the stack pointer at the begining of a program
+     */
+    public int toADDSP(DecacCompiler compiler){
+        int nbVarGlo = compiler.getEnvironmentType().getEnvironmentMain().getLocalEnv().size();
+        //int nbVarGlo = this.envType.getEnvironmentMain().getLocalEnv().size();
+        //System.out.println("nbVarGlo = " + nbVarGlo);
+        //throw new UnsupportedOperationException("Not finish yet");
+        return nbVarGlo;
+    }
 }

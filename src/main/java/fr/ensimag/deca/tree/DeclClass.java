@@ -3,6 +3,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.deca.tools.SymbolTable;
 import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
@@ -18,6 +19,10 @@ public class DeclClass extends AbstractDeclClass {
     final private AbstractIdentifier className;
     final private AbstractIdentifier extendsName;
     final private ListBody classBody;
+
+    public SymbolTable.Symbol getSymbol() {
+        return className.getName();
+    }
 
     public DeclClass(AbstractIdentifier className, AbstractIdentifier extendsName, ListBody classBody) {
         Validate.notNull(className);
@@ -58,6 +63,11 @@ public class DeclClass extends AbstractDeclClass {
         }
         className.setDefinition(varDef);
         className.setType(type);
+    }
+
+    @Override
+    protected void codeGenDeclClass(DecacCompiler compiler) {
+        // Pour chaque class, on doit définir sa table des méthodes dans la passe 1
     }
 
     @Override
