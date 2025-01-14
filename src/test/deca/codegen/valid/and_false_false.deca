@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une and entre false et false
+//
+//
+
+
+
+{
+    false && false;
+}
