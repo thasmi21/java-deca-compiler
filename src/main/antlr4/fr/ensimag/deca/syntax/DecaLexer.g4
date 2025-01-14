@@ -17,6 +17,8 @@ options {
 
 fragment STRING_CAR: ~ ('"' | '\\' );
 
+
+
 ASM : 'asm';
 
 CLASS : 'class';
@@ -150,4 +152,6 @@ MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 
 FILENAME : (LETTER | DIGIT | '.' | '-' | '_')+;
 
-INCLUDE : '#include' (' ')* '"' FILENAME '"';
+INCLUDE : '#include' (' ')* '"' FILENAME '"' {
+    doInclude(getText().substring(10).trim().replace("\"", ""));
+};
