@@ -168,6 +168,10 @@ public abstract class AbstractExpr extends AbstractInst {
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+
     @Override
     protected void decompileInst(IndentPrintStream s) {
         decompile(s);

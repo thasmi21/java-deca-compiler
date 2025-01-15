@@ -70,8 +70,16 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         for (AbstractDeclClass declClass : getList()) {
             // Ceci correspond à la passe 1
             declClass.declareTableMethode(compiler);
-            declClass.codeGenDeclClass(compiler);
+            //declClass.codeGenDeclClass(compiler);
         }
         //throw new UnsupportedOperationException("Not Finish yet");
+    }
+
+    public void codeGenPass2(DecacCompiler compiler){
+        compiler.getToExecuteEnd().add(new Line("debut initialisation des Champs des classes"));
+        for (AbstractDeclClass declClass : getList()) {
+            //on prend chaque classe et on genere son init et son codeGen
+            declClass.codeGenDeclClass(compiler);
+        }
     }
 }
