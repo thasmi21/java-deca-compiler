@@ -30,7 +30,9 @@ public class DeclMethod extends AbstractBody {
         this.setLocation(type.getLocation());
     }
 
-
+    public AbstractIdentifier getVarName(){
+        return this.varName;
+    }
 
     @Override
     protected void verifyClassMembers(DecacCompiler compiler,
