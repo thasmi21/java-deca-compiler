@@ -41,13 +41,25 @@ public class Dot extends AbstractLValue {
             if (expDefinition != null) {
                 if(expDefinition.isField()){
                     FieldDefinition fieldDefinition = (FieldDefinition)expDefinition;
-                    if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) || currentClass.getType().isSubClassOf(classType) ||classType.sameType(currentClass.getType())){
-                        Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
-                        this.setType(type1);
-                        return type1;
+                    if(currentClass==null){
+                        if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) ){
+                            Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                            this.setType(type1);
+                            return type1;
+                        }
+                        else{
+                            throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                        }
                     }
                     else{
-                        throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                        if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) || currentClass.getType().isSubClassOf(classType) ||classType.sameType(currentClass.getType())){
+                            Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                            this.setType(type1);
+                            return type1;
+                        }
+                        else{
+                            throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                        }
                     }
                 }
                 else if(expDefinition.isMethod()) {

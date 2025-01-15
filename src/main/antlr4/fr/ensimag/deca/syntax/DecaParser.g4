@@ -182,7 +182,7 @@ inst returns[AbstractInst tree]
         }
     | RETURN expr SEMI {
             assert($expr.tree != null);
-            $tree=$expr.tree;
+            $tree=new Return($expr.tree);
             setLocation($tree,$RETURN);
         }
     ;
@@ -424,6 +424,7 @@ select_expr returns[AbstractExpr tree]
             // we matched "e1.i(args)"
             assert($args.tree != null);
             $tree=new Dot($e1.tree,$i.tree,$args.tree);
+            setLocation($tree,$i.start);
         }
         | /* epsilon */ {
             $tree=new Dot($e1.tree,$i.tree);
@@ -652,5 +653,6 @@ multi_line_string returns[String text, Location location]
 param returns[AbstractParams tree]
     : type ident {
         $tree=new Params($type.tree,$ident.tree);
+        setLocation($tree,$ident.start);
         }
     ;
