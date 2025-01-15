@@ -90,5 +90,6 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
             //on prend chaque classe et on genere son init et son codeGen
             declClass.codeGenDeclClass(compiler);
         }
+        compiler.getToExecuteEnd().add(new Line("fin initialisation des Champs et methodes des classes"));
     }
 }
