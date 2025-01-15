@@ -45,6 +45,15 @@ public class DecacCompiler {
     private EnvironmentType envType = new EnvironmentType(this);
     private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
     private boolean labelDefined = false;
+    private int nbVarGlo = 0;
+
+    public int getNbVarGlo() {
+        return nbVarGlo;
+    }
+
+    public void IncrNbVarGlo() {
+        this.nbVarGlo++;
+    }
 
     public boolean getlabelDefined() {
         return labelDefined;
@@ -305,10 +314,14 @@ public class DecacCompiler {
      * @return The int value to add to the stack pointer at the begining of a program
      */
     public int toADDSP(DecacCompiler compiler){
-        int nbVarGlo = compiler.getEnvironmentType().getEnvironmentMain().getLocalEnv().size();
+        int result = 0;
+        //int nbVarGlo = compiler.getEnvironmentType().getEnvironmentMain().getLocalEnv().size();
+        int nbVarGlo = compiler.getNbVarGlo();
+        result += nbVarGlo;
+        //int nbVarGlo = compiler.environmentType.getEnvironmentMain().getLocalEnv().size();
         //int nbVarGlo = this.envType.getEnvironmentMain().getLocalEnv().size();
         //System.out.println("nbVarGlo = " + nbVarGlo);
         //throw new UnsupportedOperationException("Not finish yet");
-        return nbVarGlo;
+        return result;
     }
 }

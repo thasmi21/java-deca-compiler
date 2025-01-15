@@ -58,7 +58,7 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         LOG.debug("verify listClass: end");
     }
 
-    public void codeGenListClass(DecacCompiler compiler) {
+    public void codeGenListDeclClass(DecacCompiler compiler) {
         //throw new UnsupportedOperationException("To be implemented");
         // On commence par construire la table des méthodes de Object quoi qu'il arrive
         compiler.addComment("Construction de la table des methodes de Object");
@@ -73,6 +73,15 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
             //declClass.codeGenDeclClass(compiler);
         }
         //throw new UnsupportedOperationException("Not Finish yet");
+    }
+
+    public void toAddStack(DecacCompiler compiler) {
+        int result = 0;
+        int nbVarGlo = compiler.getNbVarGlo();
+        result = result + nbVarGlo;
+        for (AbstractDeclClass declClass : getList()) {
+            result = result + 2;
+        }
     }
 
     public void codeGenPass2(DecacCompiler compiler){

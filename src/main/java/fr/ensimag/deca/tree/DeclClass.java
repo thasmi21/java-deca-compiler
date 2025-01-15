@@ -11,6 +11,7 @@ import fr.ensimag.ima.pseudocode.instructions.*;
 import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 /**
  * Declaration of a class (<code>class name extends superClass {members}<code>).
@@ -23,6 +24,11 @@ public class DeclClass extends AbstractDeclClass {
     final private AbstractIdentifier className;
     final private AbstractIdentifier extendsName;
     final private ListBody classBody;
+    private ArrayList<Label> tabLabel;
+
+    public void addTabLabel(Label label) {
+        this.tabLabel.add(label);
+    }
 
     public SymbolTable.Symbol getSymbol() {
         return className.getName();
@@ -34,6 +40,15 @@ public class DeclClass extends AbstractDeclClass {
         this.className = className;
         this.extendsName = extendsName;
         this.classBody = classBody;
+
+        this.tabLabel = new ArrayList<Label>();
+
+//        Type t = this.className.getType();
+//        if (t instanceof ClassType) {
+//            ClassType classType = (ClassType) t;
+//            ClassDefinition ex = classType.getDefinition();
+//            this.tabLabels = new Label[ex.getNumberOfMethods()]; //On crée pour chaque class un tableau
+//        }
     }
 
 
@@ -187,8 +202,14 @@ public class DeclClass extends AbstractDeclClass {
         }
     }
 
+    public void createTableau(DecacCompiler compiler) {
+
+    }
+
     @Override
     public void declareTableMethode(DecacCompiler compiler) {
+
+
         // Pour class on veut récupérer si elle en a ses super class
         // Si elle n'en a pas sa super class va être Object
         String debComment = "Construction de la table des méthode de ";

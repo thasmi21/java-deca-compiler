@@ -40,6 +40,7 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
             ClassDefinition currentClass) throws ContextualError {
                 for(AbstractDeclVar declVar : this.getList()){
                     declVar.verifyDeclVar(compiler, localEnv, currentClass);
+                    compiler.IncrNbVarGlo();
         }
     }
 
