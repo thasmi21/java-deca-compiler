@@ -77,6 +77,9 @@ public class DecacMain {
         } else {
             for (File source : options.getSourceFiles()) {
                 DecacCompiler compiler = new DecacCompiler(options, source);
+                if(options.getN()==1) {
+                    compiler.setN(true);
+                }
                 if (compiler.compile()) {
                     error = true;
                 }

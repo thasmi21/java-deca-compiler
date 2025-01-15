@@ -46,8 +46,11 @@ public class CompilerOptions {
     private boolean printBanner = false;
     private List<File> sourceFiles = new ArrayList<File>();
     private int arret=0;
+    private int n=0;
 
-
+    public int getN(){
+        return n;
+    }
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
@@ -68,7 +71,6 @@ public class CompilerOptions {
         int p=0;
         int r=0;
         int P=0;
-        int n=0;
         int w=0;
         int d=0;
         boolean flag=false;
