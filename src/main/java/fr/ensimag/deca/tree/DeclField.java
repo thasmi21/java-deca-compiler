@@ -56,6 +56,12 @@ public class DeclField extends AbstractDeclField {
 
     }
 
+    public AbstractInitialization getInitialization(){
+        return this.initialization;
+    }
+    public AbstractIdentifier getTypeIdentifier() {
+        return this.type;
+    }
 
     @Override
     public void codeGenBody(DecacCompiler compiler){

@@ -57,9 +57,14 @@ public class Program extends AbstractProgram {
         compiler.addComment("       Construction des tables des methodes       ");
         compiler.addComment("--------------------------------------------------");
         classes.codeGenListClass(compiler);
+        /*
+        * Je cree pour chaque classe un label init
+        * et aussi le codage de ses méthodes*/
+        classes.codeGenPass2(compiler);
         compiler.addComment("Main program");
         main.codeGenMain(compiler);
         compiler.addInstruction(new HALT());
+        compiler.addComment("end main program");
         // On doit gérer le cas ou on a une pile pleine et qu'il faut renvoyer une erreur
         compiler.addLabel(new Label("pile_pleine")); // On ajoute l'etiquette à laquelle il faut jump si il y a débordement
         compiler.addInstruction(new WSTR("Erreur: La pile est pleine")); // On écrit un message d'erreur
