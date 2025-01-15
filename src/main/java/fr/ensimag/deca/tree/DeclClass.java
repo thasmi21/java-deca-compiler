@@ -4,6 +4,13 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.LabelOperand;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.LEA;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
@@ -120,4 +127,28 @@ public class DeclClass extends AbstractDeclClass {
         }
     }
 
+    @Override
+    public void declareTableMethode(DecacCompiler compiler) {
+        // Pour class on veut récupérer si elle en a ses super class
+        // Si elle n'en a pas sa super class va être Object
+        String debComment = "Construction de la table des méthode de ";
+
+        // Maintenant on va itérer sur les méthodes de chaque classe
+        DeclClass declClass = (DeclClass) this;
+        TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get(((DeclClass) this).getSymbol());
+        if(nom instanceof ClassDefinition){
+            ClassDefinition classDef = (ClassDefinition) nom;
+            String endComment = String.valueOf(classDef.getType()); // J'espère que cela récupère le nom de la classe
+            compiler.addComment(debComment + endComment);
+            ClassDefinition parent = classDef.getSuperClass();
+            if (parent == null) { // Si la classe n'hérite que de Object
+                RegisterOffset regOff =  new RegisterOffset(1, Register.GB);
+                // Si on rentre dans cette boucle c'est que la class c n'hérite que de Object
+                compiler.addInstruction(new LEA(regOff,Register.R0));
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(3, Register.GB)));
+                compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.Object.equals")), Register.R0));
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(4, Register.GB)));
+            }
+        }
+    }
 }

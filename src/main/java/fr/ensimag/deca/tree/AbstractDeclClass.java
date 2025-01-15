@@ -35,4 +35,6 @@ public abstract class AbstractDeclClass extends Tree {
 
     protected abstract void codeGenDeclClass(DecacCompiler compiler);
 
+    protected abstract void declareTableMethode(DecacCompiler compiler);
+
 }
