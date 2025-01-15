@@ -66,13 +66,19 @@ public class DecacMain {
             // instance en parallèle. Il est conseillé d'utiliser
             // java.util.concurrent de la bibliothèque standard Java.
             ArrayList<Thread> threads = new ArrayList<>();
+            Thread thread;
             for (File source : options.getSourceFiles()) {
-                Thread thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source)));
+                if(options.getN()==1) {
+                    thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source),true));
+                }
+                else{
+                    thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source),false));
+                }
                 threads.add(thread);
                 thread.start();
             }
-            for (Thread thread : threads) {
-                thread.join();
+            for (Thread t : threads) {
+                t.join();
             }
         } else {
             for (File source : options.getSourceFiles()) {
