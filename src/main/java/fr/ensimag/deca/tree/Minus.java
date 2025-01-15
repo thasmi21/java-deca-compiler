@@ -36,6 +36,11 @@ public class Minus extends AbstractOpArith {
         }
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new SUB(Register.R0, register));
+        if (this.getType().isFloat()){
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
+        }
         GestionRegistre.IncCompteurTempUsage();
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
@@ -53,7 +58,11 @@ public class Minus extends AbstractOpArith {
             compiler.addInstruction(new SUB(Register.R0, register));
             GestionRegistre.IncCompteurTempUsage();
         }
-
+        if (this.getType().isFloat()){
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
+        }
         if(r1 != null){
             r1.setInUse(false);
         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
@@ -76,7 +85,9 @@ public class Minus extends AbstractOpArith {
         if (this.getType() instanceof IntType) {
             compiler.addInstruction(new WINT());
         } else if (this.getType() instanceof FloatType) {
-            compiler.addInstruction(new WFLOAT());
+            if (!compiler.getN()){
+                compiler.addInstruction(new WFLOAT());
+            }
         }
 
         if(r1 != null){

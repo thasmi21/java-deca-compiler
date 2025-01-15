@@ -32,7 +32,9 @@ public class Plus extends AbstractOpArith {
             getRightOperand().evalueExpr(compiler, register );
             compiler.addInstruction(new ADD(r1, register));
             if (this.getType().isFloat()) {
-                compiler.labelOverflow(compiler);
+                if (!compiler.getN()){
+                    compiler.labelOverflow(compiler);
+                }
             }
             r1.setInUse(false); //on n'utilise plus r1
             return;
@@ -41,7 +43,9 @@ public class Plus extends AbstractOpArith {
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new ADD(Register.R0, register));
         if (this.getType().isFloat()) {
-            compiler.labelOverflow(compiler);
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
         }
         GestionRegistre.IncCompteurTempUsage();
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
@@ -59,6 +63,12 @@ public class Plus extends AbstractOpArith {
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             compiler.addInstruction(new ADD(Register.R0, register));
             GestionRegistre.IncCompteurTempUsage();
+        }
+
+        if (this.getType().isFloat()) {
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
         }
 
         if(r1 != null){
@@ -79,6 +89,12 @@ public class Plus extends AbstractOpArith {
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             compiler.addInstruction(new ADD(Register.R0, register));
             GestionRegistre.IncCompteurTempUsage();
+        }
+
+        if (this.getType().isFloat()) {
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
         }
 
         if (this.getType() instanceof IntType) {

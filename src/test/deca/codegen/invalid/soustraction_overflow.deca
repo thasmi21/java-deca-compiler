@@ -1,0 +1,11 @@
+// Descrition:
+//      Test d'une soustraction qui devrait faire un débordement en nombre flottants
+//
+// Résultats:
+//
+
+{
+    float x = 3.40282e+38;
+    float y = - x;
+    x - y;
+}
