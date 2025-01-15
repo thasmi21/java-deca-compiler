@@ -52,11 +52,12 @@ public class Program extends AbstractProgram {
         // On a : ADDSP = nb_var_glob + pour chaque class ( @table_super_class + @Code_methods_Object.equals + @Code_method_de_la_class)
         int toAddStack = compiler.toADDSP(compiler);
         compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
+        // Il faut rendre l'instruction précédente plus générale
         // 3 varGlo + 2classObject + 2 ClassSimple
         compiler.addComment("--------------------------------------------------");
         compiler.addComment("       Construction des tables des methodes       ");
         compiler.addComment("--------------------------------------------------");
-        classes.codeGenListClass(compiler);
+        classes.codeGenListDeclClass(compiler);
         /*
         * Je cree pour chaque classe un label init
         * et aussi le codage de ses méthodes*/
