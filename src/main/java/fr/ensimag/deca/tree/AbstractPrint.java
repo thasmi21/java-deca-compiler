@@ -36,7 +36,7 @@ public abstract class AbstractPrint extends AbstractInst {
     }
 
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         for (AbstractExpr expressions : arguments.getList()){
@@ -45,7 +45,7 @@ public abstract class AbstractPrint extends AbstractInst {
                 throw new ContextualError("A l'intérieur du print, il faut un int, float ou string ! Type reçu : "+ typeExpr, getLocation());
             }
         }
-        // il faut verifier si ce qui est à l'intérieur du print est de type int, float ou string
+        return compiler.environmentType.VOID;
     }
 
     @Override

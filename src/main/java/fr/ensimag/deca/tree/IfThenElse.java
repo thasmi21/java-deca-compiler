@@ -45,12 +45,18 @@ public class IfThenElse extends AbstractInst {
 
 
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         this.condition.verifyCondition(compiler, localEnv, currentClass);
-        this.thenBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
-        this.elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        Type typeif=this.thenBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        Type typeelse=this.elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        if(typeif.sameType(typeelse)) {
+            return typeelse;
+        }
+        else{
+            throw new ContextualError("le type renvoyer dans le if n'est pas le meme que dans le else",getLocation());
+        }
     }
 
     @Override

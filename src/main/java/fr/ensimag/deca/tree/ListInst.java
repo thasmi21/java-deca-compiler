@@ -24,12 +24,24 @@ public class ListInst extends TreeList<AbstractInst> {
      * @param returnType
      *          corresponds to "return" attribute (void in the main bloc).
      */    
-    public void verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    public Type verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
+            int n = getList().size()-1;
+            Type type;
             for(AbstractInst i : getList()){
-                i.verifyInst(compiler,localEnv,currentClass,returnType);
+                type=i.verifyInst(compiler,localEnv,currentClass,returnType);
+                n-=1;
+                if(n==0 && !returnType.isVoid()){
+                    if(type.sameType(returnType)){
+                        return returnType;
+                    }
+                    else{
+                        throw new ContextualError("Le type de retour n'est pas le bon",getLocation());
+                    }
+                }
             }
+            return returnType;
     }
 
     public void codeGenListInst(DecacCompiler compiler) {

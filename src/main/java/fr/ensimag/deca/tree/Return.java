@@ -18,13 +18,14 @@ public class Return extends AbstractInst{
     }
 
 
-    public void verifyInst(DecacCompiler compiler,
+    public Type verifyInst(DecacCompiler compiler,
                                     EnvironmentExp localEnv, ClassDefinition currentClass,Type type)
             throws ContextualError{
         Type t =expr.verifyExpr(compiler,localEnv,currentClass);
         if (!t.sameType(type)) {
             throw new ContextualError("le return n'est pas du bon type",getLocation());
         }
+        return t;
     }
 
     @Override
