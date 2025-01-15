@@ -1,0 +1,10 @@
+// Description :
+//      tests de minus avec un int
+//
+//
+
+
+
+{
+    - 1;
+}

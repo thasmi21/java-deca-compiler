@@ -1,0 +1,11 @@
+// Description :
+//      tests d'une diff entre false et true
+//
+//
+
+
+
+{
+    print(!true);
+    print(!false);
+}
