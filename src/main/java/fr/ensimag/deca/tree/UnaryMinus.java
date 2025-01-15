@@ -71,4 +71,20 @@ public class UnaryMinus extends AbstractUnaryExpr {
 
     }
 
+    @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getOperand().evalueExpr(compiler,r1);
+            compiler.addInstruction(new OPP(r1, register));
+            r1.setInUse(false);
+            return;
+        }
+        System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+        // Je pense qu'on va avoir un problème ici, car si on n'a plus de registre dispo on va appeler la méthode push et pop
+        // mais celle-ci prend deux operand en paramètre et ici on n'en a qu'une
+        // Peut-être qu'il faut re-créer la methode pushPop avec une seule operand en paramètre
+    }
+
 }

@@ -72,12 +72,20 @@ public class Divide extends AbstractOpArith {
             r1=Register.R0;
 
         }
-        if (!compiler.getN()){
-            if (this.getType().isFloat()){
+
+        if (getLeftOperand().getType().isInt()){
+            compiler.addInstruction(new QUO(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
+            }
+        } else if (getRightOperand().getType().isFloat()) {
+            compiler.addInstruction(new DIV(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
                 compiler.labelOverflow(compiler);
             }
-            compiler.labelDivZero(compiler);
         }
+
         if(r1 != null){
             r1.setInUse(false);
         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
