@@ -1,0 +1,11 @@
+// Descritpion:
+//      Declaration de 50 variables de diffférents types afin de vérifier la gestion des registres
+
+{
+int test = 10;
+int TEST = 4;
+int Test = 8;
+println("test :", test);  // Affiche la valeur de 'test'
+println("TEST :", TEST);  // Affiche la valeur de 'TEST'
+println("Test :", Test);
+}

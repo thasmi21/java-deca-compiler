@@ -1,0 +1,11 @@
+// Descritpion:
+//      Declaration de 50 variables de diffférents types afin de vérifier la gestion des registres
+
+{
+boolean a = true;
+while (a){
+    for (int i=0; i<5; i++)
+        assert(1==1);
+    a = false;
+}
+}

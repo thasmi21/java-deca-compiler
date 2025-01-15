@@ -1,8 +1,7 @@
-// Descritpion:
+// Descrition:
 //      26 boucles while imbriquées pour vérifier que le compilateur arrive bien à toutes les gérer en meme temps
 //      Incrémentation d'une variable à chaque itération
 //      Vérification à la fin du programme qu'on a bien effectué le bon nombre d'itérations (2²⁶ =  67,108,864)
-//
 
 {
     int compteur = 0;
@@ -59,58 +58,58 @@
                                                                                                     while (y < 2) {
                                                                                                         int z = 0;
                                                                                                         while (z < 2) {
-                                                                                                            compteur += 1;
-                                                                                                            z++;
+                                                                                                            compteur = compteur + 1;
+                                                                                                            z = z + 1;
                                                                                                         }
-                                                                                                        y++;
+                                                                                                        y = y + 1;
                                                                                                     }
-                                                                                                    x++;
+                                                                                                    x = x + 1;
                                                                                                 }
-                                                                                                w++;
+                                                                                                w = w + 1;
                                                                                             }
-                                                                                            v++;
+                                                                                            v = v + 1;
                                                                                         }
-                                                                                        u++;
+                                                                                        u = u + 1;
                                                                                     }
-                                                                                    t++;
+                                                                                    t = t + 1;
                                                                                 }
-                                                                                s++;
+                                                                                s = s + 1;
                                                                             }
-                                                                            r++;
+                                                                            r = r + 1;
                                                                         }
-                                                                        q++;
+                                                                        q = q + 1;
                                                                     }
-                                                                    p++;
+                                                                    p = p + 1;
                                                                 }
-                                                                o++;
+                                                                o = o + 1;
                                                             }
-                                                            n++;
+                                                            n = n + 1;
                                                         }
-                                                        m++;
+                                                        m = m + 1;
                                                     }
-                                                    l++;
+                                                    l = l + 1;
                                                 }
-                                                k++;
+                                                k = k + 1;
                                             }
-                                            j++;
+                                            j = j + 1;
                                         }
-                                        i++;
+                                        i = i + 1;
                                     }
-                                    h++;
+                                    h = h + 1;
                                 }
-                                g++;
+                                g = g + 1;
                             }
-                            f++;
+                            f = f + 1;
                         }
-                        e++;
+                        e = e + 1;
                     }
-                    d++;
+                    d = d + 1;
                 }
-                c++;
+                c = c + 1;
             }
-            b++;
+            b = b + 1;
         }
-        a++;
+        a = a + 1;
     }
     assert(compteur == 67108864);
 }
