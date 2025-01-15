@@ -163,13 +163,18 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        ExpDefinition def = localEnv.get(name);
-        if (def == null) {
-            throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
+        EnvironmentExp env = localEnv;
+        ExpDefinition def;
+        while(env != null) {
+            def= env.get(name);
+            if (def != null) {
+                this.setDefinition(def);
+                this.setType(def.getType());
+                return def.getType();
+            }
+            env=env.getParentEnvironment();
         }
-        this.setDefinition(def);
-        this.setType(def.getType());
-        return def.getType();
+        throw new ContextualError("Identifier '" + name.getName() + "' is not defined", getLocation());
     }
 
     @Override

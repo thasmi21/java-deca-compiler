@@ -38,7 +38,7 @@ public class DeclMethod extends AbstractBody {
     protected void verifyClassMembers(DecacCompiler compiler,
                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         Type t = this.type.verifyType(compiler);
-        params.verifyParams(compiler,new EnvironmentExp(null));
+        params.verifyParams(compiler,new EnvironmentExp(localEnv));
         Signature signature= new Signature();
         for(AbstractParams param:params.getList()){
             if(param instanceof Params){
@@ -63,7 +63,7 @@ public class DeclMethod extends AbstractBody {
     @Override
     protected void verifyClassBody(DecacCompiler compiler,
                                    EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError{
-        EnvironmentExp environmentExp=new EnvironmentExp(null);
+        EnvironmentExp environmentExp=new EnvironmentExp(localEnv);
         params.verifyParams(compiler,environmentExp);
         declVar.verifyListDeclVar(compiler,environmentExp,currentClass);
         inst.verifyListInst(compiler,environmentExp,currentClass,varName.getType());

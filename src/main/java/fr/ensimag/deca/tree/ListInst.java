@@ -27,7 +27,7 @@ public class ListInst extends TreeList<AbstractInst> {
     public Type verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-            int n = getList().size()-1;
+            int n = getList().size();
             Type type;
             for(AbstractInst i : getList()){
                 type=i.verifyInst(compiler,localEnv,currentClass,returnType);

@@ -36,8 +36,8 @@ public class Dot extends AbstractLValue {
         Type type=select_expr.verifyExpr(compiler, localEnv, currentClass);
         if(type.isClass()){
             ClassType classType = (ClassType)type;
-            while(classType.getDefinition().getSuperClass()!=null){
-                EnvironmentExp environmentExp= classType.getDefinition().getMembers();
+            EnvironmentExp environmentExp= classType.getDefinition().getMembers();
+            while(environmentExp!=null){
                 ExpDefinition expDefinition = environmentExp.get(identifier.getName());
                 if (expDefinition != null) {
                     if(expDefinition.isField()){
@@ -88,7 +88,7 @@ public class Dot extends AbstractLValue {
                         throw new ContextualError(select_expr.prettyPrint() + "n'est pas une méthode ou un field " + identifier.prettyPrint(),getLocation());
                     }
                 }
-                classType=classType.getDefinition().getSuperClass().getType();
+                environmentExp=environmentExp.getParentEnvironment();
             }
             }
             throw new ContextualError(select_expr.prettyPrint() + "n'est pas une classe il ne peut donc avoir d'argument",getLocation());
