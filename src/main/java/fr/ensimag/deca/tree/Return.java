@@ -39,12 +39,6 @@ public class Return extends AbstractInst{
         s.println(";");
     }
 
-    @Override
-    protected void decompileInst(IndentPrintStream s) {
-        s.print("return ");
-        decompile(s);
-        s.print(";");
-    }
 
     @Override
     public void prettyPrintChildren(PrintStream s,String indent) {

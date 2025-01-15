@@ -36,64 +36,62 @@ public class Dot extends AbstractLValue {
         Type type=select_expr.verifyExpr(compiler, localEnv, currentClass);
         if(type.isClass()){
             ClassType classType = (ClassType)type;
-            EnvironmentExp environmentExp= classType.getDefinition().getMembers();
-            ExpDefinition expDefinition = environmentExp.get(identifier.getName());
-            if (expDefinition != null) {
-                if(expDefinition.isField()){
-                    FieldDefinition fieldDefinition = (FieldDefinition)expDefinition;
-                    if(currentClass==null){
-                        if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) ){
-                            Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
-                            this.setType(type1);
-                            return type1;
+            while(classType.getDefinition().getSuperClass()!=null){
+                EnvironmentExp environmentExp= classType.getDefinition().getMembers();
+                ExpDefinition expDefinition = environmentExp.get(identifier.getName());
+                if (expDefinition != null) {
+                    if(expDefinition.isField()){
+                        FieldDefinition fieldDefinition = (FieldDefinition)expDefinition;
+                        if(currentClass==null){
+                            if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) ){
+                                Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                                this.setType(type1);
+                                return type1;
+                            }
+                            else{
+                                throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                            }
                         }
                         else{
-                            throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                            if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) || currentClass.getType().isSubClassOf(classType) ||classType.sameType(currentClass.getType())){
+                                Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                                this.setType(type1);
+                                return type1;
+                            }
+                            else{
+                                throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
+                            }
                         }
+                    }
+                    else if(expDefinition.isMethod()) {
+                        MethodDefinition methodDefinition = (MethodDefinition)expDefinition;
+                        int n=methodDefinition.getSignature().size();
+                        if(n!=args.getList().size()){
+                            throw new ContextualError(select_expr.prettyPrint() + "n'a pas le bon nombre d'argument " + identifier.prettyPrint(),getLocation());
+                        }
+                        Type type2;
+                        int i=0;
+                        for(AbstractExpr arg : args.getList()) {
+                            type2=arg.verifyExpr(compiler, localEnv, classType.getDefinition());
+                            if(type2.sameType(methodDefinition.getSignature().paramNumber(i))){
+                                i++;
+                            }
+                            else{
+                                throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                            }
+                        }
+                        Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
+                        this.setType(type1);
+                        return type1;
                     }
                     else{
-                        if(fieldDefinition.getVisibility().equals(Visibility.PUBLIC) || currentClass.getType().isSubClassOf(classType) ||classType.sameType(currentClass.getType())){
-                            Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
-                            this.setType(type1);
-                            return type1;
-                        }
-                        else{
-                            throw new ContextualError(select_expr.prettyPrint() + "le fields demander est privé. on ne peut pas y acceder" + identifier.prettyPrint(),getLocation());
-                        }
+                        throw new ContextualError(select_expr.prettyPrint() + "n'est pas une méthode ou un field " + identifier.prettyPrint(),getLocation());
                     }
                 }
-                else if(expDefinition.isMethod()) {
-                    MethodDefinition methodDefinition = (MethodDefinition)expDefinition;
-                    int n=methodDefinition.getSignature().size();
-                    if(n!=args.getList().size()){
-                        throw new ContextualError(select_expr.prettyPrint() + "n'a pas le bon nombre d'argument " + identifier.prettyPrint(),getLocation());
-                    }
-                    Type type2;
-                    int i=0;
-                    for(AbstractExpr arg : args.getList()) {
-                        type2=arg.verifyExpr(compiler, localEnv, classType.getDefinition());
-                        if(type2.sameType(methodDefinition.getSignature().paramNumber(i))){
-                            i++;
-                        }
-                        else{
-                            throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
-                        }
-                    }
-                    Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
-                    this.setType(type1);
-                    return type1;
-                }
-                else{
-                    throw new ContextualError(select_expr.prettyPrint() + "n'est pas une méthode ou un field " + identifier.prettyPrint(),getLocation());
-                }
+                classType=classType.getDefinition().getSuperClass().getType();
             }
-            else{
-                throw new ContextualError(select_expr.prettyPrint() + "n'a pas d'argument " + identifier.prettyPrint(),getLocation());
             }
-        }
-        else{
             throw new ContextualError(select_expr.prettyPrint() + "n'est pas une classe il ne peut donc avoir d'argument",getLocation());
-        }
 
     }
 
