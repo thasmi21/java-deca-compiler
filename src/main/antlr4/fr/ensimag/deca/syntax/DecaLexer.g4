@@ -150,8 +150,6 @@ COMMA : ',';
 
 MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 
-FILENAME : (LETTER | DIGIT | '.' | '-' | '_')+;
-
-INCLUDE : '#include' (' ')* '"' FILENAME '"' {
+INCLUDE : '#include' (' ')* '"' (LETTER | DIGIT | '.' | '-' | '_')+ '"' {
     doInclude(getText().substring(10).trim().replace("\"", ""));
 };
