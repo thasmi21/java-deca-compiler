@@ -118,8 +118,15 @@ public class GetArray extends Identifier {
     public void codeGenPrint(DecacCompiler compiler) {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         int indice = listIndex.get(0).getValue();
-        ArrayDefinition arrayDef = (ArrayDefinition) identifier.getExpDefinition();
-        int size = ((ArrayLiteral)arrayDef.getInitialization().getExpression()).getArray().getSize();
+        ArrayDefinition arrayDefGauche = (ArrayDefinition) identifier.getExpDefinition();
+        if((((ArrayDefinition) identifier.getExpDefinition()).getInitialization()).getExpression() instanceof AbstractBinaryExpr){
+            AbstractBinaryExpr expr = (AbstractBinaryExpr) (((ArrayDefinition) identifier.getExpDefinition()).getInitialization()).getExpression();
+            Identifier ident = (Identifier) expr.getLeftOperand();
+            arrayDefGauche = (ArrayDefinition) ident.getExpDefinition();
+        }
+        Array tableauGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray();
+
+        int size = tableauGauche.getSize();
         if(!(0<=indice && indice < size)) {
             throw new RuntimeException("Index out of bounds");
         }

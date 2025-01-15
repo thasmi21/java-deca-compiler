@@ -50,19 +50,15 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             if (typeLeft.sameType(typeRight)) {
                 int tailleDroit = 0;
                 int tailleGauche = 0;
-                if(getRightOperand() instanceof ArrayLiteral) {
+                if(getRightOperand() instanceof ArrayLiteral && getLeftOperand() instanceof ArrayLiteral) {
                     tailleDroit = ((ArrayLiteral) getRightOperand()).getArray().getSize();
-                }
-                else if(getLeftOperand() instanceof ArrayLiteral) {
                     tailleGauche = ((ArrayLiteral) getLeftOperand()).getArray().getSize();
                 }
-                else if (getRightOperand() instanceof Identifier) {
-                    ArrayDefinition arrayDef = (ArrayDefinition) ((Identifier) getRightOperand()).getExpDefinition();
-                    tailleDroit = ((ArrayLiteral)arrayDef.getInitialization().getExpression()).getArray().getSize();
-                }
-                else if(getLeftOperand() instanceof Identifier) {
-                    ArrayDefinition arrayDef = (ArrayDefinition) ((Identifier) getLeftOperand()).getExpDefinition();
-                    tailleGauche = ((ArrayLiteral)arrayDef.getInitialization().getExpression()).getArray().getSize();
+                else if (getRightOperand() instanceof Identifier && getLeftOperand() instanceof Identifier) {
+                    ArrayDefinition arrayDefDroit = (ArrayDefinition) ((Identifier) getRightOperand()).getExpDefinition();
+                    tailleDroit = ((ArrayLiteral)arrayDefDroit.getInitialization().getExpression()).getArray().getSize();
+                    ArrayDefinition arrayDefGauche = (ArrayDefinition) ((Identifier) getLeftOperand()).getExpDefinition();
+                    tailleGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray().getSize();
                 }
                 if(tailleDroit != tailleGauche){
                     throw new ContextualError("Les tableaux n'ont pas la même taille !", getLocation());

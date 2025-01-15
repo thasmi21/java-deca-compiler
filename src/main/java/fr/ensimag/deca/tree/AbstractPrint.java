@@ -41,7 +41,7 @@ public abstract class AbstractPrint extends AbstractInst {
             throws ContextualError {
         for (AbstractExpr expressions : arguments.getList()){
             Type typeExpr = expressions.verifyExpr(compiler, localEnv, currentClass);
-            if(!(typeExpr.isFloat() || typeExpr.isInt() || typeExpr.isString() )) {
+            if(!(typeExpr.isFloat() || typeExpr.isInt() || typeExpr.isString() || typeExpr.isArray() )) {
                 throw new ContextualError("A l'intérieur du print, il faut un int, float ou string ! Type reçu : "+ typeExpr, getLocation());
             }
         }

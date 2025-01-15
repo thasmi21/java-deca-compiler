@@ -69,7 +69,7 @@ public class ArrayLiteral extends AbstractExpr{
         for (char caractere : name.toCharArray()) {
             if (caractere == '}') {
                 entreAccolades = false;
-                sizes.add(counter);
+                sizes.add(counter+1);
             }
             if(entreAccolades && caractere== ','){
                 counter += 1;
