@@ -4,6 +4,7 @@
 //      Vérification à la fin du programme qu'on a bien effectué le bon nombre d'itérations
 //
 
+{
 int i = 0;
 
 while (i != 20 && i != 21 && i != 22 && i != 23 && i != 24 && i != 25 && i != 26 && i != 27 && i != 28 && i != 29 &&
@@ -12,3 +13,4 @@ while (i != 20 && i != 21 && i != 22 && i != 23 && i != 24 && i != 25 && i != 26
     i++;
 }
 assert(i==19);
+}
