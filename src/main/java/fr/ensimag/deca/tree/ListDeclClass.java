@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.ExpDefinition;
@@ -63,9 +64,9 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         // On commence par construire la table des méthodes de Object quoi qu'il arrive
         compiler.addComment("Construction de la table des methodes de Object");
         compiler.addInstruction(new LOAD(new NullOperand(), Register.R0));
-        compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(1, Register.GB)));
-        compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.objet.equals")), Register.R0));
-        compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(2, Register.GB)));
+        compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
+        compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.Object.equals")), Register.R0));
+        compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
 
         for (AbstractDeclClass declClass : getList()) {
             // Ceci correspond à la passe 1

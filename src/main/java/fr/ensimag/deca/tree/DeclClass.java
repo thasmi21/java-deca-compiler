@@ -13,6 +13,7 @@ import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Declaration of a class (<code>class name extends superClass {members}<code>).
@@ -296,7 +297,7 @@ public class DeclClass extends AbstractDeclClass {
         }
     }
 
-    public void createTableauLAbel(DecacCompiler compiler) {
+    public void createTableauLabel(DecacCompiler compiler) {
         // Pour chaque classe à l'indice 0 elle doit avoir le code de la méthode
         // de Object.equals car chaque class hérite de Object
         this.setTabLabel(0,new Label("code.Object.equals"));
@@ -304,34 +305,44 @@ public class DeclClass extends AbstractDeclClass {
         // regarder si elle a une super class, si oui il faudra ajouter les méthodes
         // de la super class dans le tableau en faisant attention aux indices
         DeclClass declClass = this;
-        TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(extendsName.getName());
+        if (this.extendsName != null){
+            TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(extendsName.getName());
+            ClassDefinition classDef = (ClassDefinition) t;
+            ClassDefinition parent = classDef.getSuperClass(); // On récupère la classe parent de la classe actuelle
+            //for (Label labPar : )
+        }
         AbstractIdentifier parentIdent = declClass.extendsName;
     }
 
     @Override
     public void declareTableMethode(DecacCompiler compiler) {
-        this.createTableauLAbel(compiler);
+        // On construit le tableau des étiquettes de méthodes de chaque classe
+        this.createTableauLabel(compiler);
 
         // Pour class on veut récupérer si elle en a ses super class
         // Si elle n'en a pas sa super class va être Object
         String debComment = "Construction de la table des méthode de ";
-
-        // Maintenant on va itérer sur les méthodes de chaque classe
-        DeclClass declClass = (DeclClass) this;
+        // On cherche la classe mère de la classe que l'on traite, pour savoir où est initialiser sa table des méthode
         TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get(((DeclClass) this).getSymbol());
-        if(nom instanceof ClassDefinition){
+        if (nom instanceof ClassDefinition) {
             ClassDefinition classDef = (ClassDefinition) nom;
             String endComment = String.valueOf(classDef.getType()); // J'espère que cela récupère le nom de la classe
             compiler.addComment(debComment + endComment);
             ClassDefinition parent = classDef.getSuperClass();
-            if (parent == null) { // Si la classe n'hérite que de Object
-                RegisterOffset regOff =  new RegisterOffset(1, Register.GB);
-                // Si on rentre dans cette boucle c'est que la class c n'hérite que de Object
-                compiler.addInstruction(new LEA(regOff,Register.R0));
-                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(3, Register.GB)));
-                compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.Object.equals")), Register.R0));
-                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(4, Register.GB)));
+            // Ici on récupère Object si la classe actuelle n'hérite d'aucune classe
+            if (Objects.equals(parent.getType().getName().getName(), "objet")) {
+                // Si la super classe est la classe objet, on sait ou est définie sa table des méthode
+                // C'est à 1(GB)
+                compiler.addInstruction(new LEA(new RegisterOffset(1, Register.GB), Register.R0));
+                // On charge l'adresse de la table des méthode de la classe
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
             }
+        }
+        // Maintenant on va itérer sur les méthodes de chaque classe
+        for (Label methodLabel : this.tabLabel) {
+            // On met chaque label au bon endroit dans la pile
+            compiler.addInstruction(new LOAD(new LabelOperand(methodLabel), Register.R0));
+            compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1),Register.GB)));
         }
     }
 }

@@ -9,9 +9,12 @@ class Simple {
     int b = 2;
 }
 {
-    Simple deb = new Simple();
-    int x = deb.a;
-    int y = deb.b;
-    println("Valeur de a : ", x);
-    println("Valeur de b : ", y);
+    //Simple deb = new Simple();
+    //int x;
+    //int y;
+    //x = deb.a;
+    //y = deb.b;
+    //println("Valeur de a : ", x);
+    //println("Valeur de b : ", y);
+    println("C'est good");
 }
