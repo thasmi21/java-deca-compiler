@@ -7,11 +7,8 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
-import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
-import fr.ensimag.ima.pseudocode.GPRegister;
 
 import java.io.PrintStream;
 
@@ -102,5 +99,11 @@ public class IntLiteral extends AbstractExpr {
         ConvFloat valFloat = new ConvFloat(this);
         valFloat.evalueExpr(compiler, Register.R1);
         compiler.addInstruction(new WFLOATX());
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        compiler.addInstruction(new LOAD(new ImmediateInteger(value), reg));
     }
 }
