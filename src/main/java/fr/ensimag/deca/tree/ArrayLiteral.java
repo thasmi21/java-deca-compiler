@@ -34,8 +34,8 @@ public class ArrayLiteral extends AbstractExpr{
             this.dimension = getDimensionFromName(name);
         }
         else{
-            setSizeFromNameInit(name);
             this.dimension = getDimensionFromNameInit(name);
+            setSizeFromNameInit(name);
         }
         ArrayList<AbstractExpr> coeffs= new ArrayList<>();
         if(coefficients != null){
@@ -65,21 +65,88 @@ public class ArrayLiteral extends AbstractExpr{
     }
 
     public void setSizeFromNameInit(String name) {
-        boolean entreAccolades = false;
-        int counter = 0;
-        for (char caractere : name.toCharArray()) {
-            if (caractere == '}') {
-                entreAccolades = false;
-                sizes.add(counter+1);
-            }
-            if(entreAccolades && caractere== ','){
-                counter += 1;
-            }
-            if (caractere == '{') {
-                entreAccolades = true;
-                counter = 0;
+        // Vider la liste sizes avant de calculer
+        sizes.clear();
+
+        // Cette liste va contenir la taille maximale pour chaque profondeur
+        List<Integer> maxCounts = new ArrayList<>();
+        // Cette liste va contenir le compteur courant pour chaque profondeur
+        List<Integer> currentCounts = new ArrayList<>();
+
+        int depth = 0;
+
+        for (char c : name.toCharArray()) {
+            switch (c) {
+                case '{':
+                    // On entre dans une nouvelle profondeur
+                    depth++;
+                    // S'assurer que les listes ont la bonne taille
+                    while (currentCounts.size() < depth) {
+                        currentCounts.add(0);
+                    }
+                    while (maxCounts.size() < depth) {
+                        maxCounts.add(0);
+                    }
+                    // Réinitialiser le compteur pour cette profondeur
+                    currentCounts.set(depth - 1, 0);
+                    break;
+
+                case ',':
+                    // Nouvelle entrée dans la liste à la profondeur courante
+                    if (depth > 0) {
+                        currentCounts.set(depth - 1, currentCounts.get(depth - 1) + 1);
+                    }
+                    break;
+
+                case '}':
+                    // On ferme un niveau
+                    if (depth > 0) {
+                        // Incrément pour le dernier élément (celui qui n'est pas suivi d'une virgule)
+                        currentCounts.set(depth - 1, currentCounts.get(depth - 1) + 1);
+
+                        // Mettre à jour le max pour cette profondeur
+                        int count = currentCounts.get(depth - 1);
+                        if (count > maxCounts.get(depth - 1)) {
+                            maxCounts.set(depth - 1, count);
+                        }
+
+                        // Quand on remonte, on remet le compteur à zéro
+                        currentCounts.set(depth - 1, 0);
+                        depth--;
+                    }
+                    break;
+
+                default:
+                    // On ignore les autres caractères (espaces, chiffres, etc.)
+                    break;
             }
         }
+
+        // Maintenant, on copie maxCounts dans sizes
+        sizes.addAll(maxCounts);
+    }
+
+
+
+    // Calcul du nombre total d'éléments dans l'ensemble du tableau
+    public int getTotalSize() {
+        return calculateTotalSize(this.getArray());
+    }
+
+    // Méthode récursive pour parcourir toutes les dimensions du tableau
+    private int calculateTotalSize(Array array) {
+        int totalSize = 0;
+        for (int i = 0; i < array.getSize(); i++) {
+            Object coefficient = array.getCoefficients(i);
+            if (coefficient instanceof ArrayLiteral) {
+                // Descendre dans les sous-niveaux si c'est un ArrayLiteral
+                totalSize += ((ArrayLiteral) coefficient).getTotalSize();
+            } else {
+                // Sinon, c'est un élément terminal (par ex : IntLiteral)
+                totalSize++;
+            }
+        }
+        return totalSize;
     }
 
     public void setSizeFromName(String name) {
@@ -213,7 +280,7 @@ public class ArrayLiteral extends AbstractExpr{
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-
+        array.prettyPrintChildren(s,prefix);
     }
 
     @Override

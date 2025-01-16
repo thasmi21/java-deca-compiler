@@ -133,7 +133,14 @@ public class Array extends AbstractExpr{
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-
+        for (AbstractExpr coeff : coefficients){
+            if(coeff != null){
+                coeff.prettyPrint(s,prefix,false);
+            }
+            else {
+                System.out.println("null");
+            }
+        }
     }
 
     @Override

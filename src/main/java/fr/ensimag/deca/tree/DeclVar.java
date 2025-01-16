@@ -5,6 +5,8 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.ima.pseudocode.*;
@@ -110,43 +112,150 @@ public class DeclVar extends AbstractDeclVar {
     }
 
     @Override
-    public void codeGenDeclVar(DecacCompiler compiler){
-            //throw new UnsupportedOperationException("Not Yet implemented by us");
-        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
-        //initialiser l'adresse
-        if(initialization instanceof Initialization){
-            if(!(((Initialization) initialization).getExpression().getType() instanceof ArrayType)){
-                //prendre un registre libre;
-                //evaluer l'expression et charger dans le registre
-                //puis affecter
-                GPRegister r = GestionRegistre.obtainFreeRegister();
-                ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
-                //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
-                compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-                r.setInUse(false); //il faut verifier après que r ne sera jamais nul
-            }
-            else {
-                if(((Initialization) initialization).getExpression() instanceof ArrayLiteral){
-                    ArrayLiteral tabLiteral = (ArrayLiteral) (((Initialization) initialization).getExpression());
-                    Array tab = tabLiteral.getArray();
-                    int tailleTableau = tab.getCoefficients().length;
-                    GPRegister rBase = GestionRegistre.obtainFreeRegister();
-                    compiler.addInstruction(new NEW(tailleTableau,rBase));
-                    for(int i=0 ; i < tailleTableau ; i++) {
-                        GPRegister r = GestionRegistre.obtainFreeRegister();
-                        tab.getCoefficients(i).evalueExpr(compiler, r);
-                        compiler.addInstruction(new STORE(r, new RegisterOffset(i, rBase)));
-                        r.setInUse(false);
-                    }
-                    compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
-                }
-                else {
+    public void codeGenDeclVar(DecacCompiler compiler) {
+        // Initialisation de l'adresse de la variable dans la pile
+        this.varName.getExpDefinition().setOperand(
+                new RegisterOffset(
+                        GestionRegistre.obtainIndiceGPandIncrement(1),
+                        Register.GB
+                )
+        );
 
-                    ((Initialization) initialization).getExpression().doOpArray(compiler);
+        if (initialization instanceof Initialization) {
+            AbstractExpr expr = ((Initialization) initialization).getExpression();
+
+            // Cas simple : pas un tableau
+            if (!(expr.getType() instanceof ArrayType)) {
+                GPRegister r = GestionRegistre.obtainFreeRegister();
+                expr.evalueExpr(compiler, r);
+                compiler.addInstruction(
+                        new STORE(r, varName.getExpDefinition().getOperand())
+                );
+                r.setInUse(false);
+            }
+            // Cas tableau
+            else {
+                // Hypothèse : si l'expression est un ArrayLiteral, on gère le tableau multidimensionnel
+                if (expr instanceof ArrayLiteral) {
+                    ArrayLiteral tabLiteral = (ArrayLiteral) expr;
+
+                    // Allouer le bloc principal (au niveau "racine")
+                    int size = tabLiteral.getArray().getSize();
+                    GPRegister rBase = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new NEW(size, rBase));
+
+                    // Appel récursif pour remplir
+                    fillArrayRecursive(compiler, tabLiteral, rBase);
+
+                    // Stocker l'adresse du tableau dans la variable
+                    compiler.addInstruction(
+                            new STORE(rBase, varName.getExpDefinition().getOperand())
+                    );
+                    rBase.setInUse(false);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Structure inattendue lors de l'initialisation d'un tableau."
+                    );
                 }
             }
         }
     }
+
+    /**
+     * Remplit récursivement un bloc mémoire alloué en partant d'un Array ou ArrayLiteral.
+     * @param element Peut être un ArrayLiteral, un Array, un Integer, ou null.
+     */
+    private void fillArrayRecursive(
+            DecacCompiler compiler,
+            Object element,
+            GPRegister baseReg
+    ) {
+        // 1) Si on reçoit un ArrayLiteral, on récupère le Array réel :
+        if (element instanceof ArrayLiteral) {
+            element = ((ArrayLiteral) element).getArray();
+        }
+
+        // 2) Si c'est un Array, on parcourt ses sous-éléments :
+        if (element instanceof Array) {
+            Array array = (Array) element;
+            for (int i = 0; i < array.getSize(); i++) {
+                Object subElement = array.getCoefficients(i);
+
+                // Sous-élément = sous-tableau ?
+                if (subElement instanceof Array
+                        || subElement instanceof ArrayLiteral) {
+
+                    // a) Calcul de la taille du sous-tableau :
+                    int subSize = getArraySize(subElement);
+
+                    // b) Allouer un bloc pour ce sous-tableau
+                    GPRegister subReg = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new NEW(subSize, subReg));
+
+                    // c) Stocker la référence dans baseReg[i]
+                    compiler.addInstruction(
+                            new STORE(subReg, new RegisterOffset(i, baseReg))
+                    );
+
+                    // d) Remplir récursivement
+                    fillArrayRecursive(compiler, subElement, subReg);
+                    subReg.setInUse(false);
+                }
+                // Sous-élément = null ? on stocke 0
+                else if (subElement == null) {
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new LOAD(new ImmediateInteger(0), r));
+                    compiler.addInstruction(
+                            new STORE(r, new RegisterOffset(i, baseReg))
+                    );
+                    r.setInUse(false);
+                }
+                // Sous-élément = entier ?
+                else if (subElement instanceof IntLiteral) {
+                    int val = ((IntLiteral) subElement).getValue();
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new LOAD(new ImmediateInteger(val), r));
+                    compiler.addInstruction(
+                            new STORE(r, new RegisterOffset(i, baseReg))
+                    );
+                    r.setInUse(false);
+                }
+                // Autre type (String, float, etc.) ?
+                else {
+                    throw new IllegalArgumentException(
+                            "Structure inattendue dans le tableau : "
+                                    + subElement.getClass().getName()
+                    );
+                }
+            }
+        }
+        // 3) Si ce n'est pas un Array, on jette une exception
+        else {
+            throw new IllegalArgumentException(
+                    "fillArrayRecursive ne peut remplir qu'un Array ou ArrayLiteral."
+            );
+        }
+    }
+
+    /**
+     * Calcule la taille (nombre d'éléments) nécessaire pour un bloc correspondant
+     * à 'element', qui peut être un Array ou ArrayLiteral.
+     * Dans cet exemple, on suppose qu'on n'a qu'un "niveau" de taille à allouer.
+     */
+    private int getArraySize(Object element) {
+        if (element instanceof ArrayLiteral) {
+            return ((ArrayLiteral) element).getArray().getSize();
+        } else if (element instanceof Array) {
+            return ((Array) element).getSize();
+        } else {
+            // Si jamais on passe ici sur un scalaire,
+            // on peut estimer qu'on a besoin d'une case (1).
+            // Mais en principe, on ne devrait pas allouer un bloc
+            // pour un scalaire. Donc, on pourrait lever une exception.
+            return 1;
+        }
+    }
+
     // méthode qui récupère le type de base, par ex(int[][][] -> int)
     public static Type getBaseType(DecacCompiler compiler,Type type) throws ContextualError {
         String typeName = type.getName().getName();
