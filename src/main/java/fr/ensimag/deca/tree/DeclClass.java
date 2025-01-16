@@ -31,6 +31,11 @@ public class DeclClass extends AbstractDeclClass {
         this.tabLabel.add(label);
     }
 
+    public void setTabLabel(int index,Label label) {
+        this.addTabLabel(label);
+        this.tabLabel.set(index, label);
+    }
+
     public SymbolTable.Symbol getSymbol() {
         return className.getName();
     }
@@ -291,13 +296,20 @@ public class DeclClass extends AbstractDeclClass {
         }
     }
 
-    public void createTableau(DecacCompiler compiler) {
-
+    public void createTableauLAbel(DecacCompiler compiler) {
+        // Pour chaque classe à l'indice 0 elle doit avoir le code de la méthode
+        // de Object.equals car chaque class hérite de Object
+        this.setTabLabel(0,new Label("code.Object.equals"));
+        // Ensuite quand on ajoutera les méthodes il faudra pour chaque classe
+        // regarder si elle a une super class, si oui il faudra ajouter les méthodes
+        // de la super class dans le tableau en faisant attention aux indices
+        DeclClass declClass = this;
+        AbstractIdentifier parentIdent = declClass.extendsName;
     }
 
     @Override
     public void declareTableMethode(DecacCompiler compiler) {
-
+        this.createTableauLAbel(compiler);
 
         // Pour class on veut récupérer si elle en a ses super class
         // Si elle n'en a pas sa super class va être Object
