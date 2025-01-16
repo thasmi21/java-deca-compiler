@@ -75,14 +75,34 @@ public class DeclClass extends AbstractDeclClass {
         }
         EnvironmentExp environmentExp=compiler.environmentType.getEnvironmentMain();
         Type type = envType.getEnvTypes().get(className.getName()).getType();
-        VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
-        try {
-            environmentExp.declare(className.getName(), varDef);
-        } catch(EnvironmentExp.DoubleDefException e) {
-            throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
+        if(type instanceof ClassType) {
+            ClassType classType = (ClassType)type;
+            if(extendsName != null) {
+                ClassDefinition classDefinition = new ClassDefinition(classType,getLocation(),extendsName.getClassDefinition());
+                VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
+                try {
+                    environmentExp.declare(className.getName(), varDef);
+                } catch(EnvironmentExp.DoubleDefException e) {
+                    throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
+                }
+                className.setDefinition(classDefinition);
+                className.setType(classType);
+            }
+            else {
+                ClassDefinition classDefinition = new ClassDefinition(classType,getLocation(),compiler.environmentType.OBJET.getDefinition());
+                VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
+                try {
+                    environmentExp.declare(className.getName(), varDef);
+                } catch(EnvironmentExp.DoubleDefException e) {
+                    throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
+                }
+                className.setDefinition(classDefinition);
+                className.setType(classType);
+            }
         }
-        className.setDefinition(varDef);
-        className.setType(type);
+        else{
+            throw new ContextualError("ce n'est pas une class",getLocation());
+        }
     }
     protected void initDefault(DeclField field, DecacCompiler compiler){
         Type type = field.getTypeIdentifier().getDefinition().getType();
@@ -136,10 +156,18 @@ public class DeclClass extends AbstractDeclClass {
         int dernierIndice = compiler.getToExecuteEnd().size();
         int nombreVarSuper;
         if(extendsName == null){
-            nombreVarSuper = 0;
+            nombreVarSuper = 1;
         }
         else{
-            nombreVarSuper = extendsName.getClassDefinition().getNumberOfFields();
+
+            TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(extendsName.getName());
+            if(t instanceof ClassDefinition){
+                ClassDefinition classDefinition = (ClassDefinition)t;
+                nombreVarSuper = classDefinition.getNumberOfFields();
+            }
+            else{
+                nombreVarSuper = 0;
+            }
         }
         int cpt =  nombreVarSuper+1;
 

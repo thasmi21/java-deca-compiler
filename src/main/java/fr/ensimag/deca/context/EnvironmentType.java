@@ -31,6 +31,7 @@ public class EnvironmentType {
         Symbol objetSymb=compiler.createSymbol("objet");
         OBJET=new ClassType(objetSymb);
         OBJET.definition=new ClassDefinition(OBJET,Location.BUILTIN,null);
+
         S.add(objetSymb);
 
         Symbol intSymb = compiler.createSymbol("int");
