@@ -216,11 +216,11 @@ expr returns[AbstractExpr tree]
             assert($assign_expr.tree != null);
             $tree=$assign_expr.tree;
         }
-    | expr DOT method_array OPARENT (par=expr)? CPARENT {
-                assert($expr.tree != null);
-                assert($method_array.name != null);
-                $tree= new CallMethodArray($expr.tree,$method_array.name, $par.tree);
-        }
+//    | expr DOT method_array OPARENT (par=expr)? CPARENT {
+//                assert($expr.tree != null);
+//                assert($method_array. != null);
+//                $tree= new CallMethodArray($expr.tree,$method_array.name, $par.tree);
+//        }
     ;
 
 assign_expr returns[AbstractExpr tree]
@@ -459,35 +459,18 @@ primary_expr returns[AbstractExpr tree]
             assert($get_array.tree != null);
             $tree=$get_array.tree;
     }
-    ;
-
-method_array returns[String name]
-    :SORT {
-        $name = "sort";
-    }
-    | TRANSPOSE {
-        $name = "transpose";
-    }
-    | TRACE {
-         $name = "trace";
-    }
-    | DET {
-         $name = "det";
-    }
-    | ISINVERSIBLE {
-        $name = "isInversible";
-    }
-    SCALARMULT {
-        $name = "scalarMult";
-    }
-    | SCALARDIV {
-        $name = "scalarDiv";
-    }
-    | TOSTRING {
-        $name = "toString";
+    | method_array {
+            assert($method_array.tree != null);
+            $tree=$method_array.tree;
     }
     ;
 
+method_array returns[AbstractExpr tree]
+    : ARRAY DOT IDENT OPARENT (e+=expr (COMMA e+=expr)*)? CPARENT{
+        $tree = (AbstractExpr) new CallMethodArray($e, $IDENT.text);
+        setLocation($tree, $ARRAY);
+    }
+    ;
 
 get_array returns[AbstractExpr tree]
     :ident (OCROCHET list_int+=expr CCROCHET)+ {

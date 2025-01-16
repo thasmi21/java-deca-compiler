@@ -118,15 +118,10 @@ public class GetArray extends Identifier {
     public void codeGenPrint(DecacCompiler compiler) {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         int indice = listIndex.get(0).getValue();
-        ArrayDefinition arrayDefGauche = (ArrayDefinition) identifier.getExpDefinition();
-        if((((ArrayDefinition) identifier.getExpDefinition()).getInitialization()).getExpression() instanceof AbstractBinaryExpr){
-            AbstractBinaryExpr expr = (AbstractBinaryExpr) (((ArrayDefinition) identifier.getExpDefinition()).getInitialization()).getExpression();
-            Identifier ident = (Identifier) expr.getLeftOperand();
-            arrayDefGauche = (ArrayDefinition) ident.getExpDefinition();
-        }
-        Array tableauGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray();
+        ArrayDefinition arrayDef = (ArrayDefinition) identifier.getExpDefinition();
+        Array tableau = ((ArrayLiteral)arrayDef.getInitialization().getExpression()).getArray();
 
-        int size = tableauGauche.getSize();
+        int size = tableau.getSize();
         if(!(0<=indice && indice < size)) {
             throw new RuntimeException("Index out of bounds");
         }
@@ -134,9 +129,10 @@ public class GetArray extends Identifier {
         RegisterOffset identifierOffset = (RegisterOffset) idAdresse;
 
         Register baseRegister = identifierOffset.getRegister();
+        GPRegister baseReg = GestionRegistre.obtainFreeRegister();
         int baseOffset = identifierOffset.getOffset();
-        RegisterOffset effectiveAdress = new RegisterOffset(baseOffset+indice,baseRegister);
-
+        compiler.addInstruction(new LOAD(new RegisterOffset(baseOffset,baseRegister), baseReg));
+        RegisterOffset effectiveAdress = new RegisterOffset(indice,baseReg);
         compiler.addInstruction(new LOAD(effectiveAdress,Register.R1));
         if (listIndex.get(0) instanceof IntLiteral) {
             compiler.addInstruction(new WINT());

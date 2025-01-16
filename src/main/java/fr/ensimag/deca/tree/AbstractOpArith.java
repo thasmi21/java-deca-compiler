@@ -46,7 +46,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             this.setType(compiler.environmentType.INT);
             return typeLeft;
         }
-        else {
+        else if(typeLeft.isArray() && typeRight.isArray()) {
             if (typeLeft.sameType(typeRight)) {
                 int tailleDroit = 0;
                 int tailleGauche = 0;
@@ -69,6 +69,19 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             else{
                 throw new ContextualError("Les tableaux ne sont pas de la meme dimension !", getLocation());
             }
+        }
+        else if(typeLeft.isArray() && typeRight.isInt() || typeRight.isArray() && typeLeft.isInt()) {
+            if(typeLeft.isArray()) {
+                this.setType(typeLeft);
+                return typeLeft;
+            }
+            else {
+                this.setType(typeRight);
+                return typeRight;
+            }
+        }
+        else {
+            throw new ContextualError("Probleme lors de la vérification contextuelle !", getLocation());
         }
     }
 }

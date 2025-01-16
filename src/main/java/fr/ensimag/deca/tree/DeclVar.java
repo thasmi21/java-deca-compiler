@@ -7,11 +7,9 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.NEW;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
@@ -132,34 +130,19 @@ public class DeclVar extends AbstractDeclVar {
                     ArrayLiteral tabLiteral = (ArrayLiteral) (((Initialization) initialization).getExpression());
                     Array tab = tabLiteral.getArray();
                     int tailleTableau = tab.getCoefficients().length;
-                    int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(tailleTableau-1);
+                    GPRegister rBase = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new NEW(tailleTableau,rBase));
                     for(int i=0 ; i < tailleTableau ; i++) {
                         GPRegister r = GestionRegistre.obtainFreeRegister();
                         tab.getCoefficients(i).evalueExpr(compiler, r);
-                        compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP-tailleTableau+i+1, Register.GB)));
+                        compiler.addInstruction(new STORE(r, new RegisterOffset(i, rBase)));
                         r.setInUse(false);
                     }
+                    compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
                 }
                 else {
-                    AbstractBinaryExpr op = (AbstractBinaryExpr) ((Initialization) initialization).getExpression();
-                    Identifier identGauche = (Identifier) op.getLeftOperand();
-                    Identifier identDroit = (Identifier) op.getRightOperand();
-                    ArrayDefinition arrayDefGauche = (ArrayDefinition) identGauche.getExpDefinition();
-                    ArrayDefinition arrayDefDroit = (ArrayDefinition) identDroit.getExpDefinition();
-                    Array tableauGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray();
-                    Array tableauDroit = ((ArrayLiteral)arrayDefDroit.getInitialization().getExpression()).getArray();
 
-                    int size = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray().getSize();
-                    int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(size-1);
-                    for(int i=0 ; i < size ; i++) {
-                        GPRegister r = GestionRegistre.obtainFreeRegister();
-                        ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
-                        int coeffDroit = ((IntLiteral)tableauDroit.getCoefficients(i)).getValue();
-                        int coeffGauche = ((IntLiteral)tableauGauche.getCoefficients(i)).getValue();
-                        compiler.addInstruction(new LOAD(new ImmediateInteger(coeffGauche+coeffDroit), r));
-                        compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP-size+i+1, Register.GB)));
-                        r.setInUse(false);
-                    }
+                    ((Initialization) initialization).getExpression().doOpArray(compiler);
                 }
             }
         }

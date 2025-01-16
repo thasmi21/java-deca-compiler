@@ -84,7 +84,7 @@ CBRACE : '}' ;
 SEMI : ';' ;
 READINT : 'readInt' ;
 STRING : '"' (STRING_CAR | '\\"' | '\\\\')* '"';
-
+ARRAY : 'Array';
 // suivi de la convention de fragment expliqué dans le poly
 // pour ajouter les priorités
 fragment LETTER : [a-zA-Z] ;
@@ -162,3 +162,4 @@ TRACE : 'trace';
 DET : 'det';
 
 ISINVERSIBLE : 'isInversible';
+

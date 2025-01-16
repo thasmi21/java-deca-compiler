@@ -4,10 +4,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
-import fr.ensimag.ima.pseudocode.DAddr;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
@@ -120,6 +117,28 @@ public class Plus extends AbstractOpArith {
             if (r1 != null) {
                 r1.setInUse(false);
             }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+        }
+    }
+
+    @Override
+    public void doOpArray(DecacCompiler compiler){
+        Identifier identGauche = (Identifier) getLeftOperand();
+        Identifier identDroit = (Identifier) getRightOperand();
+        ArrayDefinition arrayDefGauche = (ArrayDefinition) identGauche.getExpDefinition();
+        ArrayDefinition arrayDefDroit = (ArrayDefinition) identDroit.getExpDefinition();
+        Array tableauGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray();
+        Array tableauDroit = ((ArrayLiteral)arrayDefDroit.getInitialization().getExpression()).getArray();
+
+        int size = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray().getSize();
+        int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(size-1);
+        for(int i=0 ; i < size ; i++) {
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            evalueExpr(compiler, r);
+            int coeffDroit = ((IntLiteral)tableauDroit.getCoefficients(i)).getValue();
+            int coeffGauche = ((IntLiteral)tableauGauche.getCoefficients(i)).getValue();
+            compiler.addInstruction(new LOAD(new ImmediateInteger(coeffGauche+coeffDroit), r));
+            compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP-size+i+1, Register.GB)));
+            r.setInUse(false);
         }
     }
 }
