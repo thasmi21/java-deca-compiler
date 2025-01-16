@@ -4,7 +4,7 @@
 //
 
 class Vehicule{
-    int nb_roue;
+    int nbroue;
     int poids;
 }
 class Moto extends Vehicule{
@@ -19,7 +19,7 @@ class Logement{
     Moto moto=new Moto();
     Logement maison= new Logement();
 
-    motoSport.nbroue = 2;
-    motoSport.poids = 120;
-    motoSport.annee = 2019;
+    moto.nbroue = 2;
+    moto.poids = 120;
+    moto.annee = 2019;
 }

@@ -304,6 +304,7 @@ public class DeclClass extends AbstractDeclClass {
         // regarder si elle a une super class, si oui il faudra ajouter les méthodes
         // de la super class dans le tableau en faisant attention aux indices
         DeclClass declClass = this;
+        TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(extendsName.getName());
         AbstractIdentifier parentIdent = declClass.extendsName;
     }
 
