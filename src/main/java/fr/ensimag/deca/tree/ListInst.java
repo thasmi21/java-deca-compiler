@@ -27,18 +27,16 @@ public class ListInst extends TreeList<AbstractInst> {
     public Type verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-            int n = getList().size();
-            Type type;
+            Type type=compiler.environmentType.VOID;
             for(AbstractInst i : getList()){
                 type=i.verifyInst(compiler,localEnv,currentClass,returnType);
-                n-=1;
-                if(n==0 && !returnType.isVoid()){
-                    if(type.sameType(returnType)){
-                        return returnType;
-                    }
-                    else{
-                        throw new ContextualError("Le type de retour n'est pas le bon",getLocation());
-                    }
+            }
+            if(!returnType.isVoid()){
+                if(returnType.sameType(type)){
+                    return returnType;
+                }
+                else{
+                    throw new ContextualError("Le type de retour n'est pas le bon",getLocation());
                 }
             }
             return returnType;

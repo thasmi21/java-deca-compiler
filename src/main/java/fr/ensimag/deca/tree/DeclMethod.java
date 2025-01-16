@@ -66,6 +66,7 @@ public class DeclMethod extends AbstractBody {
         EnvironmentExp environmentExp=new EnvironmentExp(localEnv);
         params.verifyParams(compiler,environmentExp);
         declVar.verifyListDeclVar(compiler,environmentExp,currentClass);
+        inst.setLocation(getLocation());
         inst.verifyListInst(compiler,environmentExp,currentClass,varName.getType());
     }
 

@@ -28,11 +28,7 @@ public class EnvironmentType {
         envTypes = new HashMap<Symbol, TypeDefinition>();
         S = new HashSet<Symbol>();
 
-        Symbol objetSymb=compiler.createSymbol("objet");
-        OBJET=new ClassType(objetSymb);
-        OBJET.definition=new ClassDefinition(OBJET,Location.BUILTIN,null);
-        envTypes.put(objetSymb,OBJET.getDefinition() );
-        S.add(objetSymb);
+
 
         Symbol intSymb = compiler.createSymbol("int");
         INT = new IntType(intSymb);
@@ -58,7 +54,17 @@ public class EnvironmentType {
         STRING = new StringType(stringSymb);
         // not added to envTypes, it's not visible for the user.
         S.add(stringSymb);
-        
+
+        Symbol objetSymb=compiler.createSymbol("objet");
+        OBJET=new ClassType(objetSymb);
+        OBJET.definition=new ClassDefinition(OBJET,Location.BUILTIN,null);
+        Signature signature= new Signature();
+        signature.add(OBJET);
+        MethodDefinition methodDefinition= new MethodDefinition(BOOLEAN,Location.BUILTIN,signature,0);
+        OBJET.definition.incNumberOfMethods();
+        OBJET.definition.getMembers().getLocalEnv().put(compiler.createSymbol("equals"),methodDefinition);
+        envTypes.put(objetSymb,OBJET.getDefinition() );
+        S.add(objetSymb);
     }
 
 //    private int nbClasses;
