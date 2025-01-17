@@ -1,0 +1,14 @@
+// Description:
+// Test de la méthode equals
+// Doit renvoyer false car a1 et a2 pointent sur des instances différentes
+
+class A{}
+
+class B extends A {}
+
+{
+    A a1 = new A();
+    A a2 = new A();
+
+    println(a1.equals(a2));
+}

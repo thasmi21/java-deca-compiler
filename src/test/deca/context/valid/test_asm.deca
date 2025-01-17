@@ -1,0 +1,6 @@
+// Description :
+// Test d'une methode écrite en assembleur
+
+class A {
+    int add(int a, int b)
+}

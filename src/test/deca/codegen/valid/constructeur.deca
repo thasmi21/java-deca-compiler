@@ -1,0 +1,22 @@
+// Description :
+// Test pour vérifier qu'un constructeur peut etre implémenté
+
+class Person {
+    int age;
+
+    void initialize(int age) {
+        this.age = age;
+    }
+
+    void tostring() {
+        println("Age: ", age);
+    }
+}
+
+{
+    Person p = new Person();
+    p.initialize(25);
+    p.tostring();
+}
+
+//erreur a la compilation
