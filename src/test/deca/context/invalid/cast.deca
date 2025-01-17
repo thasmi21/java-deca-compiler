@@ -1,0 +1,11 @@
+// Description :
+// cast d'une variable. Ne devrait pas fonctionner
+
+{
+    class A {}
+
+    class B extends A {}
+
+    A a = new A();
+    B b = (B)a;
+}

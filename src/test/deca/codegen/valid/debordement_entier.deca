@@ -1,0 +1,6 @@
+// Description : test de débordement des entiers signés en 32 bits
+
+{ int x = 2147483647; // Plus grand entier signé en 32 bits
+int result = x + 1; // Dépassement de capacité : Doit revenir à -2147483648
+println(result);
+}
