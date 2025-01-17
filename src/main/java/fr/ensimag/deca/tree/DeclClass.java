@@ -86,22 +86,12 @@ public class DeclClass extends AbstractDeclClass {
             if(extendsName != null) {
                 ClassDefinition classDefinition = new ClassDefinition(classType,getLocation(),extendsName.getClassDefinition());
                 VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
-                try {
-                    environmentExp.declare(className.getName(), varDef);
-                } catch(EnvironmentExp.DoubleDefException e) {
-                    throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
-                }
                 className.setDefinition(classDefinition);
                 className.setType(classType);
             }
             else {
                 ClassDefinition classDefinition = new ClassDefinition(classType,getLocation(),compiler.environmentType.OBJET.getDefinition());
                 VariableDefinition varDef = new VariableDefinition(type, this.getLocation());
-                try {
-                    environmentExp.declare(className.getName(), varDef);
-                } catch(EnvironmentExp.DoubleDefException e) {
-                    throw new ContextualError("La variable "+className.getName()+" est déjà définie !",this.getLocation());
-                }
                 className.setDefinition(classDefinition);
                 className.setType(classType);
             }
