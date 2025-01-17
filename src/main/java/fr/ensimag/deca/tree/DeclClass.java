@@ -312,12 +312,28 @@ public class DeclClass extends AbstractDeclClass {
         // regarder si elle a une super class, si oui il faudra ajouter les méthodes
         // de la super class dans le tableau en faisant attention aux indices
         DeclClass declClass = this;
-        if (this.extendsName != null){
+//        TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(declClass.extendsName.getName());
+//        ClassDefinition classDef = (ClassDefinition) t;
+        if (declClass.extendsName != null){
             TypeDefinition t= compiler.getEnvironmentType().getEnvTypes().get(extendsName.getName());
             ClassDefinition classDef = (ClassDefinition) t;
             ClassDefinition parent = classDef.getSuperClass(); // On récupère la classe parent de la classe actuelle
+
             //for (Label labPar : )
+        } else { // Si ca vaut nul c'est que la super classe est Object
+            // On va itérer sur les noms des méthodes de la classe courante
+            TypeDefinition t = compiler.getEnvironmentType().getEnvTypes().get(className.getName());
+            ClassDefinition currentClass = (ClassDefinition)t;
+            for (SymbolTable.Symbol methodName : currentClass.getMembers().getLocalEnv().keySet()) {
+                ExpDefinition expDefinition= currentClass.getMembers().getLocalEnv().get(methodName);
+                if (expDefinition instanceof MethodDefinition) { // Si on est bien avec une méthode
+                    // On ajoute son label
+                    this.addTabLabel(new Label("code." + currentClass.getType().getName().getName() + "." + methodName.getName()));
+                }
+
+            }
         }
+
         AbstractIdentifier parentIdent = declClass.extendsName;
     }
 
