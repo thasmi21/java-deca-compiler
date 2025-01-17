@@ -1,5 +1,5 @@
 // Descritpion:
-//      26 boucles for imbriquées pour vérifier que le compilateur arrive bien à toutes les gérer en meme temps
+//      26 boucles for imbriquées
 //      Incrémentation d'une variable à chaque itération
 //      Vérification à la fin du programme qu'on a bien effectué le bon nombre d'itérations (2²⁶ =  67,108,864)
 //

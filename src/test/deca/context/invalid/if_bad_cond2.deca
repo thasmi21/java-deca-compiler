@@ -1,0 +1,12 @@
+// Description:
+//      On écrit un if avec une condition non booléenne
+//
+// Résultats:
+//      Ligne 9:
+
+{
+    float a = 3.5;
+    if (a){
+        println("Faux");
+    }
+}

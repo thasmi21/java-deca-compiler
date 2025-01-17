@@ -1,0 +1,13 @@
+// Descritpion:
+//      Utilisation d'un boolean comme condition de if
+
+{
+    boolean a = true;
+    if (a){
+        int i = 0;
+        while(i<10){
+            assert(1==1);
+            i=i+1;
+        }
+    }
+}

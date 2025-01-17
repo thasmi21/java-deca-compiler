@@ -1,11 +1,14 @@
 // Descritpion:
-//      Declaration de 50 variables de diffférents types afin de vérifier la gestion des registres
+//      Utilisation d'un boolean comme condition de while
 
 {
-boolean a = true;
-while (a){
-    for (int i=0; i<5; i++)
-        assert(1==1);
-    a = false;
-}
+    boolean a = true;
+    while (a){
+        int i = 0;
+        while(i<10){
+            assert(1==1);
+            i=i+1;
+        }
+        a = false;
+    }
 }
