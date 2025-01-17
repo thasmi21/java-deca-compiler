@@ -326,6 +326,8 @@ public class DeclClass extends AbstractDeclClass {
         // On construit le tableau des étiquettes de méthodes de chaque classe
         this.createTableauLabel(compiler);
 
+        compiler.setToAddStack(compiler.getToAddStack()+1+this.tabLabel.size());
+
         // Pour class on veut récupérer si elle en a ses super class
         // Si elle n'en a pas sa super class va être Object
         String debComment = "Construction de la table des méthode de ";

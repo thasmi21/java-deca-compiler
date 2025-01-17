@@ -8,10 +8,7 @@ import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.*;
-import fr.ensimag.ima.pseudocode.instructions.ADDSP;
-import fr.ensimag.ima.pseudocode.instructions.LEA;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.instructions.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -69,7 +66,9 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
 
         // On doit écrire le code de la méthode de Object
-        
+        // Pour le moment on crée simplement l'étiquette qui met 0 dans R0 (elle ne fait rien)
+        compiler.getToExecuteEnd().add(new Line(new Label("code.Object.equals")));
+        compiler.getToExecuteEnd().add(new Line(new RTS())); // Pour le moment la méthode Object.equals ne fait rien
 
         for (AbstractDeclClass declClass : getList()) {
             // Ceci correspond à la passe 1

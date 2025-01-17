@@ -51,7 +51,7 @@ public class Program extends AbstractProgram {
         // Il faudrait une méthode qui calcule de combien on doit ADDSP
         // On a : ADDSP = nb_var_glob + pour chaque class ( @table_super_class + @Code_methods_Object.equals + @Code_method_de_la_class)
         int toAddStack = compiler.toADDSP(compiler);
-        compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
+        //compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
         // Il faut rendre l'instruction précédente plus générale
         // 3 varGlo + 2classObject + 2 ClassSimple
         compiler.addComment("--------------------------------------------------");
@@ -80,6 +80,7 @@ public class Program extends AbstractProgram {
         // On doit ajouter l'instruction TSTO
         // Pour le moment on la fixe à une certaine constante mais il faudra être
         // capable de la calculer par la suite
+        compiler.addFirst(new ADDSP(compiler.getToAddStack() + compiler.getNbVarGlo()));
         Label stackFull = new Label("pile_pleine");
         compiler.addFirst(new BOV(stackFull));
         int val = GestionRegistre.getIndiceRegistreGB() + GestionRegistre.getCompteurTempUsage();

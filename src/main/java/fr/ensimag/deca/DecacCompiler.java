@@ -46,6 +46,16 @@ public class DecacCompiler {
     private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
     private boolean labelDefined = false;
     private int nbVarGlo = 0;
+    private int toAddStack = 2;
+
+    public int getToAddStack(){
+        return toAddStack;
+    }
+
+    public void setToAddStack(int toAddStack){
+        this.toAddStack = toAddStack;
+    }
+
 
     public int getNbVarGlo() {
         return nbVarGlo;
