@@ -1,0 +1,12 @@
+// Description:
+//    class méthode float
+
+
+class A {
+
+   float l(){
+        float x,y;
+        return x+y;
+   }
+
+}

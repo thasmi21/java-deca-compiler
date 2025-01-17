@@ -1,0 +1,13 @@
+// Description:
+//    class méthode int
+
+
+class A {
+
+   int l(){
+        int x;
+        int y;
+        return x+y;
+   }
+
+}

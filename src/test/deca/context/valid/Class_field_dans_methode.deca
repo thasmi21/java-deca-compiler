@@ -1,0 +1,14 @@
+// Description:
+//    class field exterieur à la méthode
+
+
+class A {
+
+    int x;
+    int y;
+
+    void l(){
+        x+y;
+    }
+
+}
