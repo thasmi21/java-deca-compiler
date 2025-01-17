@@ -30,25 +30,34 @@ public class Assign extends AbstractBinaryExpr {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+                           ClassDefinition currentClass) throws ContextualError {
+        Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.sameType(typeLeft) || ((typeLeft.isFloat() && typeRight.isInt()|| typeLeft.isInt()) && (typeRight.isFloat()))) {
+        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
             if(typeRight.sameType(typeLeft)){
                 this.setType(typeLeft);
                 return typeLeft;
             }
+            this.setType(compiler.environmentType.FLOAT);
             if(typeLeft.isFloat()){
-                this.setType(typeLeft);
-                return typeLeft;
+                type=typeLeft;
             }
-            this.setType(typeRight);
-            return typeRight;
+            else{
+                type=typeRight;
+            }
+            //Pour ajouter l'enrichissement Convfloat
+            if(!typeRight.isFloat()){
+                setRightOperand(new ConvFloat(getRightOperand()));
+                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+            return type;
         }
         else{
             throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+" "+ typeRight, getLocation());
         }
     }
+
 
     /*@Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register) {

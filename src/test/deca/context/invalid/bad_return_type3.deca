@@ -1,0 +1,14 @@
+// Description:
+//    retour du mauvais type
+//
+//
+//
+//
+
+class A {
+    float x = 1.0;
+
+    int getX(){
+        return x;
+    }
+}

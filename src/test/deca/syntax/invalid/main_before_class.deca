@@ -1,0 +1,12 @@
+// Description:
+//    déclaration d'un main avant une déclaration de classe
+//
+//
+//
+//
+
+{
+    int a =1;
+}
+class A{
+}

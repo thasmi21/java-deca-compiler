@@ -1,0 +1,9 @@
+// Description:
+//    class extends une classe qui n'existe pas
+//
+//
+//
+//
+
+class A extends B{
+}
