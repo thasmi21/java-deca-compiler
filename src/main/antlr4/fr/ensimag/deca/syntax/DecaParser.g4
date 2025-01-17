@@ -45,6 +45,12 @@ prog returns[AbstractProgram tree]
         }
     ;
 
+//include
+//    : INCLUDE* {
+//        getLexer().doInclude($INCLUDE.text);
+//    }
+//    ;
+
 main returns[AbstractMain tree]
     : /* epsilon */ {
             $tree = new EmptyMain();

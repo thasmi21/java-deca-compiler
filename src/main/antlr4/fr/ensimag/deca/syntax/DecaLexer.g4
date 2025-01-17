@@ -17,6 +17,7 @@ options {
 
 fragment STRING_CAR: ~ ('"' | '\\' );
 
+
 ASM : 'asm';
 
 CLASS : 'class';
@@ -90,6 +91,8 @@ ARRAY : 'Array';
 fragment LETTER : [a-zA-Z] ;
 fragment DIGIT : [0-9] ;
 fragment POSITIVE_DIGIT : '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9';
+fragment FILENAME : (LETTER | DIGIT | '.' | '-' | '_')+;
+
 IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )*;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
@@ -163,3 +166,7 @@ DET : 'det';
 
 ISINVERSIBLE : 'isInversible';
 
+
+INCLUDE : '#include' (' ')* '"' FILENAME '"'{
+    doInclude(getText());
+};
