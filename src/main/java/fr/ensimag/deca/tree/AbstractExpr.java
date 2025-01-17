@@ -111,19 +111,8 @@ public abstract class AbstractExpr extends AbstractInst {
     protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-        Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
+        this.verifyExpr(compiler, localEnv, currentClass);
         return compiler.environmentType.VOID;
-
-        // Vérification : une expression de type void ne peut pas être utilisée comme instruction
-        //pas sur à vérifier pose des problème à la construction des fonctions
-        /*
-        if (exprType.isVoid()) {
-            throw new ContextualError(
-                    "Une expression de type void ne peut pas être utilisée comme instruction.",
-                    this.getLocation()
-            );
-        }
-        */
     }
 
     /**
