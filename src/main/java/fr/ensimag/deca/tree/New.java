@@ -29,7 +29,7 @@ public class New extends AbstractExpr{
                 ClassDefinition classDefinition=(ClassDefinition)typeDefinition;
                 Type type= classDefinition.getType();
                 setType(type);
-                return type;N
+                return type;
             }
         }
         throw new ContextualError("le type donnée n'est pas une class",getLocation());
