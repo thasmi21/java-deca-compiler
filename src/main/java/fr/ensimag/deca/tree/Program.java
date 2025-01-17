@@ -71,6 +71,11 @@ public class Program extends AbstractProgram {
         compiler.addInstruction(new WSTR("Erreur: La pile est pleine")); // On écrit un message d'erreur
         compiler.addInstruction(new WNL());
         compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
+        //dereferencement null
+        compiler.addLabel(new Label("dereferencement.null"));
+        compiler.addInstruction(new WSTR("Erreur: dereferencement de null"));
+        compiler.addInstruction(new WNL());
+        compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
 
         // On doit ajouter l'instruction TSTO
         // Pour le moment on la fixe à une certaine constante mais il faudra être

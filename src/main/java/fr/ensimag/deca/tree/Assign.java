@@ -6,9 +6,8 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.REM;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
  * Assignment, i.e. lvalue = expr.
@@ -95,6 +94,58 @@ public class Assign extends AbstractBinaryExpr {
         // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
         compiler.addInstruction(new STORE(reg, regAdresse));
         reg.setInUse(false);
+    }
+
+    @Override
+    public void codeGenInstMethod(DecacCompiler compiler) {
+        //AbstractLValue left = getLeftOperand();
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }else{
+            ident = (AbstractIdentifier)getLeftOperand();
+        }
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
+        if(ident.getDefinition().isField()){
+
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstructionEnd(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+            getRightOperand().evalueExprMethod(compiler, reg);
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, r));
+            compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(rWasNul){
+                compiler.addInstructionEnd(new POP(Register.getR(5)));
+            }
+            return;
+        }
+
+        if(reg != null){
+            getRightOperand().evalueExprMethod(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else{
+            reg = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(reg));
+            getRightOperand().evalueExprMethod(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            compiler.addInstructionEnd(new POP(reg));
+        }
+
+
     }
 
 

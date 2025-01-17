@@ -162,7 +162,7 @@ public class DeclClass extends AbstractDeclClass {
         int dernierIndice = compiler.getToExecuteEnd().size();
         int nombreVarSuper;
         if(extendsName == null){
-            nombreVarSuper = 1;
+            nombreVarSuper = 0;
         }
         else{
 
@@ -187,7 +187,9 @@ public class DeclClass extends AbstractDeclClass {
                     compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1)));
                     compiler.getToExecuteEnd().add(new Line(new STORE(Register.R0, new RegisterOffset(cpt, Register.R1))));
                 }
+
                 //il faut appeler la methode init du parent
+                field.getVarName().getFieldDefinition().setIndex(cpt);
                 cpt++;
             }
         }
@@ -212,6 +214,7 @@ public class DeclClass extends AbstractDeclClass {
                     compiler.getToExecuteEnd().add(new Line(new STORE(Register.R0, new RegisterOffset(cpt, Register.R1))));
                     d1++;
                 }
+                field.getVarName().getFieldDefinition().setIndex(cpt);
                 cpt++;
             }
         }
@@ -228,13 +231,27 @@ public class DeclClass extends AbstractDeclClass {
     protected void codeGenMethodBody(DecacCompiler compiler) {
         for (AbstractBody method: classBody.getList()){
             if(method instanceof DeclMethod){
+                GestionRegistre.setIndiceRegistreLB(0);
                 DeclMethod method1 = (DeclMethod)method;
                 String nom_label = "code."+this.getSymbol().getName()+"."+ method1.getVarName().getName();
                 AbstractLine ligne_label = new Line(new Label(nom_label));
                 compiler.getToExecuteEnd().add(ligne_label);
                 int d1 = 0; //Pour l'instant pas de TSTO
                 int dernierIndice = compiler.getToExecuteEnd().size();
-                int cpt = 1;
+
+                compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXX"));
+                //init des varaibles avec leur index
+
+                //les paramètres ont été gérer dans le verify
+                for (AbstractDeclVar decl : method1.getDeclVar().getList()){
+                    decl.codeGenDeclVarMethod(compiler);
+                }
+                for (AbstractInst ins : method1.getInsts().getList()){
+                    //RegisterOffset parentRegister = new RegisterOffset(-2, Register.LB);
+                    ins.codeGenInstMethod(compiler);
+                    compiler.addInstructionEnd(new RTS());
+                }
+                compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXXX"));
             }
 
         }

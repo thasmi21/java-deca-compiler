@@ -4,8 +4,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 import java.io.PrintStream;
@@ -16,10 +15,43 @@ public class Dot extends AbstractLValue {
     private AbstractIdentifier identifier;
     private ListExpr args;
 
+    private boolean dotField = false;
+
     public Dot(AbstractExpr select_expr, AbstractIdentifier identifier) {
         this.select_expr = select_expr;
         this.identifier = identifier;
         this.args = null;
+        this.dotField=true;
+    }
+    public AbstractIdentifier getIdentifier(){
+        return this.identifier;
+    }
+    public boolean getDotField(){
+        return this.dotField;
+    }
+
+    @Override
+    public void codeGenPrint(DecacCompiler compiler){
+        if(dotField){
+            DAddr addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+            int indice = identifier.getFieldDefinition().getIndex();
+            GPRegister register = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(register == null){
+                rWasNul = true;
+                register = Register.getR(2);
+                compiler.addInstruction(new PUSH(register));
+            }
+            compiler.addInstruction(new LOAD(addrParent, register));
+            GestionRegistre.verifieNullReference(compiler, register);
+            compiler.addInstruction(new LOAD(new RegisterOffset(indice, register), register));
+            compiler.addInstruction(new LOAD(register, Register.R1));
+            if(rWasNul){
+                compiler.addInstruction(new POP(register));
+            }else{
+                register.setInUse(false);
+            }
+        }
     }
 
     public Dot(AbstractExpr select_expr,AbstractIdentifier identifier,ListExpr args) {

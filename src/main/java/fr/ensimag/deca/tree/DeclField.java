@@ -31,6 +31,7 @@ public class DeclField extends AbstractDeclField {
 
 
 
+
     @Override
     protected void verifyClassMembers(DecacCompiler compiler,
                                    EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
@@ -61,6 +62,9 @@ public class DeclField extends AbstractDeclField {
     }
     public AbstractIdentifier getTypeIdentifier() {
         return this.type;
+    }
+    public AbstractIdentifier getVarName() {
+        return this.varName;
     }
 
     @Override

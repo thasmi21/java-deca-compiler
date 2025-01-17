@@ -150,12 +150,20 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented by us");
+    }
 
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented by us");
     }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -166,6 +174,9 @@ public abstract class AbstractExpr extends AbstractInst {
     *
     * */
     public void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register ){
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 

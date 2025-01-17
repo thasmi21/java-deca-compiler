@@ -23,11 +23,15 @@ public class Params extends AbstractParams {
 
     }
 
+    public AbstractIdentifier getVarName(){
+        return this.varName;
+    }
+
     @Override
     protected void verifyParams(DecacCompiler compiler,
                                  EnvironmentExp localEnv) throws ContextualError {
         Type t = this.type.verifyType(compiler);
-        VariableDefinition varDef = new VariableDefinition(t, this.getLocation());
+        ParamDefinition varDef = new ParamDefinition(t, this.getLocation());
         if (t.isVoid()) {
             throw new ContextualError("La variable ne peut pas être de type void !", this.getLocation());
         }

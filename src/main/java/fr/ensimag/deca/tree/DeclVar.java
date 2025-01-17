@@ -8,12 +8,11 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
-import fr.ensimag.ima.pseudocode.instructions.ADDSP;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.Line;
+import fr.ensimag.ima.pseudocode.instructions.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -68,6 +67,23 @@ public class DeclVar extends AbstractDeclVar {
             //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
             compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
             r.setInUse(false); //il faut verifier après que r ne sera jamais nul
+        }
+    }
+
+    @Override
+    public void codeGenDeclVarMethod(DecacCompiler compiler){
+        //throw new UnsupportedOperationException("Not Yet implemented by us");
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceLBandIncrement(1), Register.LB));
+        //initialiser l'adresse
+        if(initialization instanceof Initialization){
+            //prendre un registre libre;
+            //evaluer l'expression et charger dans le registre
+            //puis affecter
+            GPRegister r = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(r));
+            ((Initialization) initialization).getExpression().evalueExprMethod(compiler, r);
+            compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
+            compiler.addInstructionEnd(new POP(r));
         }
     }
 

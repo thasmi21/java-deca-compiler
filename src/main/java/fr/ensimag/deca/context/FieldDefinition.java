@@ -15,6 +15,9 @@ public class FieldDefinition extends ExpDefinition {
     }
 
     private int index;
+    public void setIndex(int index){
+        this.index = index;
+    }
     
     @Override
     public boolean isField() {

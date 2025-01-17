@@ -28,8 +28,11 @@ public class ListParams extends TreeList<AbstractParams> {
      *      the "env_exp_r" attribute
      */
     void verifyParams(DecacCompiler compiler, EnvironmentExp localEnv) throws ContextualError {
+        int cpt_idx = -3;
         for(AbstractParams param : this.getList()){
             param.verifyParams(compiler, localEnv);
+            ((Params)param).getVarName().getParamDefinition().setIndex(cpt_idx);
+            cpt_idx--;
         }
     }
 
