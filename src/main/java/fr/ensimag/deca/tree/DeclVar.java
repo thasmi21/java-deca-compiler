@@ -8,11 +8,8 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
 
 import fr.ensimag.deca.tools.SymbolTable;
-import fr.ensimag.ima.pseudocode.Line;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -55,6 +52,7 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     public void codeGenDeclVar(DecacCompiler compiler){
+        GPRegister r = GestionRegistre.obtainFreeRegister();
             //throw new UnsupportedOperationException("Not Yet implemented by us");
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
@@ -65,12 +63,20 @@ public class DeclVar extends AbstractDeclVar {
                 ClassDefinition def = ident.getClassDef();
                 System.out.println(def);
 
-                compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK"+ def.getNumberOfFields());
-                
+                int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
+                compiler.addInstruction(new NEW(nbrTotFields+1, r));
+                compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+                compiler.addInstruction(new BOV(new Label("tas_plein")));
+                compiler.addInstruction(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(0, r)));
+                compiler.addInstruction(new PUSH(r));
+                compiler.addInstruction(new BSR(new Label("init."+def.getType().getName())));
+                compiler.addInstruction(new POP(r));
                 compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                r.setInUse(false);
                 return ;
             }
-            GPRegister r = GestionRegistre.obtainFreeRegister();
+
             ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
             compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
             r.setInUse(false); //il faut verifier après que r ne sera jamais nul

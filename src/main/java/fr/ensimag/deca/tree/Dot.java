@@ -23,6 +23,9 @@ public class Dot extends AbstractLValue {
         this.args = null;
         this.dotField=true;
     }
+    public AbstractExpr getSelectExpr(){
+        return this.select_expr;
+    }
     public AbstractIdentifier getIdentifier(){
         return this.identifier;
     }
@@ -46,6 +49,7 @@ public class Dot extends AbstractLValue {
             GestionRegistre.verifieNullReference(compiler, register);
             compiler.addInstruction(new LOAD(new RegisterOffset(indice, register), register));
             compiler.addInstruction(new LOAD(register, Register.R1));
+            compiler.addInstruction(new WINT());
             if(rWasNul){
                 compiler.addInstruction(new POP(register));
             }else{

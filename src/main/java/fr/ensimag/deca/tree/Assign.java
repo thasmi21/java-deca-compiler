@@ -86,14 +86,56 @@ public class Assign extends AbstractBinaryExpr {
         //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
-        DAddr regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }else{
+            ident = (AbstractIdentifier)getLeftOperand();
+        }
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
         // On prend ensuite un registre libre
         GPRegister reg = GestionRegistre.obtainFreeRegister();
-        // On y stock la valeur contenue dans l'opérand droite
-        getRightOperand().evalueExpr(compiler, reg);
-        // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
-        compiler.addInstruction(new STORE(reg, regAdresse));
-        reg.setInUse(false);
+        if(ident.getDefinition().isField()){
+
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstruction(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+
+            DAddr addrParent = ((AbstractIdentifier)((Dot)getLeftOperand()).getSelectExpr()).getExpDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addrParent, r));
+            GestionRegistre.verifieNullReference(compiler, r);
+            getRightOperand().evalueExpr(compiler, reg);
+            compiler.addInstruction(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(rWasNul){
+                compiler.addInstruction(new POP(Register.getR(5)));
+            }
+            return;
+        }
+        if(reg != null){
+            // On y stock la valeur contenue dans l'opérand droite
+            getRightOperand().evalueExpr(compiler, reg);
+            // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else {
+            reg = Register.getR(2);
+            compiler.addInstruction(new PUSH(reg));
+            getRightOperand().evalueExprMethod(compiler, reg);
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            compiler.addInstruction(new POP(reg));
+        }
+
     }
 
     @Override
