@@ -151,5 +151,5 @@ COMMA : ',';
 MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 
 INCLUDE : '#include' (' ')* '"' (LETTER | DIGIT | '.' | '-' | '_')+ '"' {
-    doInclude(getText().substring(10).trim().replace("\"", ""));
+    doInclude(getText().substring(9).trim());
 };
