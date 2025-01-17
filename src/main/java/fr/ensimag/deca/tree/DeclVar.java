@@ -59,12 +59,19 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
         if(initialization instanceof Initialization){
-            //prendre un registre libre;
-            //evaluer l'expression et charger dans le registre
-            //puis affecter
+            if(((Initialization) initialization).getExpression() instanceof AbstractIdentifier){
+                AbstractIdentifier ident = (AbstractIdentifier)((Initialization) initialization).getExpression();
+                //si c'est une classe definition
+                System.out.println(ident.getType());
+                if(ident.getExpDefinition().isClass()){
+                    ClassDefinition def = ident.getClassDefinition();
+                    compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK"+ def.getNumberOfFields());
+                }
+                compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                return ;
+            }
             GPRegister r = GestionRegistre.obtainFreeRegister();
             ((Initialization) initialization).getExpression().evalueExpr(compiler, r);
-            //Register r = GenDeclVar.evalueExpre(compiler,((Initialization) initialization).getExpression());
             compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
             r.setInUse(false); //il faut verifier après que r ne sera jamais nul
         }
