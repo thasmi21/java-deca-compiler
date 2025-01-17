@@ -338,11 +338,7 @@ public class DeclClass extends AbstractDeclClass {
                 // On ajoute son label
                 this.addTabLabel(new Label("code." + currentClass.getType().getName().getName() + "." + methodName.getName()));
             }
-
         }
-
-
-        AbstractIdentifier parentIdent = declClass.extendsName;
     }
 
     @Override
@@ -350,6 +346,16 @@ public class DeclClass extends AbstractDeclClass {
         // On construit le tableau des étiquettes de méthodes de chaque classe
         this.createTableauLabel(compiler);
 
+        TypeDefinition tip = compiler.getEnvironmentType().getEnvTypes().get(className.getName());
+        ClassDefinition clas = (ClassDefinition) tip;
+        for (SymbolTable.Symbol meth : clas.getMembers().getLocalEnv().keySet()){
+            ExpDefinition expDefinition= clas.getMembers().getLocalEnv().get(meth);
+            if (expDefinition instanceof MethodDefinition) { // Si on est bien avec une méthode
+                MethodDefinition methodDefinition = (MethodDefinition) expDefinition;
+                methodDefinition.setoffSet(this.tabLabel.indexOf(new Label("code."+ clas.getType().getName().getName() + "." + meth.getName())) + 1);
+            }
+
+        }
 
         compiler.setToAddStack(compiler.getToAddStack()+1+this.tabLabel.size());
 
