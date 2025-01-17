@@ -1,0 +1,9 @@
+// Descritpion:
+//      On essaye d'appeler une variable int par asm
+//
+// Résultats:
+//      Lignes 8
+
+{
+    int asm = 1;
+}

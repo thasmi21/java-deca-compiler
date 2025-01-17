@@ -1,0 +1,9 @@
+// Descritpion:
+//      On essaye d'appeler une variable par extends
+//
+// Résultats:
+//      Lignes 8
+
+{
+    boolean extends = true;
+}
