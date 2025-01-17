@@ -1,0 +1,23 @@
+// Descritpion:
+//      On va essyer de retourner le mauvais type d'une méthode utilisant des if
+//
+// Résultats:
+//
+
+class Prem {
+    int a = 1;
+
+    int check(int param) {
+        if (param == this.a) {
+            println("Egalité");
+        } else {
+            println("Aïe...");
+        }
+    }
+}
+
+{
+    Prem abc = new Prem();
+    int p = 2;
+    abc.check(p);
+}

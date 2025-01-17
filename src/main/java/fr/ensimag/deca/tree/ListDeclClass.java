@@ -78,15 +78,6 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         //throw new UnsupportedOperationException("Not Finish yet");
     }
 
-    public void toAddStack(DecacCompiler compiler) {
-        int result = 0;
-        int nbVarGlo = compiler.getNbVarGlo();
-        result = result + nbVarGlo;
-        for (AbstractDeclClass declClass : getList()) {
-            result = result + 2;
-        }
-    }
-
     public void codeGenPass2(DecacCompiler compiler){
         compiler.getToExecuteEnd().add(new Line("debut initialisation des Champs des classes"));
         for (AbstractDeclClass declClass : getList()) {
