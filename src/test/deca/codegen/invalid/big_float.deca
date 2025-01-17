@@ -1,0 +1,11 @@
+// Descritpion:
+//      Float trop grand normalement
+//
+// Résultats:
+//
+
+{
+	float x = 2.0e+38;
+	float res = x * 2;
+	println(res);
+}
