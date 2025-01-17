@@ -1,0 +1,6 @@
+//programme ne devant pas correctement parser
+
+{
+    "j'effectue
+    "un test qui ne fonctionne pas";
+}
