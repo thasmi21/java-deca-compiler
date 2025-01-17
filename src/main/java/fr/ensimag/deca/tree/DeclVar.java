@@ -61,7 +61,7 @@ public class DeclVar extends AbstractDeclVar {
                 New ident = (New)((Initialization) initialization).getExpression();
                 //si c'est une classe definition
                 ClassDefinition def = ident.getClassDef();
-                System.out.println(def);
+                //System.out.println(def);
 
                 int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
                 compiler.addInstruction(new NEW(nbrTotFields+1, r));

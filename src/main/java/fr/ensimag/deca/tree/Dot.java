@@ -64,6 +64,41 @@ public class Dot extends AbstractLValue {
         this.args = args;
     }
 
+    @Override
+    public void evalueExpr(DecacCompiler compiler, GPRegister register ){
+
+        DAddr addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+        if(dotField){
+            //DAddr addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addrParent, register));
+            GestionRegistre.verifieNullReference(compiler, register);
+            compiler.addInstruction(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(),register), register));
+        }
+        //il s'agit donc d'un appel de methode
+        else {
+            //on evalue les paramètres et on les empiles
+            int nbrParam = args.getList().size();
+            int cpt = -1;
+            compiler.addInstruction(new ADDSP(nbrParam));
+            compiler.addInstruction(new LOAD(addrParent, register));
+            compiler.addInstruction(new STORE(register, new RegisterOffset(0, Register.SP)));
+            for(AbstractExpr expr: args.getList()){
+                expr.evalueExpr(compiler, register);
+                compiler.addInstruction(new STORE(register, new RegisterOffset(cpt, Register.SP)));
+                cpt--;
+            }
+            compiler.addInstruction(new LOAD(new RegisterOffset(0, Register.SP), register));
+            GestionRegistre.verifieNullReference(compiler, register);
+            compiler.addInstruction(new LOAD(new RegisterOffset(0, register), register));
+            //appel de la methode dont -il s'agit
+            //identifier.getMethodDefinition().getIndex()
+            compiler.addInstruction(new BSR(new RegisterOffset(1, register)));
+            //fin appel de la methode
+            compiler.addInstruction(new SUBSP(nbrParam));
+            System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+
+        }
+    }
 
 
     @Override
