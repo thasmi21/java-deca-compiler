@@ -78,6 +78,17 @@ public class DecacCompiler {
         this.source = source;
     }
 
+    /*
+    * Fonction qui permet de dire si une instruction est à ajouter  à la fin(pos1 à 1)
+    * pos = 0: on ajoute à la position actuelle
+    * pos=1: on ajoute à la fin
+    * */
+
+    public void addInstructionEnd(Instruction instruction){
+            toExecuteEnd.add(new Line(instruction));
+
+    }
+
     public EnvironmentType getEnvironmentType() {
         return envType;
     }
@@ -228,6 +239,9 @@ public class DecacCompiler {
     private boolean doCompile(String sourceName, String destName,
             PrintStream out, PrintStream err)
             throws DecacFatalError, LocationException {
+
+
+
         AbstractProgram prog = doLexingAndParsing(sourceName, err);
 
         if (prog == null) {

@@ -76,5 +76,15 @@ public class ClassDefinition extends TypeDefinition {
         members = new EnvironmentExp(parent);
         this.superClass = superClass;
     }
+
+    private int adrTableMethode;
+
+    public int getAdrTableMethode() {
+        return adrTableMethode;
+    }
+
+    public void setAdrTableMethode(int adrTableMethode) {
+        this.adrTableMethode = adrTableMethode;
+    }
     
 }

@@ -34,6 +34,16 @@ public class DeclMethod extends AbstractBody {
         return this.varName;
     }
 
+    public ListInst getInsts(){
+        return  this.inst;
+    }
+    public ListParams getParams(){
+        return this.params;
+    }
+    public ListDeclVar getDeclVar(){
+        return this.declVar;
+    }
+
     @Override
     protected void verifyClassMembers(DecacCompiler compiler,
                               EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {

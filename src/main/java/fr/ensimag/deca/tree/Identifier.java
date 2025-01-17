@@ -143,6 +143,27 @@ public class Identifier extends AbstractIdentifier {
         }
     }
 
+    /**
+     * Like {@link #getDefinition()}, but works only if the definition is a ExpDefinition.
+     *
+     * This method essentially performs a cast, but throws an explicit exception
+     * when the cast fails.
+     *
+     * @throws DecacInternalError
+     *             if the definition is not a field definition.
+     */
+    @Override
+    public ParamDefinition getParamDefinition() {
+        try {
+            return (ParamDefinition) definition;
+        } catch (ClassCastException e) {
+            throw new DecacInternalError(
+                    "Identifier "
+                            + getName()
+                            + " is not a Param identifier, you can't call getParamDefinition on it");
+        }
+    }
+
     @Override
     public void setDefinition(Definition definition) {
         this.definition = definition;
@@ -243,7 +264,30 @@ public class Identifier extends AbstractIdentifier {
         compiler.addInstruction(new LOAD(op, register));
     }
 
+    /*public void evalueExprField(DecacCompiler compiler, GPRegister register, DVal addrParent){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(addrParent, register)));
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(indiceField, register), register)));
+    }*/
 
+    @Override
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register) {
+
+        if(getDefinition().isField()){
+            int index = ((FieldDefinition)getDefinition()).getIndex();
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, register));
+            compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, register), register));
+            return;
+        }
+        else if(getDefinition().isParam()){
+            int index = getParamDefinition().getIndex();
+            DAddr addrParam = new RegisterOffset(index, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParam, register));
+            return;
+        }
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstructionEnd(new LOAD(op, register));
+    }
 
     /**
      * Implements non-terminal "type" of [SyntaxeContextuelle] in the 3 passes

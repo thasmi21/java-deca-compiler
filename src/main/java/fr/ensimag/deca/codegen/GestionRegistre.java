@@ -3,10 +3,9 @@ package fr.ensimag.deca.codegen;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tree.AbstractExpr;
-import fr.ensimag.ima.pseudocode.DVal;
-import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.*;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 
@@ -30,13 +29,18 @@ public final class GestionRegistre {
     private int getIndiceRegistreSP(){return indiceRegistreSP;}
 
     public static void IncCompteurTempUsage(){compteurTempUsage +=1;}
-    private void setIndiceRegistreGB(int indice) {indiceRegistreGB = indice;}
-    private void setIndiceRegistreLB(int indice) {indiceRegistreLB = indice;}
+    private void  setIndiceRegistreGB(int indice) {indiceRegistreGB = indice;}
+    public static void setIndiceRegistreLB(int indice) {indiceRegistreLB = indice;}
     private void setIndiceRegistreSP(int indice) {indiceRegistreSP = indice;}
 
     public static int obtainIndiceGPandIncrement(int offset){
         indiceRegistreGB += offset;
         return indiceRegistreGB;
+    }
+
+    public static int obtainIndiceLBandIncrement(int offset){
+        indiceRegistreLB += offset;
+        return indiceRegistreLB;
     }
 
     /*
@@ -69,6 +73,16 @@ public final class GestionRegistre {
         compiler.addInstruction(new PUSH(register));
         leftExpr.evalueExpr(compiler, register );
         compiler.addInstruction(new POP(Register.R0));
+    }
+    public static void pushETpopMethod(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
+        rigthExpr.evalueExprMethod(compiler, register );
+        compiler.addInstructionEnd(new PUSH(register));
+        leftExpr.evalueExprMethod(compiler, register );
+        compiler.addInstructionEnd(new POP(Register.R0));
+    }
+    public static void verifieNullReference(DecacCompiler compiler, GPRegister register){
+        compiler.addInstruction(new CMP(new NullOperand(), register));
+        compiler.addInstruction(new BEQ(new Label("dereferencement.null")));
     }
 
 }
