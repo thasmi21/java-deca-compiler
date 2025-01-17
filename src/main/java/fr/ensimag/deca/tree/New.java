@@ -27,7 +27,9 @@ public class New extends AbstractExpr{
             TypeDefinition typeDefinition=environmentType.getEnvTypes().get(identifier.getName());
             if(typeDefinition instanceof ClassDefinition) {
                 ClassDefinition classDefinition=(ClassDefinition)typeDefinition;
-                return classDefinition.getType();
+                Type type= classDefinition.getType();
+                setType(type);
+                return type;N
             }
         }
         throw new ContextualError("le type donnée n'est pas une class",getLocation());
