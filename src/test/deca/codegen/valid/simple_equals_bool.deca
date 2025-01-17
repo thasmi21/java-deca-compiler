@@ -1,0 +1,15 @@
+// Description :
+//      Test de condition booléenne ==
+// Résultats:
+// 5 est égal à 5
+
+{
+    int a = 5;
+    int b = 5;
+
+    if (a == b) {
+        println("",a ," est égal à ", b);
+    } else {
+        println("",a ," n'est pas égal à ", b);
+    }
+}

@@ -99,8 +99,8 @@ public class IntLiteral extends AbstractExpr {
     }
     @Override
     protected void codeGenPrintX(DecacCompiler compiler) {
-        compiler.addInstruction(new LOAD(this.getValue(),Register.R1));
-        compiler.addInstruction(new WINT());
+        ConvFloat valFloat = new ConvFloat(this);
+        valFloat.evalueExpr(compiler, Register.R1);
+        compiler.addInstruction(new WFLOATX());
     }
-
 }

@@ -488,9 +488,15 @@ literal returns[AbstractExpr tree]
         setLocation($tree, $INT);
         }
     | fd=FLOAT {
-        $tree = new FloatLiteral(Float.parseFloat($fd.text));
-        setLocation($tree, $fd);
+        float val = Float.parseFloat($fd.text);
+        try {
+            $tree = new FloatLiteral(val);
+        } catch (IllegalArgumentException e) {
+            System.err.print(tokenLocation($fd));
+            System.err.print(e.getMessage());
         }
+        setLocation($tree, $fd);
+    }
     | STRING {
         String letexte = $STRING.text.substring(1, $STRING.text.length() - 1);
         String texte_f = letexte.replace("\\\"", "\"").replace("\\\\", "\\");
