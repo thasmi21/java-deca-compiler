@@ -239,8 +239,8 @@ public class DeclClass extends AbstractDeclClass {
                 for (AbstractInst ins : method1.getInsts().getList()){
                     //RegisterOffset parentRegister = new RegisterOffset(-2, Register.LB);
                     ins.codeGenInstMethod(compiler);
-                    compiler.addInstructionEnd(new RTS());
                 }
+                compiler.addInstructionEnd(new RTS());
                 compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXXX"));
             }
 
