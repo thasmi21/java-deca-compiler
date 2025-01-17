@@ -93,7 +93,7 @@ public class Dot extends AbstractLValue {
             //appel de la methode dont -il s'agit
             //identifier.getMethodDefinition().getIndex() /*
             // il faudra qu'on puisse recuperer après le bon index*/
-            compiler.addInstruction(new BSR(new RegisterOffset(4, register)));
+            compiler.addInstruction(new BSR(new RegisterOffset(identifier.getMethodDefinition().getOffSet(), register)));
             //fin appel de la methode
             compiler.addInstruction(new SUBSP(nbrParam));
             compiler.addInstruction(new LOAD(Register.R0, register));
