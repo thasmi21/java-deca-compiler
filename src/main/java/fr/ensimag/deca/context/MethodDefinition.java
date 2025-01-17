@@ -33,6 +33,10 @@ public class MethodDefinition extends ExpDefinition {
 
     private int index;
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Override
     public MethodDefinition asMethodDefinition(String errorMessage, Location l)
             throws ContextualError {

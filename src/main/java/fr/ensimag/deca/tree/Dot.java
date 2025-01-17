@@ -91,10 +91,12 @@ public class Dot extends AbstractLValue {
             GestionRegistre.verifieNullReference(compiler, register);
             compiler.addInstruction(new LOAD(new RegisterOffset(0, register), register));
             //appel de la methode dont -il s'agit
-            //identifier.getMethodDefinition().getIndex()
+            //identifier.getMethodDefinition().getIndex() /*
+            // il faudra qu'on puisse recuperer après le bon index*/
             compiler.addInstruction(new BSR(new RegisterOffset(1, register)));
             //fin appel de la methode
             compiler.addInstruction(new SUBSP(nbrParam));
+            compiler.addInstruction(new LOAD(Register.R0, register));
             System.out.println("Il y'a "+ args.getList().size()+" paramètres");
 
         }
