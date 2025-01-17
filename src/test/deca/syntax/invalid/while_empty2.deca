@@ -1,0 +1,11 @@
+// Description:
+//      On essaye d'exécuter un while contenant seulement un ;
+//
+// Résultats:
+//      Lignes 9
+
+{
+    while (true){
+        ;
+    }
+}

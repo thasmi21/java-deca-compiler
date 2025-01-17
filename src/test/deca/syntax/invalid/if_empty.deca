@@ -1,0 +1,11 @@
+// Description:
+//      On essaye d'exécuter un if sans instruction
+//
+// Résultats:
+//      Lignes 9
+
+{
+    if (true){
+
+    }
+}
