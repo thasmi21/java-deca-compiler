@@ -13,12 +13,15 @@ import java.io.PrintStream;
 public class New extends AbstractExpr{
 
     AbstractIdentifier identifier;
+    ClassDefinition classDef = null;
 
     public New(AbstractIdentifier identifier) {
         super();
         this.identifier = identifier;
     }
-
+    public ClassDefinition getClassDef(){
+        return classDef;
+    }
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
@@ -27,6 +30,7 @@ public class New extends AbstractExpr{
             TypeDefinition typeDefinition=environmentType.getEnvTypes().get(identifier.getName());
             if(typeDefinition instanceof ClassDefinition) {
                 ClassDefinition classDefinition=(ClassDefinition)typeDefinition;
+                this.classDef = classDefinition;
                 Type type= classDefinition.getType();
                 setType(type);
                 return type;

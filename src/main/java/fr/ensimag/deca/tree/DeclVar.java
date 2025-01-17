@@ -59,14 +59,14 @@ public class DeclVar extends AbstractDeclVar {
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
         if(initialization instanceof Initialization){
-            if(((Initialization) initialization).getExpression() instanceof AbstractIdentifier){
-                AbstractIdentifier ident = (AbstractIdentifier)((Initialization) initialization).getExpression();
+            if(((Initialization) initialization).getExpression() instanceof New){
+                New ident = (New)((Initialization) initialization).getExpression();
                 //si c'est une classe definition
-                System.out.println(ident.getType());
-                if(ident.getExpDefinition().isClass()){
-                    ClassDefinition def = ident.getClassDefinition();
-                    compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK"+ def.getNumberOfFields());
-                }
+                ClassDefinition def = ident.getClassDef();
+                System.out.println(def);
+
+                compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK"+ def.getNumberOfFields());
+                
                 compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
                 return ;
             }
