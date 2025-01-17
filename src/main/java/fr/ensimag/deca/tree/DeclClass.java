@@ -343,6 +343,8 @@ public class DeclClass extends AbstractDeclClass {
         TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get(((DeclClass) this).getSymbol());
         if (nom instanceof ClassDefinition) {
             ClassDefinition classDef = (ClassDefinition) nom;
+            // Il faut dire à quelle adresse dans la pile à étét déclaré la table des méthodes de la classe courante
+            classDef.setAdrTableMethode(GestionRegistre.getIndiceRegistreGB() + 1);
             String endComment = String.valueOf(classDef.getType()); // J'espère que cela récupère le nom de la classe
             compiler.addComment(debComment + endComment);
             ClassDefinition parent = classDef.getSuperClass();
@@ -352,6 +354,10 @@ public class DeclClass extends AbstractDeclClass {
                 // C'est à 1(GB)
                 compiler.addInstruction(new LEA(new RegisterOffset(1, Register.GB), Register.R0));
                 // On charge l'adresse de la table des méthode de la classe
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
+            } else { // Si la classe hérite d'une autre clase que Object on doti récupérer l'adresse du début de la table des méthode de cette super classe
+                // On récupère l'adrese de la table des méthodes de la super classe
+                compiler.addInstruction(new LEA(new RegisterOffset(parent.getAdrTableMethode(), Register.GB), Register.R0));
                 compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
             }
         }

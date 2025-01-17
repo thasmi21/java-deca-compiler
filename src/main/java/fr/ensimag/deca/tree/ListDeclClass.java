@@ -68,6 +68,9 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         compiler.addInstruction(new LOAD(new LabelOperand(new Label("code.Object.equals")), Register.R0));
         compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB)));
 
+        // On doit écrire le code de la méthode de Object
+        
+
         for (AbstractDeclClass declClass : getList()) {
             // Ceci correspond à la passe 1
             declClass.declareTableMethode(compiler);
