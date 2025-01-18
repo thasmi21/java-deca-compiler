@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une or entre true et true
+//
+//
+
+
+
+{
+    true || true;
+}

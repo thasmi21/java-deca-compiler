@@ -43,10 +43,37 @@ public class StringLiteral extends AbstractStringLiteral {
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new WSTR(new ImmediateString(value)));
     }
+    @Override
+    protected void codeGenPrintX(DecacCompiler compiler) {
+        compiler.addInstruction(new WSTR(new ImmediateString(value)));
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("\""+getValue()+"\"");
+        String string = this.value;
+        s.print("\"");
+        for (int i = 0; i < string.length(); ++i) {
+            char c = string.charAt(i);
+            if (c == '\n') {
+                s.print("\n");
+            }
+            else if (c == '\\') {
+                s.print("\\\\");
+            }
+            else if (c == '"') {
+                s.print("\\\"");
+            }
+            else if (c == '\r') {
+                s.print("\\r");
+            }
+            else if (c == '\t') {
+                s.print("\\t");
+            }
+            else {
+                s.print(c);
+            }
+        }
+        s.print("\"");
     }
 
     @Override

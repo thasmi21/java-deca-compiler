@@ -1,0 +1,15 @@
+// Description :
+//      Test de condition booléenne >=
+// Résultats:
+// 5 est supérieur ou égal à 5
+
+{
+    int a = 5;
+    int b = 5;
+
+    if (b >= a) {
+        println("",b ," supérieur ou égal à ", a);
+    } else {
+        println("",b ,"est strictement inférieur à ", a);
+    }
+}

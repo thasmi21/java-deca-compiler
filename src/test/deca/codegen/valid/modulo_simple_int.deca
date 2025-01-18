@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une modulo entre float et float
+//
+//
+
+
+
+{
+    1%6;
+}

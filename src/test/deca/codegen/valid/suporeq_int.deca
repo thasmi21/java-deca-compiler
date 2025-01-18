@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une >= entre int
+//
+//
+
+
+
+{
+    1>=3;
+}

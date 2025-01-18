@@ -1,0 +1,9 @@
+//programme deca pour bien vérifier
+//que le lexer sait reconaitre un programme deca avec un 'main' vide
+
+
+{
+    "j'effectue
+    un
+    test";
+}

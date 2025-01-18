@@ -1,0 +1,9 @@
+//Description :
+//Print d'un float en hexadecimal, doit renvoyer une erreur
+// Résultat :
+// Val a : 0x1.6becp+5
+
+{
+    float a = 0X5af.bp-5f;
+    printlnx("Val a : ", a);
+}

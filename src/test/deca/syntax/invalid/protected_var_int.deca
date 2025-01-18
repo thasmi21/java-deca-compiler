@@ -1,0 +1,9 @@
+// Description:
+//      On essaye d'appeler une variable int par protected
+//
+// Résultats:
+//      Lignes 4
+
+{
+    int protected = 42;
+}

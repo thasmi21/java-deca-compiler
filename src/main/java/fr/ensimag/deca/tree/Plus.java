@@ -31,14 +31,39 @@ public class Plus extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, r1 );
             getRightOperand().evalueExpr(compiler, register );
             compiler.addInstruction(new ADD(r1, register));
+            if (this.getType().isFloat()) {
+                compiler.labelOverflow(compiler);
+            }
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
         //si on doit conserver dans la pile
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new ADD(Register.R0, register));
+        if (this.getType().isFloat()) {
+            compiler.labelOverflow(compiler);
+        }
         GestionRegistre.IncCompteurTempUsage();
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+    }
+
+    @Override
+    public void codeGenInst(DecacCompiler compiler){
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExpr(compiler, r1 );
+            getRightOperand().evalueExpr(compiler, register );
+            compiler.addInstruction(new ADD(r1, register));
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstruction(new ADD(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
+        }
+
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
     }
 
     @Override

@@ -1,0 +1,11 @@
+// Description:
+//      Erreur de syntaxe sur l'utilisation de l'opérateur binaire +
+//
+// Résultats:
+//      Ligne 10:
+
+{
+    int a = 5;
+    int b = 10;
+    b = a+;
+}

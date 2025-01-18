@@ -44,14 +44,23 @@ public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
 
     private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
-    private boolean labelDefined = false;
+    private boolean labelZeroDefined = false;
+    private boolean labelOvFloat;
 
-    public boolean getlabelDefined() {
-        return labelDefined;
+    public boolean getLabelOvFloat() {
+        return labelOvFloat;
     }
 
-    public void setlabelDefined(boolean labelDefined) {
-        this.labelDefined = labelDefined;
+    public void setLabelOvFloat(boolean lab) {
+        this.labelOvFloat = lab;
+    }
+
+    public boolean getlabelZeroDefined() {
+        return labelZeroDefined;
+    }
+
+    public void setlabelZeroDefined(boolean labelDefined) {
+        this.labelZeroDefined = labelDefined;
     }
 
     public ArrayList<AbstractLine> getToExecuteEnd() {
@@ -159,7 +168,7 @@ public class DecacCompiler {
     private EnvironmentType envType = new EnvironmentType(this);
 
     public  Symbol createSymbol(String name) {
-        return this.symbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
+        return this.symbolTable.create(name); // À FAIRE: remplacer par la ligne en commentaire ci-dessous
     }
 
     /**
@@ -292,12 +301,23 @@ public class DecacCompiler {
 
     public void labelDivZero(DecacCompiler compiler){
         compiler.addInstruction(new BOV(new Label("division_by_zero")));
-        if (!compiler.getlabelDefined()) {
+        if (!compiler.getlabelZeroDefined()) {
             compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
             compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
             compiler.getToExecuteEnd().add(new Line(new WNL()));
             compiler.getToExecuteEnd().add(new Line(new ERROR()));
         }
-        compiler.setlabelDefined(true);
+        compiler.setlabelZeroDefined(true);
+    }
+
+    public void labelOverflow(DecacCompiler compiler) {
+        compiler.addInstruction(new BOV(new Label("Overflow")));
+        if (!compiler.getLabelOvFloat()) {
+            compiler.getToExecuteEnd().add(new Line(new Label("Overflow")));
+            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Débordement en nombre flottant")));
+            compiler.getToExecuteEnd().add(new Line(new WNL()));
+            compiler.getToExecuteEnd().add(new Line(new ERROR()));
+        }
+        compiler.setLabelOvFloat(true);
     }
 }

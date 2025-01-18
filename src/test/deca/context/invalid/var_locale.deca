@@ -1,0 +1,11 @@
+// Descritpion:
+//      On essaye d'accéder à une variable déclarée localement
+// Résultats:
+//      Ligne 10
+
+{
+    if (true){
+        int a=5;
+    }
+    a = 10;
+}

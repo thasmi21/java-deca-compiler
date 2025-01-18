@@ -71,6 +71,7 @@ public class CompilerOptions {
         int n=0;
         int w=0;
         int d=0;
+        boolean flag=false;
         for (int i = 0; i < args.length; i++) {
             if(args[i].equals("-v")) {
                 if(v==0 && p==0) {
@@ -95,6 +96,7 @@ public class CompilerOptions {
                         int digit = Integer.parseInt(args[i+1]);
                         if(4<=digit && digit<=16){
                             r=1;
+                            flag=true;
                             for(int j=15;j>=digit;j--){
                                 Register.getR(j).setInUse(true);
                             }
@@ -152,6 +154,9 @@ public class CompilerOptions {
                 else {
                     throw new CLIException("Il faut au maximum 3 -d");
                 }
+            }
+            else if(flag){
+                flag=false;
             }
             else {
                 chemins.add(args[i]);

@@ -1,0 +1,9 @@
+// Description:
+//      On essaye d'appeler une variable bool par false
+//
+// Résultats:
+//      Lignes 4
+
+{
+    boolean false = false;
+}

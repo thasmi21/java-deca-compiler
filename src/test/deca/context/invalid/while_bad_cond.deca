@@ -1,0 +1,11 @@
+// Description:
+//      On écrit un while avec une condition non booléenne
+//
+// Résultats:
+//      Ligne 8:
+
+{
+    while (42){
+        println("Faux");
+    }
+}

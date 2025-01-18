@@ -30,6 +30,13 @@ public class Or extends AbstractOpBool {
     }
 
     @Override
+    public void codeGenInst(DecacCompiler compiler) {
+        AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
+        transform.codeGenInst(compiler);
+    }
+
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
         transform.codeGenPrint(compiler);

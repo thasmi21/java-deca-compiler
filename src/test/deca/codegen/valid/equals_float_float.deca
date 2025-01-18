@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une equals entre float
+//
+//
+
+
+
+{
+    1.0==3.0;
+}

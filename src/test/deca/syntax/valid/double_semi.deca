@@ -1,0 +1,9 @@
+// Description:
+//      On fait exprès de mettre 2 points virgules
+//
+// Résultats:
+//      Ligne 8
+
+{
+    boolean mot = true;;
+}
