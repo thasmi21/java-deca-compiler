@@ -4,6 +4,8 @@ import fr.ensimag.deca.tree.Location;
 import fr.ensimag.ima.pseudocode.Label;
 import org.apache.commons.lang.Validate;
 
+import java.util.ArrayList;
+
 /**
  * Definition of a class.
  *
@@ -76,5 +78,24 @@ public class ClassDefinition extends TypeDefinition {
         members = new EnvironmentExp(parent);
         this.superClass = superClass;
     }
-    
+
+    private int adrTableMethode;
+
+    public int getAdrTableMethode() {
+        return adrTableMethode;
+    }
+
+    public void setAdrTableMethode(int adrTableMethode) {
+        this.adrTableMethode = adrTableMethode;
+    }
+
+    private ArrayList<Label> labels;
+
+    public ArrayList<Label> getLabels() {
+        return labels;
+    }
+    public void setLabels(ArrayList<Label> labels) {
+        this.labels = labels;
+    }
+
 }

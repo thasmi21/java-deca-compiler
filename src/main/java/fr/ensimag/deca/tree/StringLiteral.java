@@ -52,6 +52,11 @@ public class StringLiteral extends AbstractStringLiteral {
     }
 
     @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new WSTR(new ImmediateString(value)));
+    }
+
+    @Override
     public void decompile(IndentPrintStream s) {
         String string = this.value;
         s.print("\"");

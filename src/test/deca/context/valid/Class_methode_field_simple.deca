@@ -1,0 +1,15 @@
+// Description:
+//    class de base avec field et methode
+//
+//
+//
+//
+
+class A {
+    int i;
+    A a;
+
+    void l(){
+    }
+
+}

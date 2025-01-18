@@ -1,0 +1,10 @@
+// Description:
+//    DeclVar en utilisant convFloat
+//
+//
+//
+//
+
+{
+    float a = 6;
+}

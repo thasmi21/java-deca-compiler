@@ -111,19 +111,11 @@ public abstract class AbstractExpr extends AbstractInst {
     
     
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-        Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
-
-        // Vérification : une expression de type void ne peut pas être utilisée comme instruction
-        if (exprType.isVoid()) {
-            throw new ContextualError(
-                    "Une expression de type void ne peut pas être utilisée comme instruction.",
-                    this.getLocation()
-            );
-        }
-
+        this.verifyExpr(compiler, localEnv, currentClass);
+        return compiler.environmentType.VOID;
     }
 
     /**
@@ -150,7 +142,10 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented by us");
+    }
 
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented by us");
     }
 
@@ -163,6 +158,11 @@ public abstract class AbstractExpr extends AbstractInst {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
     /*
     * une methode qui prend un registre, effectue
     * l'evaluation de l'expression et le met dans le registre
@@ -170,6 +170,13 @@ public abstract class AbstractExpr extends AbstractInst {
     *
     * */
     public void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ){
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 

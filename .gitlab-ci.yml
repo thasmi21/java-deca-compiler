@@ -1,11 +1,20 @@
-stages:          # List of stages for jobs, and their order of execution
-  - build
+# Fichier .gitlab-ci.yml à placer à la racine de votre projet
+stages:
   - test
-  - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
+run_tests:
+  stage: test
+  # Utiliser une image qui contient les dépendances nécessaires pour vos tests
+  image: bash:latest
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-    - echo "done"
+    # Exécuter votre script de test
+    - chmod +x ./src/test/script/non_regression_lex.sh
+    - ./src/test/script/non_regression_lex.sh
+  # Définir quand la pipeline doit s'exécuter
+  rules:
+    # Sur chaque push
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    # Sur chaque merge request
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  # Arrêter la pipeline si les tests échouent
+  allow_failure: false

@@ -18,16 +18,16 @@ public class This extends AbstractExpr {
 
 
 
-    public This() {
-
-    }
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
-        Type intType = compiler.environmentType.INT;
-        this.setType(intType);
-        return intType;
+        if(currentClass == null) {
+            throw new ContextualError("pas de this dans le main",getLocation());
+        }
+        Type classType = currentClass.getType();
+        this.setType(classType);
+        return classType;
     }
 
     @Override

@@ -1,0 +1,18 @@
+// Description:
+//    class appel methode class
+
+
+class A {
+
+    int x;
+
+}
+
+class B{
+
+    A a= new A();
+
+    void l(){
+        a.x=2;
+    }
+}

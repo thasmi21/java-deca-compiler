@@ -1,0 +1,13 @@
+// Description:
+//    class méthode void
+
+
+class A {
+
+   void l(){
+        int x;
+        int y;
+        x+y;
+   }
+
+}

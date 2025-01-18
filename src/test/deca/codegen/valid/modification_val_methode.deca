@@ -1,0 +1,19 @@
+// Description :
+//      appel d'une méthode pour modifier une valeur
+// Resultats :
+//      5
+
+
+
+class A {
+    void modify(int x) {
+        x = x + 10;
+    }
+}
+{
+    A a = new A();
+    int y = 5;
+    a.modify(y);
+    println(y); // Doit afficher 5, car les paramètres sont passés par valeur
+}
+// erreur dans le codegen pour l'instant

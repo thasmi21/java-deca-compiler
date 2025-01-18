@@ -40,6 +40,7 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
             ClassDefinition currentClass) throws ContextualError {
                 for(AbstractDeclVar declVar : this.getList()){
                     declVar.verifyDeclVar(compiler, localEnv, currentClass);
+                    compiler.IncrNbVarGlo();
         }
     }
 
@@ -49,12 +50,12 @@ public class ListDeclVar extends TreeList<AbstractDeclVar> {
     void codeGenListDeclVar(DecacCompiler compiler) {
         // On commence par faire de la place dans la pile,
         // autant qu'il y a de variables définies
-        int taille_pile = getList().size();
-        if (taille_pile > 0) {
-            // On utilise addFirst pour que l'instruction ADDSP soit avant
-            // l'instruction ; Main Program
-            compiler.addFirst(new ADDSP(taille_pile));
-        }
+//        int taille_pile = getList().size();
+//        if (taille_pile > 0) {
+//            // On utilise addFirst pour que l'instruction ADDSP soit avant
+//            // l'instruction ; Main Program
+//            compiler.addFirst(new ADDSP(taille_pile));
+//        }
 
         // Pour chaque variable on va appeler une nouvelle méthode de genCode
         for (AbstractDeclVar declVar : this.getList()){

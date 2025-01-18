@@ -1,0 +1,28 @@
+// Descripion:
+//      On crée une méthode avec un if dedans
+//
+// Résultats:
+//
+
+class Polygon {
+    int nbCotes;
+
+    void figure() {
+        if (this.nbCotes == 4){
+            println("Le polygone est un carré");
+        } else {
+            if (this.nbCotes == 3){
+                println("Le polygone est un triangle");
+            } else {
+                if (this.nbCotes == 0){
+                    println("Ce n'est pas un polygone");
+                }
+            }
+        }
+    }
+}
+
+{
+    Polygon a = new Polygon();
+    a.figure();
+}

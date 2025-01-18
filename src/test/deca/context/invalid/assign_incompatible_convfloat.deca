@@ -1,0 +1,10 @@
+// Description:
+//    assign du mauvais type
+//
+//
+//
+//
+
+{
+    int a  = 6.3;
+}

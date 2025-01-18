@@ -1,0 +1,19 @@
+// Description:
+//      On va déclarer deux classes dont une hérite de l'autre
+//
+// Résultats:
+//
+
+class Mere {
+    int age;
+}
+class Fille extends Mere {
+    float taille;
+}
+class Fils extends Mere {
+    float poids;
+}
+
+{
+    println("C'est bien");
+}

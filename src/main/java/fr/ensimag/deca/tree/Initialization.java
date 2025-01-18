@@ -27,13 +27,13 @@ public class Initialization extends AbstractInitialization {
         Validate.notNull(expression);
         this.expression = expression;
 
-        //bonne positionnement de la Localisation de l'initialisation
+        //bon positionnement de la Localisation de l'initialisation
         this.setLocation(expression.getLocation());
     }
 
     @Override
     protected void verifyInitialization(DecacCompiler compiler, Type t,
-            EnvironmentExp localEnv, ClassDefinition currentClass)
+                                        EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
         Type typeExpr = expression.verifyExpr(compiler, localEnv, currentClass);
         if (typeExpr.sameType(t) || (t.isFloat() && typeExpr.isInt())) {
@@ -46,6 +46,7 @@ public class Initialization extends AbstractInitialization {
             throw new ContextualError("Types incompatibles dans l'initialisation ! (attendu "+t+" ), (trouvé "+typeExpr+")",expression.getLocation());
         }
     }
+
 
 
     @Override

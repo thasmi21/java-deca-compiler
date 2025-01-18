@@ -1,0 +1,11 @@
+// Description:
+//    class de base avec field
+//
+//
+//
+//
+
+class A {
+    int i;
+    A a;
+}

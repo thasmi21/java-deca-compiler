@@ -1,0 +1,20 @@
+// Descritpion:
+//      Code contenant une unique class mais sans méthode. Celle-ci hérite nécessairement de Object
+//
+// Résultats:
+//
+
+class Simple {
+    int a = 1;
+    int b = 2;
+}
+{
+    //Simple deb = new Simple();
+    //int x;
+    //int y;
+    //x = deb.a;
+    //y = deb.b;
+    //println("Valeur de a : ", x);
+    //println("Valeur de b : ", y);
+    println("C'est good");
+}

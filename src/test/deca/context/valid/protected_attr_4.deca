@@ -1,0 +1,15 @@
+// Description:
+//    accès d'un attribut d'une classe en utilisant extends
+//
+//
+//
+//
+
+class A {
+    protected int a;
+
+}
+
+class B extends A {
+    int b = a;
+}

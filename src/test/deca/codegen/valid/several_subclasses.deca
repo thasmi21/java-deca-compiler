@@ -1,0 +1,33 @@
+// Descritpion:
+//      On va déclarer un classe qui va avoir deux sous-classes
+//
+// Résultats:
+//
+
+class Vehicule {
+    int annee;
+}
+class Terrestre extends Vehicule {
+    int capacite;
+}
+class Voiture extends Terrestre {
+    int nbRoues = 4;
+}
+class VoitureDeSport extends Voiture {
+    int puissance;
+}
+class Aerien extends Vehicule {
+    float altitudeMax;
+}
+class Helicopter extends Aerien {
+    int nbPassegers;
+}
+
+{
+    boolean verif = true;
+    if (verif) {
+        println("C'est tout bon !");
+    } else {
+        println("Aïe... problème...");
+    }
+}

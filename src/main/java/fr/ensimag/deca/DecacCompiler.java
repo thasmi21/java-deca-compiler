@@ -63,6 +63,26 @@ public class DecacCompiler {
     public void setLabelOvFloat(boolean lab) {
         this.labelOvFloat = lab;
     }
+    private boolean labelDefined = false;
+    private int nbVarGlo = 0;
+    private int toAddStack = 2;
+
+    public int getToAddStack(){
+        return toAddStack;
+    }
+
+    public void setToAddStack(int toAddStack){
+        this.toAddStack = toAddStack;
+    }
+
+
+    public int getNbVarGlo() {
+        return nbVarGlo;
+    }
+
+    public void IncrNbVarGlo() {
+        this.nbVarGlo++;
+    }
 
     public boolean getlabelZeroDefined() {
         return labelZeroDefined;
@@ -85,6 +105,17 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.source = source;
+    }
+
+    /*
+    * Fonction qui permet de dire si une instruction est à ajouter  à la fin(pos1 à 1)
+    * pos = 0: on ajoute à la position actuelle
+    * pos=1: on ajoute à la fin
+    * */
+
+    public void addInstructionEnd(Instruction instruction){
+            toExecuteEnd.add(new Line(instruction));
+
     }
 
     public EnvironmentType getEnvironmentType() {
@@ -239,6 +270,9 @@ public class DecacCompiler {
     private boolean doCompile(String sourceName, String destName,
             PrintStream out, PrintStream err)
             throws DecacFatalError, LocationException {
+
+
+
         AbstractProgram prog = doLexingAndParsing(sourceName, err);
 
         if (prog == null) {
@@ -262,7 +296,7 @@ public class DecacCompiler {
 
         //addComment("start main program");
         prog.codeGenProgram(this);
-        addComment("end main program");
+        //addComment("end main program");
         LOG.debug("Generated assembly code:" + nl + program.display());
         LOG.info("Output file assembly file is: " + destName);
 
@@ -328,5 +362,22 @@ public class DecacCompiler {
             compiler.getToExecuteEnd().add(new Line(new ERROR()));
         }
         compiler.setLabelOvFloat(true);
+    }
+
+    /**
+     * Method that calculate how much we need to add to the SP
+     * @param compiler
+     * @return The int value to add to the stack pointer at the begining of a program
+     */
+    public int toADDSP(DecacCompiler compiler){
+        int result = 0;
+        //int nbVarGlo = compiler.getEnvironmentType().getEnvironmentMain().getLocalEnv().size();
+        int nbVarGlo = compiler.getNbVarGlo();
+        result += nbVarGlo;
+        //int nbVarGlo = compiler.environmentType.getEnvironmentMain().getLocalEnv().size();
+        //int nbVarGlo = this.envType.getEnvironmentMain().getLocalEnv().size();
+        //System.out.println("nbVarGlo = " + nbVarGlo);
+        //throw new UnsupportedOperationException("Not finish yet");
+        return result;
     }
 }

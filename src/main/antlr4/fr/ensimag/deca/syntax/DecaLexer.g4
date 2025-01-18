@@ -18,7 +18,6 @@ options {
 fragment STRING_CAR: ~ ('"' | '\\' );
 
 
-
 ASM : 'asm';
 
 CLASS : 'class';
@@ -87,7 +86,7 @@ CBRACE : '}' ;
 SEMI : ';' ;
 READINT : 'readInt' ;
 STRING : '"' (STRING_CAR | '\\"' | '\\\\')* '"';
-
+ARRAY : 'Array';
 // suivi de la convention de fragment expliqué dans le poly
 // pour ajouter les priorités
 fragment LETTER : [a-zA-Z] ;
@@ -97,7 +96,7 @@ IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )* ;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;
-fragment SIGN : ('+' | '-')?  ;
+fragment SIGN : '+' | '-' | ' ' ;
 fragment EXP : ('E' | 'e') SIGN NUM ;
 fragment DEC : NUM '.' NUM ;
 fragment FLOATDEC : (DEC | DEC EXP) ('F' | 'f')? ;
@@ -153,3 +152,19 @@ MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 INCLUDE : '#include' (' ')* '"' (LETTER | DIGIT | '.' | '-' | '_')+ '"' {
     doInclude(getText().substring(9).trim());
 };
+
+// méthodes pour le calcul matriciel
+
+SORT : 'sort';
+
+TRANSPOSE : 'transpose' ;
+
+SCALARMULT : 'scalarmult';
+
+SCALARDIV : 'scalardiv';
+
+TRACE : 'trace';
+
+DET : 'det';
+
+ISINVERSIBLE : 'isInversible';

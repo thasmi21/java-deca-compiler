@@ -1,0 +1,25 @@
+// Descritpion:
+//      On va créer 3 classes, dont un qui hérite de une autre et une troisièmes
+//      qui hérite simplement de Object
+//
+
+class Vehicule{
+    int nbroue;
+    int poids;
+}
+class Moto extends Vehicule{
+    int annee;
+}
+class Logement{
+    float superficie = 0.0;
+    float prix = 0.0;
+}
+
+{
+    Moto moto=new Moto();
+    Logement maison= new Logement();
+
+    moto.nbroue = 2;
+    moto.poids = 120;
+    moto.annee = 2019;
+}

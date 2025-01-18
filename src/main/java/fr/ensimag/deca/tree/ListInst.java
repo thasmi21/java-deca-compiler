@@ -24,12 +24,53 @@ public class ListInst extends TreeList<AbstractInst> {
      * @param returnType
      *          corresponds to "return" attribute (void in the main bloc).
      */    
-    public void verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    public Type verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
+        if (returnType == null) {
+            Type t=null;
+            Type type;
             for(AbstractInst i : getList()){
-                i.verifyInst(compiler,localEnv,currentClass,returnType);
+                type=i.verifyInst(compiler,localEnv,currentClass,null);
+                if(!type.isVoid()){
+                    if(t==null){
+                        t=type;
+                    } else if (t.sameType(type)) {
+                        continue;
+                    } else{
+                        throw new ContextualError("Le type de retour n'est pas le bon",getLocation());
+                    }
+                }
             }
+            if (t == null) {
+                return compiler.getEnvironmentType().VOID;
+            }
+            else {
+                return t;
+            }
+        }
+        else {
+            Type t = null;
+            Type type;
+            for (AbstractInst i : getList()) {
+                type = i.verifyInst(compiler, localEnv, currentClass, returnType);
+                if (!type.isVoid()) {
+                    if (type.sameType(returnType)) {
+                        t = type;
+                    } else {
+                        throw new ContextualError("Le type de retour n'est pas le bon", getLocation());
+                    }
+                }
+            }
+            if (!returnType.isVoid()) {
+                if (t != null) {
+                    return returnType;
+                } else {
+                    throw new ContextualError("Le type de retour n'est pas le bon", getLocation());
+                }
+            }
+            return returnType;
+        }
     }
 
     public void codeGenListInst(DecacCompiler compiler) {

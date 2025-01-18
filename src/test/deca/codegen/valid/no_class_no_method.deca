@@ -1,0 +1,12 @@
+// Descritpion:
+//      On teste un programme qui ne déclare ni class ni methode, il a simplement la classe Object
+//
+// Résultats:
+//
+
+{
+    int a = 32;
+    float b = 5.0;
+    float c = a + b;
+    println("", a, " + ", b, " = ", c);
+}

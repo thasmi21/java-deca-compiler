@@ -38,28 +38,55 @@ public class Program extends AbstractProgram {
     @Override
     public void verifyProgram(DecacCompiler compiler) throws ContextualError {
         LOG.debug("verify program: start");
-        //getClasses().verifyListClass(compiler);
+        classes.verifyListClass(compiler);
+        classes.verifyListClassMembers(compiler);
+        classes.verifyListClassBody(compiler);
         main.verifyMain(compiler);
-        //decommenter la ligne au dessus par Victor
-        //throw new UnsupportedOperationException("not yet implemented");
         LOG.debug("verify program: end");
     }
 
     @Override
     public void codeGenProgram(DecacCompiler compiler) {
         // A FAIRE: compléter ce squelette très rudimentaire de code
+        // Il faudrait une méthode qui calcule de combien on doit ADDSP
+        // On a : ADDSP = nb_var_glob + pour chaque class ( @table_super_class + @Code_methods_Object.equals + @Code_method_de_la_class)
+        int toAddStack = compiler.toADDSP(compiler);
+        //compiler.addInstruction(new ADDSP(7)); // On met 7 dans le cadre du prog one_class_no_method.deca
+        // Il faut rendre l'instruction précédente plus générale
+        // 3 varGlo + 2classObject + 2 ClassSimple
+        compiler.addComment("--------------------------------------------------");
+        compiler.addComment("       Construction des tables des methodes       ");
+        compiler.addComment("--------------------------------------------------");
+        classes.codeGenListDeclClass(compiler);
+        /*
+        * Je cree pour chaque classe un label init
+        * et aussi le codage de ses méthodes*/
+        classes.codeGenPass2(compiler);
         compiler.addComment("Main program");
         main.codeGenMain(compiler);
         compiler.addInstruction(new HALT());
+        compiler.addComment("end main program");
         // On doit gérer le cas ou on a une pile pleine et qu'il faut renvoyer une erreur
         compiler.addLabel(new Label("pile_pleine")); // On ajoute l'etiquette à laquelle il faut jump si il y a débordement
         compiler.addInstruction(new WSTR("Erreur: La pile est pleine")); // On écrit un message d'erreur
         compiler.addInstruction(new WNL());
         compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
+        //Tas plein
+        compiler.addLabel(new Label("tas_plein"));
+        compiler.addInstruction(new WSTR("Erreur: Le tas est plein"));
+        compiler.addInstruction(new WNL());
+        compiler.addInstruction(new ERROR());
+        //dereferencement null
+        compiler.addLabel(new Label("dereferencement.null"));
+        compiler.addInstruction(new WSTR("Erreur: dereferencement de null"));
+        compiler.addInstruction(new WNL());
+        compiler.addInstruction(new ERROR()); // Le programme s'arrête mais sur un message d'erreur
+
 
         // On doit ajouter l'instruction TSTO
         // Pour le moment on la fixe à une certaine constante mais il faudra être
         // capable de la calculer par la suite
+        compiler.addFirst(new ADDSP(compiler.getToAddStack() + compiler.getNbVarGlo()));
         Label stackFull = new Label("pile_pleine");
         if (!compiler.getN()){
             compiler.addFirst(new BOV(stackFull));

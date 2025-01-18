@@ -40,7 +40,14 @@ public class IntLiteral extends AbstractExpr {
     @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(value, register));
-
+    }
+    @Override
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new LOAD(value, register));
+    }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(value, register)));
     }
 
     @Override

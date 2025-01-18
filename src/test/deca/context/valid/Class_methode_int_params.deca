@@ -1,0 +1,11 @@
+// Description:
+//    class méthode int avec params
+
+
+class A {
+
+   int l(int x, int y){
+        return x+y;
+   }
+
+}
