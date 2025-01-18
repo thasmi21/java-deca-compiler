@@ -237,6 +237,11 @@ public class Identifier extends AbstractIdentifier {
             compiler.addInstruction(new LOAD(op, Register.getR(1)));
             compiler.addInstruction(new WFLOATX());
         }
+        else if(this.getType() instanceof IntType){
+            ConvFloat convFloat = new ConvFloat(this);
+            convFloat.evalueExpr(compiler,Register.R1);
+            compiler.addInstruction(new WFLOATX());
+        }
         else {
             throw new RuntimeException("on ne peut print qu'un float en hexadecimal !");
         }

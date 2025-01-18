@@ -11,5 +11,10 @@ class B extends A {}
 
     A a1 = b1;
 
-    println(b1.equals(a3));
+    if(b1.equals(a1)){
+        println("true");
+    }
+    else{
+        println("false");
+    }
 }

@@ -13,13 +13,13 @@
     println("Entrer un nombre :", a = readInt());
 
     if (a<0){
-        println("Votre nombre est négatifs !");
+        println("Votre nombre est négatif !");
     } else {
         while(cpt <= a){
             fact = fact * cpt;
             cpt = cpt + 1;
         }
-        println("Le factoriel de ", a, " est : ", fact);
+        println("Le factorielle de ", a, " est : ", fact);
     }
 
 }

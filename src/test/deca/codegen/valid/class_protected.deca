@@ -15,10 +15,11 @@ class Base {
 
 class Derived extends Base {
     void printValue() {
-        println("Value from Base: " + this.value);
+        println("Value from Base: ",this.value);
     }
 }
-
-Derived d = new Derived();
-d.setValue(42);
-d.printValue();
+{
+    Derived d = new Derived();
+    d.setValue(42);
+    d.printValue();
+}

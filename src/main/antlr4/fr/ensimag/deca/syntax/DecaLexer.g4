@@ -96,7 +96,7 @@ IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )* ;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;
-fragment SIGN : '+' | '-' | ' ' ;
+fragment SIGN : ('+' | '-')? ;
 fragment EXP : ('E' | 'e') SIGN NUM ;
 fragment DEC : NUM '.' NUM ;
 fragment FLOATDEC : (DEC | DEC EXP) ('F' | 'f')? ;

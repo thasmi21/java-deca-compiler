@@ -19,12 +19,12 @@ class Cat extends Animal {
         println("Meow!");
     }
 }
+{
+    Animal a = new Animal();
+    Animal d = new Dog();
+    Animal c = new Cat();
 
-Animal a = new Animal();
-a.speak();
-
-Animal d = new Dog();
-d.speak();
-
-Animal c = new Cat();
-c.speak();
+    a.speak();
+    d.speak();
+    c.speak();
+}
