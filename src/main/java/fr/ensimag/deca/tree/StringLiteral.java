@@ -48,7 +48,11 @@ public class StringLiteral extends AbstractStringLiteral {
     protected void codeGenPrintMethod(DecacCompiler compiler) {
         compiler.addInstructionEnd(new WSTR(new ImmediateString(value)));
     }
-
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
     @Override
     public void decompile(IndentPrintStream s) {
         s.print("\""+getValue()+"\"");

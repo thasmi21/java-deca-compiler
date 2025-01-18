@@ -7,6 +7,8 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
+
 import java.io.PrintStream;
 
 /**
@@ -26,6 +28,11 @@ public class NoOperation extends AbstractInst {
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 
     @Override

@@ -8,9 +8,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.RFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.RINT;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 import java.io.PrintStream;
 
@@ -40,10 +38,20 @@ public class ReadFloat extends AbstractReadExpr {
         compiler.addInstructionEnd(new RFLOAT());
         compiler.addInstructionEnd(new LOAD(Register.R1, register));
     }
-
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WFLOAT());
+        //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new RFLOAT());
+        //compiler.addInstruction(new WFLOAT());
+    }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new RFLOAT());
         //compiler.addInstruction(new WFLOAT());
     }
 

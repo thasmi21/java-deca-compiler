@@ -48,6 +48,30 @@ public class And extends AbstractOpBool {
     }
 
     @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+
+
+        getLeftOperand().evalueExprEnd(compiler, r1);
+        getRightOperand().evalueExprEnd(compiler, r2);
+        Label sinon = new Label(this.toString().replace('@', '_')+"sinon_and");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_and");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(sinon));
+        compiler.addInstructionEnd(new CMP(0, r2));
+        compiler.addInstructionEnd(new BEQ(sinon));
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(sinon);
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        r1.setInUse(false);
+        r2.setInUse(false);
+    }
+
+    @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
@@ -169,6 +193,29 @@ public class And extends AbstractOpBool {
         compiler.addLabel(fin);
         r1.setInUse(false);
         r2.setInUse(false);
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+
+        getLeftOperand().evalueExprEnd(compiler, r1);
+        getRightOperand().evalueExprEnd(compiler, r2);
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_while");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(fin));
+        compiler.addInstructionEnd(new CMP(0, r2));
+        compiler.addInstructionEnd(new BNE(label));
+        compiler.addLabelEnd(fin);
+        r1.setInUse(false);
+        r2.setInUse(false);
+    }
+
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 
 

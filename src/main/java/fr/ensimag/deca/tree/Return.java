@@ -43,16 +43,17 @@ public class Return extends AbstractInst{
     protected void codeGenInst(DecacCompiler compiler) {
 
     }
+
     @Override
     protected void codeGenInstMethod(DecacCompiler compiler) {
         GPRegister r = GestionRegistre.obtainFreeRegister();
         if(r != null){
-            expr.evalueExprMethod(compiler, r);
+            expr.evalueExprEnd(compiler, r);
             compiler.addInstructionEnd(new LOAD(r, Register.R0));
         }else{
             r=Register.getR(2);
             compiler.addInstructionEnd(new PUSH(r));
-            expr.evalueExprMethod(compiler, r);
+            expr.evalueExprEnd(compiler, r);
             compiler.addInstructionEnd(new LOAD(r, Register.R0));
             compiler.addInstructionEnd(new POP(r));
 

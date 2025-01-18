@@ -4,6 +4,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -47,7 +48,13 @@ public class Equals extends AbstractOpExactCmp {
         compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
         Label E = new Label(this.toString().replace('@', '_'));
         Label fin = new Label(this.toString().replace('@', '_')+"_fin");
-        compiler.addInstructionEnd(new CMP(0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+
         compiler.addInstructionEnd(new BEQ(E));
         compiler.addInstructionEnd(new LOAD(0, register));
         compiler.addInstructionEnd(new BRA(fin));
@@ -87,6 +94,49 @@ public class Equals extends AbstractOpExactCmp {
     }
 
     @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister register = Register.R1;
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        Label E = new Label(this.toString().replace('@', '_')+"if");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+
+        compiler.addInstructionEnd(new BEQ(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister register = Register.R1;
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+
+        compiler.addInstructionEnd(new BEQ(label));
+    }
+
+
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         GPRegister r2 = GestionRegistre.obtainFreeRegister();
@@ -104,6 +154,11 @@ public class Equals extends AbstractOpExactCmp {
         compiler.addLabel(fin);
         r1.setInUse(false);
         r2.setInUse(false);
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
     
 }

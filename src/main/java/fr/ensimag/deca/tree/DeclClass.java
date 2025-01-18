@@ -114,7 +114,7 @@ public class DeclClass extends AbstractDeclClass {
         }
 
     }
-    protected void initByUser(DeclField field, DecacCompiler compiler){
+    protected void initByUser(DeclField field, DecacCompiler compiler, int cpt){
         AbstractExpr initiali = ((Initialization)field.getInitialization()).getExpression();
         //on l'evalue dans r0
         //il faut gérer les evalue des classes pour voir comment gérer cela
@@ -128,6 +128,32 @@ public class DeclClass extends AbstractDeclClass {
         // que se passe t-il si r1 est null, on va utiliser R1
         //on ne peut pas directement utiliser R0, car c'est notre registre de secours
         // dans les calculs quand il n'ya plus de registre
+        if(initiali instanceof New){
+            GPRegister r = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(r));
+
+            New ident = (New)initiali;
+            //si c'est une classe definition
+            ClassDefinition def = ident.getClassDef();
+            //System.out.println(def);
+
+            int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
+            compiler.addInstructionEnd(new NEW(nbrTotFields+1, r));
+
+            compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1)));
+            compiler.getToExecuteEnd().add(new Line(new STORE(r, new RegisterOffset(cpt, Register.R1))));
+
+            compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+            compiler.addInstructionEnd(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
+            compiler.addInstructionEnd(new STORE(Register.R0, new RegisterOffset(0, r)));
+            compiler.addInstructionEnd(new PUSH(r));
+            compiler.addInstructionEnd(new BSR(new Label("init."+def.getType().getName())));
+            compiler.addInstructionEnd(new POP(r));
+            compiler.addInstructionEnd(new POP(r));
+            //compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+            //r.setInUse(false);
+            return ;
+        }
         if(r1 != null){
             initiali.evalueExprEnd(compiler, r1);
             compiler.getToExecuteEnd().add(new Line(new LOAD(r1, Register.R0)));
@@ -199,9 +225,11 @@ public class DeclClass extends AbstractDeclClass {
                 DeclField field = (DeclField)element;
                 //si il n'ya pas d'initialisation, on le fait à 0 null ou false selon le champ
                 if(field.getInitialization() instanceof Initialization){
-                    initByUser(field, compiler);
-                    compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1)));
-                    compiler.getToExecuteEnd().add(new Line(new STORE(Register.R0, new RegisterOffset(cpt, Register.R1))));
+                    initByUser(field, compiler, cpt);
+                    if(! (((Initialization)field.getInitialization()).getExpression() instanceof New)) {
+                        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1)));
+                        compiler.getToExecuteEnd().add(new Line(new STORE(Register.R0, new RegisterOffset(cpt, Register.R1))));
+                    }
                     d1++;
                 }
                 field.getVarName().getFieldDefinition().setIndex(cpt);

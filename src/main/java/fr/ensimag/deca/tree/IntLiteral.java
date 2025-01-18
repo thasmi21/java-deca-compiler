@@ -41,10 +41,10 @@ public class IntLiteral extends AbstractExpr {
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(value, register));
     }
-    @Override
-    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
-        compiler.addInstructionEnd(new LOAD(value, register));
-    }
+//    @Override
+//    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
+//        compiler.addInstructionEnd(new LOAD(value, register));
+//    }
     @Override
     public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
         compiler.getToExecuteEnd().add(new Line(new LOAD(value, register)));
@@ -100,6 +100,16 @@ public class IntLiteral extends AbstractExpr {
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(this.getValue(),Register.R1));
         compiler.addInstruction(new WINT());
+    }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new LOAD(this.getValue(),Register.R1));
+        compiler.addInstructionEnd(new WINT());
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 
 }

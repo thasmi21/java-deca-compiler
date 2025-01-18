@@ -28,7 +28,16 @@ public class Or extends AbstractOpBool {
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
         transform.genIfElseCode(compiler, thenIns, elseIns);
     }
-
+    @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
+        transform.genIfElseCodeMethod(compiler, thenIns, elseIns);
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
     @Override
     public void codeGenPrint(DecacCompiler compiler){
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
@@ -38,6 +47,12 @@ public class Or extends AbstractOpBool {
     public void genWhileCode(DecacCompiler compiler, Label label){
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
         transform.genWhileCode(compiler, label);
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
+        transform.genWhileCodeMethod(compiler, label);
     }
 
     @Override

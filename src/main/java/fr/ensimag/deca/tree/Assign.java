@@ -140,7 +140,7 @@ public class Assign extends AbstractBinaryExpr {
         else {
             reg = Register.getR(2);
             compiler.addInstruction(new PUSH(reg));
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstruction(new STORE(reg, regAdresse));
             compiler.addInstruction(new POP(reg));
         }
@@ -173,25 +173,27 @@ public class Assign extends AbstractBinaryExpr {
                 r=Register.getR(5);
                 rWasNul = true;
             }
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             DAddr addrParent = new RegisterOffset(-2, Register.LB);
             compiler.addInstructionEnd(new LOAD(addrParent, r));
             compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
             if(rWasNul){
                 compiler.addInstructionEnd(new POP(Register.getR(5)));
+            }else{
+                reg.setInUse(false);
             }
             return;
         }
 
         if(reg != null){
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstructionEnd(new STORE(reg, regAdresse));
             reg.setInUse(false);
         }
         else{
             reg = Register.getR(2);
             compiler.addInstructionEnd(new PUSH(reg));
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstructionEnd(new STORE(reg, regAdresse));
             compiler.addInstructionEnd(new POP(reg));
         }
