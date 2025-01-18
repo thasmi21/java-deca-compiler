@@ -62,6 +62,9 @@ public class BooleanLiteral extends AbstractExpr {
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
             GPRegister r =  GestionRegistre.obtainFreeRegister();
+            if (r == null){
+
+            }
 
             int entier = (this.getValue())?1:0;
             compiler.addInstruction(new LOAD(entier, r));
