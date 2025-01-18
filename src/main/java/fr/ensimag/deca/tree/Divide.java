@@ -43,11 +43,16 @@ public class Divide extends AbstractOpArith {
         //on verifie juste l'operande gauche car verifiyExpr aura verifie que les operandes sont de même type
         if (getLeftOperand().getType() instanceof IntType ) {
             compiler.addInstruction(new QUO(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
+            }
         } else if (getLeftOperand().getType() instanceof FloatType) {
             compiler.addInstruction(new DIV(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
+                compiler.labelOverflow(compiler);
+            }
         }
-
-        compiler.labelDivZero(compiler);
         if(r1 != null){
             r1.setInUse(false);
         }
@@ -67,7 +72,20 @@ public class Divide extends AbstractOpArith {
             r1=Register.R0;
 
         }
-        compiler.labelDivZero(compiler);
+
+        if (getLeftOperand().getType().isInt()){
+            compiler.addInstruction(new QUO(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
+            }
+        } else if (getRightOperand().getType().isFloat()) {
+            compiler.addInstruction(new DIV(r1, register));
+            if (!compiler.getN()) {
+                compiler.labelDivZero(compiler);
+                compiler.labelOverflow(compiler);
+            }
+        }
+
         if(r1 != null){
             r1.setInUse(false);
         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
@@ -91,11 +109,16 @@ public class Divide extends AbstractOpArith {
         if (this.getType() instanceof IntType) {
 
             compiler.addInstruction(new QUO(r1, register));
-            compiler.labelDivZero(compiler);
+            if (!compiler.getN()){
+                compiler.labelDivZero(compiler);
+            }
             compiler.addInstruction(new WINT());
         } else if (this.getType() instanceof FloatType) {
             compiler.addInstruction(new DIV(r1, register));
-            compiler.labelDivZero(compiler);
+            if (!compiler.getN()){
+                compiler.labelDivZero(compiler);
+                compiler.labelOverflow(compiler);
+            }
             compiler.addInstruction(new WFLOAT());
         }
 

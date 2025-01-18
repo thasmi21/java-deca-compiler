@@ -46,8 +46,11 @@ public class CompilerOptions {
     private boolean printBanner = false;
     private List<File> sourceFiles = new ArrayList<File>();
     private int arret=0;
+    private int n=0;
 
-
+    public int getN(){
+        return n;
+    }
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
@@ -68,7 +71,6 @@ public class CompilerOptions {
         int p=0;
         int r=0;
         int P=0;
-        int n=0;
         int w=0;
         int d=0;
         boolean flag=false;
@@ -204,24 +206,5 @@ public class CompilerOptions {
     }
 
     protected void displayUsage() {
-        System.out.println("decac [[-p | -v] [-n] [-r X] [-d]* [-P] [-w] <fichier deca>...] | [-b]\n" +
-                ". -b (banner) : affiche une bannière indiquant le nom de l'équipe\n" +
-                ". -p (parse) : arrête decac après l'étape de construction de\n" +
-                "l'arbre, et affiche la décompilation de ce dernier\n" +
-                "(i.e. s'il n'y a qu'un fichier source à\n" +
-                "compiler, la sortie doit être un programme\n" +
-                "deca syntaxiquement correct)\n" +
-                ". -v (verification) : arrête decac après l'étape de vérifications\n" +
-                "(ne produit aucune sortie en l'absence d'erreur)\n" +
-                ". -n (no check) : supprime les tests à l'exécution spécifiés dans\n" +
-                "les points 11.1 et 11.3 de la sémantique de Deca.\n" +
-                ". -r X (registers) : limite les registres banalisés disponibles à\n" +
-                "R0 ... R{X-1}, avec 4 <= X <= 16\n" +
-                ". -d (debug) : active les traces de debug. Répéter\n" +
-                "l'option plusieurs fois pour avoir plus de\n" +
-                "traces.\n" +
-                ". -P (parallel) : s'il y a plusieurs fichiers sources,\n" +
-                "lance la compilation des fichiers en\n" +
-                "parallèle (pour accélérer la compilation)");
     }
 }

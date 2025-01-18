@@ -1,0 +1,13 @@
+// Descritpion:
+//      On essaye de faire un if avec une condition booleene niée plusieurs fois
+//
+// Résultats:
+//      "Je suis au bon endroit"
+
+{
+    if (!!!!true){
+    		println("Je suis au bon endroit");
+    } else {
+        println("Mauvais endroit");
+    }
+}

@@ -1,5 +1,6 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -84,5 +85,9 @@ public class FloatLiteral extends AbstractExpr {
         compiler.addInstruction(new WFLOATX());
     }
 
-
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        compiler.addInstruction(new LOAD(new ImmediateFloat(value), reg));
+    }
 }

@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une diff entre false
+//
+//
+
+
+
+{
+    !false;
+}

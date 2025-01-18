@@ -46,6 +46,15 @@ public class DecacCompiler {
     private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
     private boolean labelZeroDefined = false;
     private boolean labelOvFloat;
+    private boolean N=false;
+
+    public boolean getN(){
+        return N;
+    }
+
+    public void setN(boolean N){
+        this.N = N;
+    }
 
     public boolean getLabelOvFloat() {
         return labelOvFloat;

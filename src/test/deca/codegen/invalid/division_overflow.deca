@@ -1,0 +1,11 @@
+// Description:
+//      Test d'une division qui entraine un débordement entre flottant
+//
+// Résultats:
+//
+
+{
+    float a = 3.40282e-37;
+    float b = 999999999;
+    b = b / a;
+}

@@ -61,7 +61,9 @@ public class Program extends AbstractProgram {
         // Pour le moment on la fixe à une certaine constante mais il faudra être
         // capable de la calculer par la suite
         Label stackFull = new Label("pile_pleine");
-        compiler.addFirst(new BOV(stackFull));
+        if (!compiler.getN()){
+            compiler.addFirst(new BOV(stackFull));
+        }
         int val = GestionRegistre.getIndiceRegistreGB() + GestionRegistre.getCompteurTempUsage();
         compiler.addFirst(new TSTO(val));
 
