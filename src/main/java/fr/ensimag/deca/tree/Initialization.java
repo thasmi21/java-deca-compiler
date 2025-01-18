@@ -37,9 +37,9 @@ public class Initialization extends AbstractInitialization {
             throws ContextualError {
         Type typeExpr = expression.verifyExpr(compiler, localEnv, currentClass);
         if (typeExpr.sameType(t) || (t.isFloat() && typeExpr.isInt())) {
-            if(t.isFloat() && typeExpr.isInt()){
-                this.expression=new ConvFloat(expression);
-                expression.verifyExpr(compiler,localEnv,currentClass);
+            if((t.isFloat() && typeExpr.isInt())){
+                this.expression=(new ConvFloat(expression));
+                expression.verifyExpr(compiler, localEnv, currentClass);
             }
         }
         else{

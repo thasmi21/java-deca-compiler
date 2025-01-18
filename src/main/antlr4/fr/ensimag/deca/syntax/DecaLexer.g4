@@ -17,8 +17,6 @@ options {
 
 fragment STRING_CAR: ~ ('"' | '\\' );
 
-
-
 ASM : 'asm';
 
 CLASS : 'class';
@@ -97,13 +95,13 @@ IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )* ;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;
-fragment SIGN : ('+' | '-')?  ;
+fragment SIGN : '+' | '-'  ;
 fragment EXP : ('E' | 'e') SIGN NUM ;
 fragment DEC : NUM '.' NUM ;
 fragment FLOATDEC : (DEC | DEC EXP) ('F' | 'f')? ;
 fragment DIGITTHEX : [0-9A-Fa-f] ;
 fragment NUMHEX : DIGITTHEX+ ;
-fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM ('F' | 'f')?;
+fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') (SIGN (NUM ('F' | 'f') | NUM) | (NUM ('F' | 'f')));
 
 
 // FLOAT est prioritaire sur DEC
@@ -153,3 +151,4 @@ MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 INCLUDE : '#include' (' ')* '"' (LETTER | DIGIT | '.' | '-' | '_')+ '"' {
     doInclude(getText().substring(9).trim());
 };
+
