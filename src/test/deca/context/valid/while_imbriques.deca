@@ -4,59 +4,33 @@
 //      Vérification à la fin du programme qu'on a bien effectué le bon nombre d'itérations (2²⁶ =  67,108,864)
 
 {
-    int compteur = 0;
+    int compteur = 0, a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0;
 
-    int a = 0;
     while (a < 2) {
-        int b = 0;
         while (b < 2) {
-            int c = 0;
             while (c < 2) {
-                int d = 0;
                 while (d < 2) {
-                    int e = 0;
                     while (e < 2) {
-                        int f = 0;
                         while (f < 2) {
-                            int g = 0;
                             while (g < 2) {
-                                int h = 0;
                                 while (h < 2) {
-                                    int i = 0;
                                     while (i < 2) {
-                                        int j = 0;
                                         while (j < 2) {
-                                            int k = 0;
                                             while (k < 2) {
-                                                int l = 0;
                                                 while (l < 2) {
-                                                    int m = 0;
                                                     while (m < 2) {
-                                                        int n = 0;
                                                         while (n < 2) {
-                                                            int o = 0;
                                                             while (o < 2) {
-                                                                int p = 0;
                                                                 while (p < 2) {
-                                                                    int q = 0;
                                                                     while (q < 2) {
-                                                                        int r = 0;
                                                                         while (r < 2) {
-                                                                            int s = 0;
                                                                             while (s < 2) {
-                                                                                int t = 0;
                                                                                 while (t < 2) {
-                                                                                    int u = 0;
                                                                                     while (u < 2) {
-                                                                                        int v = 0;
                                                                                         while (v < 2) {
-                                                                                            int w = 0;
                                                                                             while (w < 2) {
-                                                                                                int x = 0;
                                                                                                 while (x < 2) {
-                                                                                                    int y = 0;
                                                                                                     while (y < 2) {
-                                                                                                        int z = 0;
                                                                                                         while (z < 2) {
                                                                                                             compteur = compteur + 1;
                                                                                                             z = z + 1;
