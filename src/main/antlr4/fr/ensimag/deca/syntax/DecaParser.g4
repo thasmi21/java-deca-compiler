@@ -563,7 +563,7 @@ class_decl returns[AbstractDeclClass tree]
 
 class_extension returns[AbstractIdentifier tree]
     : EXTENDS ident {
-        $tree= new Identifier(SymbolTable.create($ident.text));
+        $tree= new Identifier(getDecacCompiler().createSymbol($ident.text));
         setLocation($tree,$EXTENDS);
         }
     | /* epsilon */ {
