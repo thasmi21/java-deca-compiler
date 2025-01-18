@@ -7,4 +7,5 @@
 {
     boolean a = true;
     float b = 3.2 + a;
+    println(b);
 }

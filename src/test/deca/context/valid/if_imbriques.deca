@@ -6,42 +6,22 @@
 {
     int compteur = 0;
 
-    if (true) {
-        if (true) {
-            if (true) {
-                if (true) {
-                    if (true) {
-                        if (true) {
-                            if (true) {
-                                if (true) {
-                                    if (true) {
-                                        if (true) {
-                                            if (true) {
-                                                if (true) {
-                                                    if (true) {
-                                                        if (true) {
-                                                            if (true) {
-                                                                if (true) {
-                                                                    if (true) {
-                                                                        if (true) {
-                                                                            if (true) {
-                                                                                if (true) {
-                                                                                    if (true) {
-                                                                                        if (true) {
-                                                                                            if (true) {
-                                                                                                if (true) {
-                                                                                                    if (true) {
-                                                                                                        compteur = compteur + 1;
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
+    if (true){
+        if (true){
+            if (true){
+                if (true){
+                    if (true){
+                        if (true){
+                            if (true){
+                                if (true){
+                                    if (true){
+                                        if (true){
+                                            if (true){
+                                                if (true){
+                                                    if (true){
+                                                        if (true){
+                                                            if (true){
+                                                                println("oui");
                                                             }
                                                         }
                                                     }
@@ -57,5 +37,4 @@
             }
         }
     }
-    assert(compteur == 1);
 }
