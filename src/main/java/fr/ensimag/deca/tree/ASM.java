@@ -26,7 +26,7 @@ public class ASM extends AbstractInst {
 
     @Override
     protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass, Type returnType) throws ContextualError {
-        return compiler.environmentType.VOID;
+        return returnType;
     }
 
     @Override
@@ -49,6 +49,7 @@ public class ASM extends AbstractInst {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
+        s.println(prefix+string);
     }
 
 
