@@ -52,6 +52,12 @@ public class BooleanLiteral extends AbstractExpr {
     }
 
     @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
+        int val = this.getValue()?1:0;
+        compiler.addInstructionEnd(new LOAD(val, register));
+    }
+
+    @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         if(this.getValue()){
             compiler.addInstruction(new WSTR("true"));

@@ -39,7 +39,21 @@ public class Greater extends AbstractOpIneq {
         compiler.addLabel(E);
         compiler.addInstruction(new LOAD(1, register));
         compiler.addLabel(fin);
-
+    }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new CMP(0, register));
+        compiler.addInstructionEnd(new BGT(E));
+        compiler.addInstructionEnd(new LOAD(0, register));
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        compiler.addInstructionEnd(new LOAD(1, register));
+        compiler.addLabelEnd(fin);
     }
 
     @Override

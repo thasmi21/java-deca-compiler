@@ -36,6 +36,11 @@ public class ReadInt extends AbstractReadExpr {
         compiler.addInstruction(new RINT());
         compiler.addInstruction(new LOAD(Register.R1, register));
     }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new RINT());
+        compiler.addInstructionEnd(new LOAD(Register.R1, register));
+    }
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {

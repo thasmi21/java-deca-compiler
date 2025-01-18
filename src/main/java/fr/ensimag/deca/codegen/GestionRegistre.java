@@ -74,6 +74,12 @@ public final class GestionRegistre {
         leftExpr.evalueExpr(compiler, register );
         compiler.addInstruction(new POP(Register.R0));
     }
+    public static void pushETpopEnd(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
+        rigthExpr.evalueExprEnd(compiler, register );
+        compiler.addInstructionEnd(new PUSH(register));
+        leftExpr.evalueExprEnd(compiler, register );
+        compiler.addInstructionEnd(new POP(Register.R0));
+    }
     public static void pushETpopMethod(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
         rigthExpr.evalueExprMethod(compiler, register );
         compiler.addInstructionEnd(new PUSH(register));

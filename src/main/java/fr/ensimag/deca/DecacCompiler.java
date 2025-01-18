@@ -99,6 +99,11 @@ public class DecacCompiler {
 
     }
 
+    public void addLabelEnd(Label label){
+        toExecuteEnd.add(new Line(label));
+
+    }
+
     public EnvironmentType getEnvironmentType() {
         return envType;
     }

@@ -43,6 +43,22 @@ public class Multiply extends AbstractOpArith {
     }
 
     @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExprEnd(compiler, r1 );
+            getRightOperand().evalueExprEnd(compiler, register );
+            compiler.addInstructionEnd(new MUL(r1, register));
+            r1.setInUse(false); //on n'utilise plus r1
+            return;
+        }
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        compiler.addInstructionEnd(new MUL(Register.R0, register));
+        //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+    }
+
+    @Override
     public void codeGenPrint(DecacCompiler compiler){
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();

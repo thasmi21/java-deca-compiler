@@ -45,4 +45,10 @@ public class Or extends AbstractOpBool {
         AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
         transform.evalueExpr(compiler, register);
     }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        AbstractExpr transform = new Not(new And(new Not(getLeftOperand()), new Not(getRightOperand())));
+        transform.evalueExprEnd(compiler, register);
+    }
 }

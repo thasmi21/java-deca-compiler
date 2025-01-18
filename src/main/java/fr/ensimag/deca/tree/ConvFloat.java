@@ -43,6 +43,25 @@ public class ConvFloat extends AbstractUnaryExpr {
         //System.out.println("Pas de registre dispo conv"); // à retirer, il faudra prendre un espace pile alors
     }
 
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            // On commence par évaluer l'expression que l'on veut convertir en float
+            getOperand().evalueExprEnd(compiler,r1);
+            compiler.addInstructionEnd(new FLOAT(r1,register));
+            r1.setInUse(false); //on n'utilise plus r1
+            return;
+        }
+        getOperand().evalueExprEnd(compiler, register );
+        compiler.addInstructionEnd(new LOAD(register, Register.R0));
+        compiler.addInstructionEnd(new FLOAT(Register.R0,register));
+        //System.out.println("Pas de registre dispo conv"); // à retirer, il faudra prendre un espace pile alors
+    }
+
+
     @Override
     public void codeGenPrint(DecacCompiler compiler){
         // Si on a déjà un Float on va simplement l'afficher

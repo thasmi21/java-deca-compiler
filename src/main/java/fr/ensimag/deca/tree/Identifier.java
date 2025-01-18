@@ -263,6 +263,18 @@ public class Identifier extends AbstractIdentifier {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(op, register));
     }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
+        if(getDefinition().isField()){
+            int index = ((FieldDefinition)getDefinition()).getIndex();
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, register));
+            compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, register), register));
+            return;
+        }
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstructionEnd(new LOAD(op, register));
+    }
 
     /*public void evalueExprField(DecacCompiler compiler, GPRegister register, DVal addrParent){
         compiler.getToExecuteEnd().add(new Line(new LOAD(addrParent, register)));

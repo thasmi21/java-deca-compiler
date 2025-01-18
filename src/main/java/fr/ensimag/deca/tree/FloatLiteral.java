@@ -10,6 +10,7 @@ import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.ImmediateFloat;
+import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
@@ -69,6 +70,10 @@ public class FloatLiteral extends AbstractExpr {
     @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(new ImmediateFloat(value), register));
+    }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new ImmediateFloat(value), register)));
     }
     @Override
     public void evalueExprMethod(DecacCompiler compiler, GPRegister register){

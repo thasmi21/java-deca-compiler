@@ -36,6 +36,12 @@ public class ReadFloat extends AbstractReadExpr {
     }
 
     @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new RFLOAT());
+        compiler.addInstructionEnd(new LOAD(Register.R1, register));
+    }
+
+    @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new RFLOAT());
         //compiler.addInstruction(new WFLOAT());

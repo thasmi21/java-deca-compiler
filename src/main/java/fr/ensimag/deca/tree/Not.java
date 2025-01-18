@@ -57,8 +57,29 @@ public class Not extends AbstractUnaryExpr {
         if(!r1EtaitNul) {
             r1.setInUse(false);
         }
+    }
 
-
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNul = false;
+        if(r1 == null){
+            r1EtaitNul = true;
+            r1 = register;
+        }
+        getOperand().evalueExprEnd(compiler, r1);
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(E));
+        compiler.addInstructionEnd(new LOAD(0, register));
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        compiler.addInstructionEnd(new LOAD(1, register));
+        compiler.addLabelEnd(fin);
+        if(!r1EtaitNul) {
+            r1.setInUse(false);
+        }
     }
 
     @Override
