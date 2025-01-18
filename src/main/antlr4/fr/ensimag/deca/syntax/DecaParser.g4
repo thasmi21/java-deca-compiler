@@ -620,17 +620,20 @@ decl_field[Visibility v,AbstractIdentifier t] returns[AbstractDeclField tree]
     ;
 
 decl_method[ListBody l]
-    : type ident OPARENT params=list_params CPARENT (block {
+    : type ident OPARENT params=list_params CPARENT block {
          DeclMethod m = new DeclMethod($type.tree,$ident.tree,$params.tree,$block.decls,$block.insts);
          setLocation(m, $type.start);
         $l.add(m);
         }
-      | ASM OPARENT code=multi_line_string CPARENT SEMI {
-        ASM as = new ASM($code.text,$code.location);
-        setLocation(as,$ASM);
-        $l.add(as);
+      | type ident OPARENT params=list_params CPARENT ASM OPARENT code=multi_line_string CPARENT SEMI {
+        ListInst j = new ListInst();
+        j.add(new ASM($code.text,$code.location));
+        ListDeclVar v=new ListDeclVar();
+        DeclMethod m = new DeclMethod($type.tree,$ident.tree,$params.tree,v,j);
+        setLocation(m, $type.start);
+        $l.add(m);
         }
-      )
+
     ;
 
 list_params returns[ListParams tree]

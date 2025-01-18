@@ -173,7 +173,6 @@ public class Dot extends AbstractLValue {
         select_expr.decompile(s);
         s.print(".");
         identifier.decompile(s);
-        s.println(";");
     }
 
     @Override

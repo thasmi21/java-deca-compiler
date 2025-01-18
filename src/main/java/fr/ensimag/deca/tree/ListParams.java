@@ -11,9 +11,13 @@ public class ListParams extends TreeList<AbstractParams> {
 
     @Override
     public void decompile(IndentPrintStream s) {
+        int j = 0;
         for (AbstractParams i : getList()) {
             i.decompile(s);
-            s.println();
+            j+=1;
+            if(j!=getList().size()){
+                s.print(", ");
+            }
         }
     }
 

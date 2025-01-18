@@ -4,12 +4,13 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import org.apache.commons.lang.Validate;
 
 import java.io.PrintStream;
 
-public class ASM extends AbstractBody {
+public class ASM extends AbstractInst {
 
 
     final private String string;
@@ -23,25 +24,21 @@ public class ASM extends AbstractBody {
         this.location = location;
     }
 
-
     @Override
-    protected void verifyClassBody(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
-
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass, Type returnType) throws ContextualError {
+        return compiler.environmentType.VOID;
     }
 
     @Override
-    protected void verifyClassMembers(DecacCompiler compiler,
-                              EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
-    }
+    protected void codeGenInst(DecacCompiler compiler) {
 
-
-    @Override
-    public void codeGenBody(DecacCompiler compiler){
     }
 
     @Override
     public void decompile(IndentPrintStream s) {
-
+        s.print("asm (");
+        s.print(string);
+        s.println(");");
     }
 
     @Override

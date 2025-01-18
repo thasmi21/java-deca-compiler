@@ -88,10 +88,12 @@ public class DeclMethod extends AbstractBody {
     public void decompile(IndentPrintStream s) {
         type.decompile(s);
         varName.decompile(s);
+        s.print("(");
         params.decompile(s);
+        s.println("){");
         declVar.decompile(s);
         inst.decompile(s);
-        s.println(";");
+        s.println("}");
     }
 
     @Override
