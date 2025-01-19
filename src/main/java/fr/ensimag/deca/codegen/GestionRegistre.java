@@ -74,15 +74,25 @@ public final class GestionRegistre {
         leftExpr.evalueExpr(compiler, register );
         compiler.addInstruction(new POP(Register.R0));
     }
-    public static void pushETpopMethod(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
-        rigthExpr.evalueExprMethod(compiler, register );
+    public static void pushETpopEnd(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
+        rigthExpr.evalueExprEnd(compiler, register );
         compiler.addInstructionEnd(new PUSH(register));
-        leftExpr.evalueExprMethod(compiler, register );
+        leftExpr.evalueExprEnd(compiler, register );
         compiler.addInstructionEnd(new POP(Register.R0));
     }
+//    public static void pushETpopMethod(DecacCompiler compiler, AbstractExpr rigthExpr, AbstractExpr leftExpr, GPRegister register){
+//        rigthExpr.evalueExprMethod(compiler, register );
+//        compiler.addInstructionEnd(new PUSH(register));
+//        leftExpr.evalueExprMethod(compiler, register );
+//        compiler.addInstructionEnd(new POP(Register.R0));
+//    }
     public static void verifieNullReference(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new CMP(new NullOperand(), register));
         compiler.addInstruction(new BEQ(new Label("dereferencement.null")));
+    }
+    public static void verifieNullReferenceEnd(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new CMP(new NullOperand(), register));
+        compiler.addInstructionEnd(new BEQ(new Label("dereferencement.null")));
     }
 
 }

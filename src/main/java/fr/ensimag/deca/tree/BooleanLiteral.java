@@ -49,6 +49,12 @@ public class BooleanLiteral extends AbstractExpr {
     }
 
     @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
+        int val = this.getValue()?1:0;
+        compiler.addInstructionEnd(new LOAD(val, register));
+    }
+
+    @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         if(this.getValue()){
             compiler.addInstruction(new WSTR("true"));
@@ -59,10 +65,26 @@ public class BooleanLiteral extends AbstractExpr {
     }
 
     @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        if(this.getValue()){
+            compiler.addInstructionEnd(new WSTR("true"));
+        }
+        else{
+            compiler.addInstructionEnd(new WSTR("false"));
+        }
+    }
+
+    @Override
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
             GPRegister r =  GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
 
+                compiler.addInstruction(new PUSH(Register.R1));
+                r = Register.R1;
+                rWasNul = true;
+            }
             int entier = (this.getValue())?1:0;
             compiler.addInstruction(new LOAD(entier, r));
             Label E = new Label(thenIns.toString().replace('@', '_')+"if");
@@ -74,17 +96,91 @@ public class BooleanLiteral extends AbstractExpr {
             compiler.addLabel(E);
             thenIns.codeGenListInst(compiler);
             compiler.addLabel(fin);
-            r.setInUse(false);
+            if(!rWasNul){
+                r.setInUse(false);
+            }else{
+                compiler.addInstruction(new POP(Register.R1));
+            }
+
     }
     @Override
     public void genWhileCode(DecacCompiler compiler, Label label){
         GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
 
+            compiler.addInstruction(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
         int entier = (this.getValue())?1:0;
         compiler.addInstruction(new LOAD(entier, r));
         compiler.addInstruction(new CMP(0, r)); //si vrai
         compiler.addInstruction(new BNE(label));
-        r.setInUse(false);
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(Register.R1));
+        }
+    }
+    @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstructionEnd(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        int entier = (this.getValue())?1:0;
+        compiler.addInstructionEnd(new LOAD(entier, r));
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
+        compiler.addInstructionEnd(new CMP(0, r));
+        compiler.addInstructionEnd(new BNE(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(Register.R1));
+        }
+
+    }
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstructionEnd(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        int entier = (this.getValue())?1:0;
+        compiler.addInstructionEnd(new LOAD(entier, r));
+        compiler.addInstructionEnd(new CMP(0, r)); //si vrai
+        compiler.addInstructionEnd(new BNE(label));
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(Register.R1));
+        }
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
     @Override
     public void decompile(IndentPrintStream s) {

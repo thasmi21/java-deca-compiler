@@ -50,6 +50,13 @@ public abstract class AbstractExpr extends AbstractInst {
         throw  new IllegalArgumentException("Expression connot be a condition");
     }
 
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        throw new UnsupportedOperationException("Expression connot be a condition");
+    }
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        throw  new IllegalArgumentException("Expression connot be a condition");
+    }
+
     protected void setType(Type type) {
         Validate.notNull(type);
         this.type = type;

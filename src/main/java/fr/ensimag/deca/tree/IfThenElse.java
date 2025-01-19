@@ -83,6 +83,12 @@ public class IfThenElse extends AbstractInst {
         condition.genIfElseCode(compiler, thenBranch, elseBranch);
 
     }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+
+        condition.genIfElseCodeMethod(compiler, thenBranch, elseBranch);
+
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {

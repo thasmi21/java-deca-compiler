@@ -107,6 +107,16 @@ public class IntLiteral extends AbstractExpr {
         valFloat.evalueExpr(compiler, Register.R1);
         compiler.addInstruction(new WFLOATX());
     }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new LOAD(this.getValue(),Register.R1));
+        compiler.addInstructionEnd(new WINT());
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {

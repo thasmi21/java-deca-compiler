@@ -1,0 +1,90 @@
+//Test pour la manipulation des tableau en deca
+/*{
+	int[] a = {3,2,5};
+	int cpt = 0;
+	int somme = 0;
+	println(a[1]);
+	while(cpt <=2){
+		somme = somme + a[1];
+		cpt = cpt+1;
+	}
+	println("La somme des élements du tableau vaut", somme);
+}
+*/
+/*class C{
+	protected int x;
+	int y = 61;
+	int k = 6;
+	int j = 2;
+	int blabla(){
+		return 0;
+	}
+	void doubler(int a, int z){
+		//int x = a;
+		int m = x;
+		//m = y+k+j;
+		this.k = 5+2;	
+		println("oui");
+	}
+}
+class A extends C{
+	int z = 3;
+	int y = 9;
+
+	void h(){
+		if(1<=2){
+			println(4);
+		}
+	}
+
+	int  a(int z){
+		int k = 1990+z;
+		this.x = 8+2;
+
+		if(1<=2){
+			println(4);
+		}
+		
+		return k;
+	}
+	int b(){
+		return 2025;
+	}
+	int blabla(){
+		return 5555;
+	}
+}
+{
+	C luc = new C();
+	A vic = new A();
+	int p;
+	//float n;
+	int oui;
+	p = vic.y;
+	println("p vaut: ",p);
+	oui = vic.blabla();
+	println(oui);
+	vic.y = 5;
+	println(vic.y);
+	println(luc.y);
+	luc.y = 10;
+	println(luc.y);
+	println("Tout va bien");
+}*/
+
+class Point {
+    int x=3;
+    int y=1;
+
+    int getX(){
+        return x;
+    }
+    int getY(){
+        return y;
+    }
+}
+{
+    Point p = new Point();
+    int x = p.getX();
+    println(x);
+} 

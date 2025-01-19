@@ -34,6 +34,7 @@ public class ASM extends AbstractInst {
 
     }
 
+
     @Override
     public void decompile(IndentPrintStream s) {
         s.print("asm (");

@@ -118,6 +118,11 @@ public class DecacCompiler {
 
     }
 
+    public void addLabelEnd(Label label){
+        toExecuteEnd.add(new Line(label));
+
+    }
+
     public EnvironmentType getEnvironmentType() {
         return envType;
     }
@@ -362,6 +367,13 @@ public class DecacCompiler {
             compiler.getToExecuteEnd().add(new Line(new ERROR()));
         }
         compiler.setLabelOvFloat(true);
+    }
+
+    public void labelDivZeroEnd(DecacCompiler compiler){
+        compiler.addInstructionEnd(new BOV(new Label("division_by_zero")));
+        if (!compiler.getlabelZeroDefined()) {
+            compiler.setlabelZeroDefined(true);
+        }
     }
 
     /**

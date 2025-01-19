@@ -55,6 +55,12 @@ public class Dot extends AbstractLValue {
             }else{
                 register.setInUse(false);
             }
+        }else{
+            GPRegister r = Register.getR(1);
+            compiler.addInstructionEnd(new PUSH(r));
+            this.evalueExpr(compiler, r);
+            compiler.addInstruction(new WINT());
+            compiler.addInstructionEnd(new POP(r));
         }
     }
 
@@ -66,7 +72,6 @@ public class Dot extends AbstractLValue {
 
     @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register ){
-
         DAddr addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
         if(dotField){
             //DAddr addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
@@ -97,10 +102,197 @@ public class Dot extends AbstractLValue {
             //fin appel de la methode
             compiler.addInstruction(new SUBSP(nbrParam));
             compiler.addInstruction(new LOAD(Register.R0, register));
-            System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+            //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+        }
+    }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ){
+        DAddr addrParent;
+        if(dotField) {
+            if (select_expr instanceof AbstractIdentifier) {
+                addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+                compiler.addInstructionEnd(new LOAD(addrParent, register));
+                GestionRegistre.verifieNullReference(compiler, register);
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(), register), register));
+
+            } else if (select_expr instanceof This) {
+
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(-2, Register.LB), register));
+                //GestionRegistre.verifieNullReference(compiler, register);
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(),register), register));
+
+            }
+        }
+        //il s'agit donc d'un appel de methode
+        else {
+            if(select_expr instanceof Identifier) {
+                addrParent = ((AbstractIdentifier) select_expr).getExpDefinition().getOperand();
+            }else if(select_expr instanceof This){
+                addrParent = new RegisterOffset(-2, Register.LB);
+         }else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire cette Opération");
+            }
+            //on evalue les paramètres et on les empiles
+            int nbrParam = args.getList().size();
+            int cpt = -1;
+            compiler.addInstructionEnd(new ADDSP(nbrParam));
+            compiler.addInstructionEnd(new LOAD(addrParent, register));
+            compiler.addInstructionEnd(new STORE(register, new RegisterOffset(0, Register.SP)));
+            for(AbstractExpr expr: args.getList()){
+                expr.evalueExprEnd(compiler, register);
+                compiler.addInstructionEnd(new STORE(register, new RegisterOffset(cpt, Register.SP)));
+                cpt--;
+            }
+            compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, Register.SP), register));
+            if(!(select_expr instanceof This)){
+                GestionRegistre.verifieNullReferenceEnd(compiler, register);
+            }
+            compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, register), register));
+            //appel de la methode dont -il s'agit
+            //identifier.getMethodDefinition().getIndex() /*
+            // il faudra qu'on puisse recuperer après le bon index*/
+            compiler.addInstructionEnd(new BSR(new RegisterOffset(identifier.getMethodDefinition().getOffSet(), register)));
+            //fin appel de la methode
+            compiler.addInstructionEnd(new SUBSP(nbrParam));
+            compiler.addInstructionEnd(new LOAD(Register.R0, register));
+            //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+
 
         }
     }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        if(args == null){
+            return;
+        }
+        DAddr addrParent;
+        GPRegister register = Register.getR(2);
+        compiler.addInstruction(new PUSH(register));
+        addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+        //on evalue les paramètres et on les empiles
+        int nbrParam = args.getList().size();
+        int cpt = -1;
+        compiler.addInstruction(new ADDSP(nbrParam));
+        compiler.addInstruction(new LOAD(addrParent, register));
+        compiler.addInstruction(new STORE(register, new RegisterOffset(0, Register.SP)));
+        for(AbstractExpr expr: args.getList()){
+            expr.evalueExpr(compiler, register);
+            compiler.addInstruction(new STORE(register, new RegisterOffset(cpt, Register.SP)));
+            cpt--;
+        }
+        compiler.addInstruction(new LOAD(new RegisterOffset(0, Register.SP), register));
+        GestionRegistre.verifieNullReference(compiler, register);
+        compiler.addInstruction(new LOAD(new RegisterOffset(0, register), register));
+        //appel de la methode dont -il s'agit
+        //identifier.getMethodDefinition().getIndex() /*
+        // il faudra qu'on puisse recuperer après le bon index*/
+        compiler.addInstruction(new BSR(new RegisterOffset(identifier.getMethodDefinition().getOffSet(), register)));
+        //fin appel de la methode
+        compiler.addInstruction(new SUBSP(nbrParam));
+        //compiler.addInstructionEnd(new LOAD(Register.R0, register));
+        //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+        compiler.addInstruction(new PUSH(register));
+    }
+
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        if(args == null){
+            return;
+        }
+        DAddr addrParent;
+        GPRegister register = Register.getR(2);
+        compiler.addInstructionEnd(new PUSH(register));
+        if(select_expr instanceof Identifier) {
+            addrParent = ((AbstractIdentifier) select_expr).getExpDefinition().getOperand();
+        }else if(select_expr instanceof This){
+            addrParent = new RegisterOffset(-2, Register.LB);
+        }else{
+            throw new IllegalArgumentException("Vous ne pouvez pas faire cette Opération");
+        }
+        //on evalue les paramètres et on les empiles
+        int nbrParam = args.getList().size();
+        int cpt = -1;
+        compiler.addInstructionEnd(new ADDSP(nbrParam));
+        compiler.addInstructionEnd(new LOAD(addrParent, register));
+        compiler.addInstructionEnd(new STORE(register, new RegisterOffset(0, Register.SP)));
+        for(AbstractExpr expr: args.getList()){
+            expr.evalueExprEnd(compiler, register);
+            compiler.addInstructionEnd(new STORE(register, new RegisterOffset(cpt, Register.SP)));
+            cpt--;
+        }
+        compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, Register.SP), register));
+        GestionRegistre.verifieNullReferenceEnd(compiler, register);
+        compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, register), register));
+        //appel de la methode dont -il s'agit
+        //identifier.getMethodDefinition().getIndex() /*
+        // il faudra qu'on puisse recuperer après le bon index*/
+        compiler.addInstructionEnd(new BSR(new RegisterOffset(identifier.getMethodDefinition().getOffSet(), register)));
+        //fin appel de la methode
+        compiler.addInstructionEnd(new SUBSP(nbrParam));
+        //compiler.addInstructionEnd(new LOAD(Register.R0, register));
+        //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+        compiler.addInstructionEnd(new PUSH(register));
+    }
+
+
+    @Override
+    public void codeGenPrintMethod(DecacCompiler compiler){
+        DAddr addrParent;
+        if(dotField) {
+            if (select_expr instanceof AbstractIdentifier) {
+                addrParent = ((AbstractIdentifier)select_expr).getExpDefinition().getOperand();
+                compiler.addInstructionEnd(new LOAD(addrParent, Register.R1));
+                GestionRegistre.verifieNullReferenceEnd(compiler, Register.R1);
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(), Register.R1), Register.R1));
+
+            } else if (select_expr instanceof This) {
+
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1));
+                //GestionRegistre.verifieNullReference(compiler, register);
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(),Register.R1), Register.R1));
+
+            }
+        }
+        //il s'agit donc d'un appel de methode
+        else {
+            if(select_expr instanceof Identifier) {
+                addrParent = ((AbstractIdentifier) select_expr).getExpDefinition().getOperand();
+            }else if(select_expr instanceof This){
+                addrParent = new RegisterOffset(-2, Register.LB);
+            }else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire cette Opération");
+            }
+                //on evalue les paramètres et on les empiles
+                int nbrParam = args.getList().size();
+                int cpt = -1;
+                compiler.addInstructionEnd(new ADDSP(nbrParam));
+                compiler.addInstructionEnd(new LOAD(addrParent, Register.R1));
+                compiler.addInstructionEnd(new STORE(Register.R1, new RegisterOffset(0, Register.SP)));
+                for(AbstractExpr expr: args.getList()){
+                    expr.evalueExprEnd(compiler, Register.R1);
+                    compiler.addInstructionEnd(new STORE(Register.R1, new RegisterOffset(cpt, Register.SP)));
+                    cpt--;
+                }
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, Register.SP), Register.R1));
+                GestionRegistre.verifieNullReferenceEnd(compiler, Register.R1);
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, Register.R1), Register.R1));
+                //appel de la methode dont -il s'agit
+                //identifier.getMethodDefinition().getIndex() /*
+                // il faudra qu'on puisse recuperer après le bon index*/
+                compiler.addInstructionEnd(new BSR(new RegisterOffset(identifier.getMethodDefinition().getOffSet(), Register.R1)));
+                //fin appel de la methode
+                compiler.addInstructionEnd(new SUBSP(nbrParam));
+                compiler.addInstructionEnd(new LOAD(Register.R0, Register.R1));
+
+
+
+            //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
+        }
+        compiler.addInstructionEnd(new WINT());
+    }
+
 
 
     @Override
@@ -168,6 +360,103 @@ public class Dot extends AbstractLValue {
 
     }
 
+
+    @Override
+    public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstruction(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        this.evalueExpr(compiler, r);
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
+        compiler.addInstruction(new CMP(0, r));
+        compiler.addInstruction(new BNE(E));
+        elseIns.codeGenListInst(compiler);
+        compiler.addInstruction(new BRA(fin));
+        compiler.addLabel(E);
+        thenIns.codeGenListInst(compiler);
+        compiler.addLabel(fin);
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(Register.R1));
+        }
+
+    }
+    @Override
+    public void genWhileCode(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstruction(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        this.evalueExpr(compiler, r);
+        compiler.addInstruction(new CMP(0, r)); //si vrai
+        compiler.addInstruction(new BNE(label));
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(Register.R1));
+        }
+    }
+
+    @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstructionEnd(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        this.evalueExprEnd(compiler, r);
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
+        compiler.addInstructionEnd(new CMP(0, r));
+        compiler.addInstructionEnd(new BNE(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(Register.R1));
+        }
+
+    }
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rWasNul = false;
+        if(r == null){
+
+            compiler.addInstructionEnd(new PUSH(Register.R1));
+            r = Register.R1;
+            rWasNul = true;
+        }
+        this.evalueExprEnd(compiler, r);
+        compiler.addInstructionEnd(new CMP(0, r)); //si vrai
+        compiler.addInstructionEnd(new BNE(label));
+        if(!rWasNul){
+            r.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(Register.R1));
+        }
+    }
+
     @Override
     public void decompile(IndentPrintStream s) {
         select_expr.decompile(s);
@@ -192,6 +481,7 @@ public class Dot extends AbstractLValue {
             identifier.prettyPrint(s,prefix,true);
         }
     }
+
 
 
 }

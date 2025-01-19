@@ -50,6 +50,29 @@ public class GreaterOrEqual extends AbstractOpIneq {
     }
 
     @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+
+        compiler.addInstructionEnd(new BGE(E));
+        compiler.addInstructionEnd(new LOAD(0, register));
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        compiler.addInstructionEnd(new LOAD(1, register));
+        compiler.addLabelEnd(fin);
+
+    }
+
+    @Override
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
         GPRegister register = Register.R1;
@@ -90,6 +113,47 @@ public class GreaterOrEqual extends AbstractOpIneq {
     }
 
     @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister register = Register.R1;
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        Label E = new Label(this.toString().replace('@', '_')+"if");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_if");
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+        compiler.addInstructionEnd(new BGE(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister register = Register.R1;
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        compiler.addInstructionEnd(new SUB(GPRegister.R0, register));
+        if(getRightOperand().getType().isFloat()){
+            compiler.addInstructionEnd(new CMP(new ImmediateFloat(0.0F), register));
+        }
+        else{
+            compiler.addInstructionEnd(new CMP(0, register));
+        }
+
+        compiler.addInstructionEnd(new BGE(label));
+    }
+
+
+    @Override
     public void codeGenInst(DecacCompiler compiler) {
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
         GPRegister r2 = GestionRegistre.obtainFreeRegister();
@@ -125,5 +189,10 @@ public class GreaterOrEqual extends AbstractOpIneq {
         compiler.addLabel(fin);
         r1.setInUse(false);
         r2.setInUse(false);
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }
