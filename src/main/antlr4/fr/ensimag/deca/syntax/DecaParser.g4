@@ -462,6 +462,11 @@ primary_expr returns[AbstractExpr tree]
             assert($get_array.tree != null);
             $tree=$get_array.tree;
     }
+    | ident DOT LENGTH {
+            assert($ident.tree != null);
+            $tree= new LengthArray($ident.tree);
+            setLocation($tree, $ident.start);
+    }
     ;
 
 get_array returns[AbstractExpr tree]

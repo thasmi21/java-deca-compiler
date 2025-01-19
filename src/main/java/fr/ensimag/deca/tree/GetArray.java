@@ -13,12 +13,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetArray extends Identifier {
+public class GetArray extends AbstractLValue {
     private AbstractIdentifier identifier;
     private List<AbstractExpr> listIndex;
 
     public GetArray(AbstractIdentifier identifier, List<DecaParser.ExprContext> ListIndex) {
-        super(identifier.getName());
+        //super(identifier.getName());
         this.identifier = identifier;
         List<AbstractExpr> liste = new ArrayList<>();
         for (DecaParser.ExprContext coefficient : ListIndex) {
@@ -49,23 +49,15 @@ public class GetArray extends Identifier {
             throw new ContextualError(symbolIdentifier + "n'est pas un tableau !", getLocation());
         }
         EnvironmentType envType = compiler.getEnvironmentType();
-        Symbol symboleTypeCoeff = compiler.createSymbol(type.getName().getName().substring(0, type.getName().getName().length() - (2 * (listIndex.size()-1))));
+        Symbol symboleTypeCoeff = compiler.createSymbol(type.getName().getName().substring(0, type.getName().getName().length() - (2 * (listIndex.size()))));
         Type typeVoulu = envType.defOfType(symboleTypeCoeff).getType();
-        //Definition varDef = new VariableDefinition(typeVoulu, getLocation());
-        String name = symbolIdentifier.getName();
-        for (int i = 0; i < listIndex.size(); i++) {
-            name = name + "[" + listIndex.get(i) + "]";
-        }
-        Symbol varSymbol = compiler.createSymbol(name);
-        this.setName(varSymbol);
         for (AbstractExpr indice : listIndex){
             indice.verifyExpr(compiler, localEnv, currentClass);
             if(!indice.getType().isInt()){
-                throw new ContextualError(symbolIdentifier + "n'est pas un int", getLocation());
+                throw new ContextualError( " Au moins un indice n'est pas un entier", getLocation());
             }
         }
         this.setType(typeVoulu);
-        //this.setDefinition(varDef);
         return typeVoulu;
     }
 
@@ -74,10 +66,21 @@ public class GetArray extends Identifier {
 
     }
 
-    @Override
-    protected String prettyPrintNode(){
-        return "GetArray";
-    }
+//    @Override
+//    protected String prettyPrintNode(){
+//        return "GetArray";
+//    }
+
+//    @Override
+//    protected void prettyPrintType(PrintStream s, String prefix) {
+//        Type t = getType();
+//        if (t != null) {
+//            s.print(prefix);
+//            s.print("type: ");
+//            s.print(t.getName());
+//            s.println();
+//        }
+//    }
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
