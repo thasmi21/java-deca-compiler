@@ -34,12 +34,17 @@ public class Assign extends AbstractBinaryExpr {
         Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isNull())) {
+        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isClassOrNull())) {
             if(typeRight.sameType(typeLeft)){
                 this.setType(typeLeft);
                 return typeLeft;
             }
-            if(typeLeft.isClass()){
+            if(typeRight.isClass()){
+                ClassType classType1 = (ClassType)typeLeft;
+                ClassType classType2 = (ClassType)typeRight;
+                if(!classType1.sameType(classType2) && !classType2.isSubClassOf(classType1)){
+                    throw new ContextualError("la class n'est pas la même class ni une sous class" ,getLocation());
+                }
                 this.setType(typeLeft);
                 return typeLeft;
             }
