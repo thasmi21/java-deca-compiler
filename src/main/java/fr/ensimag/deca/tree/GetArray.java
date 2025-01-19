@@ -15,23 +15,19 @@ import java.util.List;
 
 public class GetArray extends Identifier {
     private AbstractIdentifier identifier;
-    private List<IntLiteral> listIndex;
+    private List<AbstractExpr> listIndex;
 
     public GetArray(AbstractIdentifier identifier, List<DecaParser.ExprContext> ListIndex) {
         super(identifier.getName());
         this.identifier = identifier;
-        List<IntLiteral> liste = new ArrayList<>();
+        List<AbstractExpr> liste = new ArrayList<>();
         for (DecaParser.ExprContext coefficient : ListIndex) {
-            if (coefficient.tree instanceof IntLiteral) {
-                liste.add((IntLiteral) coefficient.tree);
-            } else {
-                throw new IllegalArgumentException("Les indices doivent être des entiers !");
-            }
+            liste.add(coefficient.tree);
         }
         this.listIndex = liste;
     }
 
-    public List<IntLiteral> getListIndex() {
+    public List<AbstractExpr> getListIndex() {
         return listIndex;
     }
 
@@ -53,27 +49,34 @@ public class GetArray extends Identifier {
             throw new ContextualError(symbolIdentifier + "n'est pas un tableau !", getLocation());
         }
         EnvironmentType envType = compiler.getEnvironmentType();
-        Type typeCourant = type;
-        Symbol symboleTypeCoeff = null;
-        for (int i = 1; i < listIndex.size() + 1; i++) {
-            symboleTypeCoeff = compiler.createSymbol(type.getName().getName().substring(0, type.getName().getName().length() - 2 * i));
-        }
+        Symbol symboleTypeCoeff = compiler.createSymbol(type.getName().getName().substring(0, type.getName().getName().length() - (2 * (listIndex.size()-1))));
         Type typeVoulu = envType.defOfType(symboleTypeCoeff).getType();
-        this.setType(compiler.environmentType.INT);
-        Definition varDef = new VariableDefinition(typeVoulu, getLocation());
+        //Definition varDef = new VariableDefinition(typeVoulu, getLocation());
         String name = symbolIdentifier.getName();
         for (int i = 0; i < listIndex.size(); i++) {
-            name = name + "[" + listIndex.get(i).getValue() + "]";
+            name = name + "[" + listIndex.get(i) + "]";
         }
         Symbol varSymbol = compiler.createSymbol(name);
         this.setName(varSymbol);
-        this.setDefinition(varDef);
+        for (AbstractExpr indice : listIndex){
+            indice.verifyExpr(compiler, localEnv, currentClass);
+            if(!indice.getType().isInt()){
+                throw new ContextualError(symbolIdentifier + "n'est pas un int", getLocation());
+            }
+        }
+        this.setType(typeVoulu);
+        //this.setDefinition(varDef);
         return typeVoulu;
     }
 
     @Override
     public void decompile(IndentPrintStream s) {
 
+    }
+
+    @Override
+    protected String prettyPrintNode(){
+        return "GetArray";
     }
 
     @Override

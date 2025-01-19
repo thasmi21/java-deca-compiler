@@ -243,9 +243,6 @@ assign_expr returns[AbstractExpr tree]
         EQUALS e2=assign_expr {
             assert($e.tree != null);
             assert($e2.tree != null);
-            if($e.tree instanceof GetArray){
-                  $tree = new SetArray((GetArray) $e.tree, $e2.tree);
-            }
             $tree = new Assign((AbstractLValue)$e.tree, $e2.tree);
             setLocation($tree,$EQUALS);
         }
@@ -465,17 +462,6 @@ primary_expr returns[AbstractExpr tree]
             assert($get_array.tree != null);
             $tree=$get_array.tree;
     }
-    | method_array {
-            assert($method_array.tree != null);
-            $tree=$method_array.tree;
-    }
-    ;
-
-method_array returns[AbstractExpr tree]
-    : ARRAY DOT IDENT OPARENT (e+=expr (COMMA e+=expr)*)? CPARENT{
-        $tree = (AbstractExpr) new CallMethodArray($e, $IDENT.text);
-        setLocation($tree, $ARRAY);
-    }
     ;
 
 get_array returns[AbstractExpr tree]
@@ -486,8 +472,8 @@ get_array returns[AbstractExpr tree]
     ;
 
 array returns[AbstractExpr tree]
-    : IDENT (OCROCHET INT CCROCHET)+ {
-        $tree = new ArrayLiteral($ctx.getText(), null);
+    : IDENT (OCROCHET indices+=expr CCROCHET)+ {
+        $tree = new ArrayNoInit($ctx.getText(), $indices);
         setLocation($tree, $IDENT);
     }
     | IDENT (OCROCHET CCROCHET)+ array_literal {
@@ -497,13 +483,9 @@ array returns[AbstractExpr tree]
     ;
 
 array_literal returns [AbstractExpr tree,  List<ExprContext> exp]
-    : OBRACE exp_list+=expr (COMMA exp_list+=expr)* CBRACE {
+    : OBRACE (exp_list+=expr (COMMA exp_list+=expr)*)? CBRACE {
         $exp = $exp_list;
         $tree = new ArrayLiteral($ctx.getText(), $exp_list);
-        setLocation($tree, $OBRACE);
-    }
-    | OBRACE CBRACE {
-        $tree = new ArrayLiteral($ctx.getText(), null);
         setLocation($tree, $OBRACE);
     }
     ;
