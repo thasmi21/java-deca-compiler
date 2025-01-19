@@ -119,7 +119,7 @@ public class Dot extends AbstractLValue {
             } else if (select_expr instanceof This) {
 
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset(-2, Register.LB), register));
-                //GestionRegistre.verifieNullReference(compiler, register);
+                GestionRegistre.verifieNullReferenceEnd(compiler, register);
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(),register), register));
 
             }
@@ -193,7 +193,7 @@ public class Dot extends AbstractLValue {
         compiler.addInstruction(new SUBSP(nbrParam));
         //compiler.addInstructionEnd(new LOAD(Register.R0, register));
         //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
-        compiler.addInstruction(new PUSH(register));
+        compiler.addInstruction(new POP(register));
     }
 
     @Override
@@ -233,7 +233,7 @@ public class Dot extends AbstractLValue {
         compiler.addInstructionEnd(new SUBSP(nbrParam));
         //compiler.addInstructionEnd(new LOAD(Register.R0, register));
         //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
-        compiler.addInstructionEnd(new PUSH(register));
+        compiler.addInstructionEnd(new POP(register));
     }
 
 

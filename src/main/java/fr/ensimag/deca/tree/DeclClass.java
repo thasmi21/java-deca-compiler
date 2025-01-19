@@ -166,11 +166,12 @@ public class DeclClass extends AbstractDeclClass {
         else{
             // on sauvegarde r1, et on le recupera ensuite
             //on aurait pu prendre ici n'importe quel registre en fait sauf r0 et r1'
-            compiler.getToExecuteEnd().add(new Line(new PUSH(Register.R1)));
-            initiali.evalueExprEnd(compiler, Register.R1);
-            compiler.getToExecuteEnd().add(new Line(new LOAD(Register.R1, Register.R0)));
+            GPRegister r = Register.getR(2);
+            compiler.getToExecuteEnd().add(new Line(new PUSH(r)));
+            initiali.evalueExprEnd(compiler, r);
+            compiler.getToExecuteEnd().add(new Line(new LOAD(r, Register.R0)));
             // on remet la bonne valeur de R1
-            compiler.getToExecuteEnd().add(new Line(new POP(Register.R1)));
+            compiler.getToExecuteEnd().add(new Line(new POP(r)));
         }
 
     }
@@ -263,15 +264,26 @@ public class DeclClass extends AbstractDeclClass {
 
                 compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXX"));
                 //init des varaibles avec leur index
-
+                compiler.addInstructionEnd(new ADDSP(method1.getDeclVar().getList().size()));
                 //les paramètres ont été gérer dans le verify
                 for (AbstractDeclVar decl : method1.getDeclVar().getList()){
                     decl.codeGenDeclVarMethod(compiler);
                 }
+                String nom_label_fin = "fin."+this.getSymbol().getName()+"."+ method1.getVarName().getName();
                 for (AbstractInst ins : method1.getInsts().getList()){
                     //RegisterOffset parentRegister = new RegisterOffset(-2, Register.LB);
+                    if(ins instanceof Return){
+                        ((Return)ins).codeGenInstReturn(compiler, nom_label_fin);
+                    }
                     ins.codeGenInstMethod(compiler);
                 }
+                compiler.addLabelEnd(new Label("etq_fin.1"));
+                compiler.addInstructionEnd(new WSTR("Erreur:Sortie de la methode "+this.getSymbol().getName()+"."+ method1.getVarName().getName()+"sans return"));
+                compiler.addInstructionEnd(new WNL());
+                compiler.addInstructionEnd(new ERROR());
+
+                AbstractLine ligne_label_fin = new Line(new Label(nom_label_fin));
+                compiler.getToExecuteEnd().add(ligne_label_fin);
                 compiler.addInstructionEnd(new RTS());
                 compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXXX"));
             }
@@ -302,6 +314,7 @@ public class DeclClass extends AbstractDeclClass {
     
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
+        GestionRegistre.classFinCour = this.className.getName().getName();
         EnvironmentExp environmentExp=((ClassDefinition)(compiler.getEnvironmentType().getEnvTypes().get(className.getName()))).getMembers();
         TypeDefinition typeDefinition= compiler.getEnvironmentType().getEnvTypes().get(className.getName());
         if(typeDefinition != null && typeDefinition.isClass()) {
