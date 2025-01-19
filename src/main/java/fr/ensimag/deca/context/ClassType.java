@@ -80,5 +80,14 @@ public class ClassType extends Type {
         return false;
     }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ClassType) {
+            ClassType classType = (ClassType) obj;
+            if(definition.getType().getName().equals(classType.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
