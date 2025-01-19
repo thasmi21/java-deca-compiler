@@ -94,7 +94,7 @@ public class Program extends AbstractProgram {
         }
         int val = GestionRegistre.getIndiceRegistreGB() + GestionRegistre.getCompteurTempUsage();
         compiler.addFirst(new TSTO(val));
-        if (compiler.getlabelZeroDefined()) {
+        if (!compiler.getlabelZeroDefined()) {
             compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
             compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
             compiler.getToExecuteEnd().add(new Line(new WNL()));

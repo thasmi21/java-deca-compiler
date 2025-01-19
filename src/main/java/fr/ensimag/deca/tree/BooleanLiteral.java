@@ -177,11 +177,7 @@ public class BooleanLiteral extends AbstractExpr {
         //ne fait rien
         compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
-    @Override
-    protected void codeGenInst(DecacCompiler compiler) {
-        //ne fait rien
-        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
-    }
+
     @Override
     public void decompile(IndentPrintStream s) {
         s.print(Boolean.toString(value));
