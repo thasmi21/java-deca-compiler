@@ -367,7 +367,7 @@ public class DeclClass extends AbstractDeclClass {
         // Si elle n'en a pas sa super class va être Object
         String debComment = "Construction de la table des méthode de ";
         // On cherche la classe mère de la classe que l'on traite, pour savoir où est initialiser sa table des méthode
-        TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get(((DeclClass) this).getSymbol());
+        TypeDefinition nom = compiler.getEnvironmentType().getEnvTypes().get((this).getSymbol());
         if (nom instanceof ClassDefinition) {
             ClassDefinition classDef = (ClassDefinition) nom;
             classDef.setLabels(this.tabLabel);
