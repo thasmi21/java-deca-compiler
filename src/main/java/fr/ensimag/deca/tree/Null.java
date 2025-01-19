@@ -7,6 +7,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.tools.IndentPrintStream;
 
+import javax.lang.model.type.NullType;
 import java.io.PrintStream;
 
 public class Null extends AbstractExpr {
@@ -15,19 +16,19 @@ public class Null extends AbstractExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
                            ClassDefinition currentClass) throws ContextualError {
-        Type intType = compiler.environmentType.VOID;
-        this.setType(intType);
-        return intType;
+        Type nullType = compiler.environmentType.NULL_TYPE;
+        this.setType(nullType);
+        return nullType;
     }
 
     @Override
     String prettyPrintNode() {
-        return "Null";
+        return "null";
     }
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("Null");
+        s.print("null");
     }
 
     @Override

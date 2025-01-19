@@ -55,6 +55,10 @@ public class EnvironmentType {
         // not added to envTypes, it's not visible for the user.
         S.add(stringSymb);
 
+        Symbol nullSymb = compiler.createSymbol("null");
+        NULL_TYPE = new NullType(nullSymb);
+        S.add(nullSymb);
+
         Symbol objetSymb=compiler.createSymbol("objet");
         OBJET=new ClassType(objetSymb);
         OBJET.definition=new ClassDefinition(OBJET,Location.BUILTIN,null);
@@ -106,6 +110,7 @@ public class EnvironmentType {
         return envExp;
     }
 
+
     public Map<Symbol, TypeDefinition> getEnvTypes() {
         return envTypes;
     }
@@ -120,5 +125,6 @@ public class EnvironmentType {
     public final FloatType   FLOAT;
     public final StringType  STRING;
     public final BooleanType BOOLEAN;
+    public final NullType NULL_TYPE;
     public final ClassType    OBJET;
 }

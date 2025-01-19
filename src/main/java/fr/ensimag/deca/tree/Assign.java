@@ -34,8 +34,12 @@ public class Assign extends AbstractBinaryExpr {
         Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
+        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isNull())) {
             if(typeRight.sameType(typeLeft)){
+                this.setType(typeLeft);
+                return typeLeft;
+            }
+            if(typeLeft.isClass()){
                 this.setType(typeLeft);
                 return typeLeft;
             }
