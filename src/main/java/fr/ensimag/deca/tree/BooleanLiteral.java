@@ -108,7 +108,10 @@ public class BooleanLiteral extends AbstractExpr {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        GPRegister reg = GestionRegistre.obtainFreeRegister();
-        throw new UnsupportedOperationException("Not finished yet");
+        GPRegister reg = GestionRegistre.obtainFreeRegister(); // On va partir du principe que ce reg n'est jamais null
+        int entier = (this.getValue())?1:0;
+        compiler.addInstruction(new LOAD(entier, reg));
+        reg.setInUse(false);
+        //throw new UnsupportedOperationException("Not finished yet en Cours");
     }
 }

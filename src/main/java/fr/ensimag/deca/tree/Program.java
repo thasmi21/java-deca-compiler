@@ -5,6 +5,7 @@ import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.AbstractLine;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -99,6 +100,11 @@ public class Program extends AbstractProgram {
 
         for (AbstractLine l : compiler.getToExecuteEnd()) {
             compiler.add(l);
+        }
+
+        for (int i = 0; i <=15; i++) {
+            GPRegister r = GPRegister.getR(i);
+            r.setInUse(false);
         }
     }
 

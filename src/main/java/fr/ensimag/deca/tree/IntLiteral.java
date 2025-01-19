@@ -112,5 +112,6 @@ public class IntLiteral extends AbstractExpr {
     protected void codeGenInst(DecacCompiler compiler) {
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         compiler.addInstruction(new LOAD(new ImmediateInteger(value), reg));
+        reg.setInUse(false);
     }
 }

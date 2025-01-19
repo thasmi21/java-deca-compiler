@@ -9,6 +9,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.ImmediateString;
+import fr.ensimag.ima.pseudocode.instructions.HALT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import java.io.PrintStream;
@@ -101,7 +102,9 @@ public class StringLiteral extends AbstractStringLiteral {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("Not finished yet.");
+        return;
+        //compiler.addInstruction(new HALT()); // On ne fait rien
+        //throw new UnsupportedOperationException("Not finished yet.");
 //        GPRegister reg = GestionRegistre.obtainFreeRegister();
 //        compiler.addInstruction(new LOAD(new ImmediateString(value)),reg);
     }
