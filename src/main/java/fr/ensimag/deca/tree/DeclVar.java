@@ -152,7 +152,16 @@ public class DeclVar extends AbstractDeclVar {
                             new STORE(rBase, varName.getExpDefinition().getOperand())
                     );
                     rBase.setInUse(false);
-                } else {
+                }
+                else if(expr instanceof ArrayNoInit){
+                    ArrayNoInit exprArray = (ArrayNoInit) expr;
+                    List<AbstractExpr> indices = exprArray.getIndices();
+                    int numDimensions = indices.size();
+                    List<Integer> sizes = new ArrayList<>();
+
+
+                }
+                else {
                     throw new IllegalArgumentException(
                             "Structure inattendue lors de l'initialisation d'un tableau."
                     );
