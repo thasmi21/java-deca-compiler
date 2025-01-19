@@ -5,6 +5,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
@@ -29,6 +30,19 @@ public class And extends AbstractOpBool {
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
 
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstruction(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstruction(new PUSH(r2));
+        }
 
         getLeftOperand().evalueExpr(compiler, r1);
         getRightOperand().evalueExpr(compiler, r2);
@@ -43,8 +57,60 @@ public class And extends AbstractOpBool {
         compiler.addLabel(sinon);
         elseIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r1));
+        }
+    }
+
+    @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstructionEnd(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstructionEnd(new PUSH(r2));
+        }
+
+        getLeftOperand().evalueExprEnd(compiler, r1);
+        getRightOperand().evalueExprEnd(compiler, r2);
+        Label sinon = new Label(this.toString().replace('@', '_')+"sinon_and");
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_and");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(sinon));
+        compiler.addInstructionEnd(new CMP(0, r2));
+        compiler.addInstructionEnd(new BEQ(sinon));
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(sinon);
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r1));
+        }
     }
 
     @Override
@@ -80,6 +146,49 @@ public class And extends AbstractOpBool {
         compiler.addLabel(E);
         compiler.addInstruction(new LOAD(0, register));
         compiler.addLabel(fin);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }
+
+    }
+
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 = register;
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            //getRightOperand().evalueExpr(compiler, r2);
+        }
+        getLeftOperand().evalueExprEnd(compiler, r1);
+
+
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(E));
+        if(r2EtaitNull){
+            // si r2 etait nul, il faut charger exp2 dans register
+            r2 = register;
+        }
+        getRightOperand().evalueExprEnd(compiler, r2);
+        compiler.addInstructionEnd(new CMP(0, r2));
+        compiler.addInstructionEnd(new BEQ(E));
+        compiler.addInstructionEnd(new LOAD(1, register));
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        compiler.addInstructionEnd(new LOAD(0, register));
+        compiler.addLabelEnd(fin);
         if(!r1EtaitNull){
             r1.setInUse(false);
         }
@@ -136,6 +245,21 @@ public class And extends AbstractOpBool {
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
 
+
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstruction(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstruction(new PUSH(r2));
+        }
+
         getLeftOperand().evalueExpr(compiler, r1);
         getRightOperand().evalueExpr(compiler, r2);
         Label fin = new Label(this.toString().replace('@', '_')+"fin_while");
@@ -144,8 +268,61 @@ public class And extends AbstractOpBool {
         compiler.addInstruction(new CMP(0, r2));
         compiler.addInstruction(new BNE(label));
         compiler.addLabel(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r1));
+        }
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r1 =  GestionRegistre.obtainFreeRegister();
+        GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstructionEnd(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstructionEnd(new PUSH(r2));
+        }
+
+        getLeftOperand().evalueExprEnd(compiler, r1);
+        getRightOperand().evalueExprEnd(compiler, r2);
+        Label fin = new Label(this.toString().replace('@', '_')+"fin_while");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(fin));
+        compiler.addInstructionEnd(new CMP(0, r2));
+        compiler.addInstructionEnd(new BNE(label));
+        compiler.addLabelEnd(fin);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r1));
+        }
+    }
+
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 
 

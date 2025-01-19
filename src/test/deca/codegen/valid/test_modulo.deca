@@ -1,0 +1,5 @@
+//test du modulo
+{
+    int m = 17;
+    println(m%3);
+}

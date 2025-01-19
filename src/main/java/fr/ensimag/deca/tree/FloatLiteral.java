@@ -11,11 +11,13 @@ import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.ImmediateFloat;
+import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.WFLOATX;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -73,14 +75,23 @@ public class FloatLiteral extends AbstractExpr {
         compiler.addInstruction(new LOAD(new ImmediateFloat(value), register));
     }
     @Override
-    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
-        compiler.addInstructionEnd(new LOAD(new ImmediateFloat(value), register));
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new ImmediateFloat(value), register)));
     }
+//    @Override
+//    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
+//        compiler.addInstructionEnd(new LOAD(new ImmediateFloat(value), register));
+//    }
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(new ImmediateFloat(this.getValue()) , Register.R1));
         compiler.addInstruction(new WFLOAT());
+    }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new LOAD(new ImmediateFloat(this.getValue()) , Register.R1));
+        compiler.addInstructionEnd(new WFLOAT());
     }
 
     @Override
@@ -88,10 +99,16 @@ public class FloatLiteral extends AbstractExpr {
         compiler.addInstruction(new LOAD(new ImmediateFloat(this.getValue()) , Register.R1));
         compiler.addInstruction(new WFLOATX());
     }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         compiler.addInstruction(new LOAD(new ImmediateFloat(value), reg));
+        reg.setInUse(false);
     }
 }

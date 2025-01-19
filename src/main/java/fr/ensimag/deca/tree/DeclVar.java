@@ -93,7 +93,28 @@ public class DeclVar extends AbstractDeclVar {
             //puis affecter
             GPRegister r = Register.getR(2);
             compiler.addInstructionEnd(new PUSH(r));
-            ((Initialization) initialization).getExpression().evalueExprMethod(compiler, r);
+            if(((Initialization) initialization).getExpression() instanceof New){
+                New ident = (New)((Initialization) initialization).getExpression();
+                //si c'est une classe definition
+                ClassDefinition def = ident.getClassDef();
+                //System.out.println(def);
+
+                int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
+                compiler.addInstructionEnd(new NEW(nbrTotFields+1, r));
+                compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
+                compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+                compiler.addInstructionEnd(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
+                compiler.addInstructionEnd(new STORE(Register.R0, new RegisterOffset(0, r)));
+                compiler.addInstructionEnd(new PUSH(r));
+                compiler.addInstructionEnd(new BSR(new Label("init."+def.getType().getName())));
+                compiler.addInstructionEnd(new POP(r));
+                compiler.addInstructionEnd(new POP(r));
+                //compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                //r.setInUse(false);
+                return ;
+            }
+            //compiler.addInstructionEnd(new PUSH(r));
+            ((Initialization) initialization).getExpression().evalueExprEnd(compiler, r);
             compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
             compiler.addInstructionEnd(new POP(r));
         }

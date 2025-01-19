@@ -149,7 +149,7 @@ public class Assign extends AbstractBinaryExpr {
         else {
             reg = Register.getR(2);
             compiler.addInstruction(new PUSH(reg));
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstruction(new STORE(reg, regAdresse));
             compiler.addInstruction(new POP(reg));
         }
@@ -173,7 +173,7 @@ public class Assign extends AbstractBinaryExpr {
         }
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         DAddr regAdresse = ident.getExpDefinition().getOperand();
-        if(ident.getDefinition().isField()){
+        if(ident.getDefinition().isField() ||ident.getExpDefinition().isParam() ){
 
             GPRegister r = GestionRegistre.obtainFreeRegister();
             boolean rWasNul = false;
@@ -182,25 +182,33 @@ public class Assign extends AbstractBinaryExpr {
                 r=Register.getR(5);
                 rWasNul = true;
             }
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             DAddr addrParent = new RegisterOffset(-2, Register.LB);
             compiler.addInstructionEnd(new LOAD(addrParent, r));
-            compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(ident.getDefinition().isField()){
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            }else{
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getParamDefinition().getIndex()),Register.LB)));
+            }
+
             if(rWasNul){
                 compiler.addInstructionEnd(new POP(Register.getR(5)));
+            }else{
+                reg.setInUse(false);
             }
             return;
         }
 
+
         if(reg != null){
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstructionEnd(new STORE(reg, regAdresse));
             reg.setInUse(false);
         }
         else{
             reg = Register.getR(2);
             compiler.addInstructionEnd(new PUSH(reg));
-            getRightOperand().evalueExprMethod(compiler, reg);
+            getRightOperand().evalueExprEnd(compiler, reg);
             compiler.addInstructionEnd(new STORE(reg, regAdresse));
             compiler.addInstructionEnd(new POP(reg));
         }

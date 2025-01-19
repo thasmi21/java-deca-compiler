@@ -248,9 +248,73 @@ public class Identifier extends AbstractIdentifier {
     }
 
     @Override
+    public void codeGenPrintMethod(DecacCompiler compiler){
+        // i lfaut que je gère le cas où c'est un paramètre ou
+        //field ou une appelle de methode
+        DAddr op = this.getExpDefinition().getOperand();
+        if(getDefinition().isField()){
+            int index = ((FieldDefinition)getDefinition()).getIndex();
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, Register.getR(1)));
+            op = new RegisterOffset(index, Register.getR(1));
+            //compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, Register.getR(1)), Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+        }
+        else if(getDefinition().isParam()){
+            int index = getParamDefinition().getIndex();
+            DAddr addrParam = new RegisterOffset(index, Register.LB);
+            op = addrParam;
+            //compiler.addInstructionEnd(new LOAD(addrParam, Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+
+        }
+
+        if (this.getType() instanceof IntType){
+            compiler.addInstructionEnd(new LOAD(op, Register.getR(1)));
+            compiler.addInstructionEnd(new WINT());
+        }
+        else if(this.getType() instanceof BooleanType){
+            GPRegister r1 = GestionRegistre.obtainFreeRegister();
+            compiler.addInstructionEnd(new LOAD(op, r1));
+            Label E = new Label(this.toString().replace('@', '_'));
+            Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+            compiler.addInstructionEnd(new CMP(0, r1));
+            compiler.addInstructionEnd(new BNE(E));
+            compiler.addInstructionEnd(new WSTR("false"));
+            compiler.addInstructionEnd(new BRA(fin));
+            compiler.addLabelEnd(E);
+            compiler.addInstructionEnd(new WSTR("true"));
+            compiler.addLabelEnd(fin);
+            r1.setInUse(false);
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstructionEnd(new LOAD(op, Register.getR(1)));
+            compiler.addInstructionEnd(new WFLOAT());
+        }
+
+
+    }
+
+
+    @Override
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
         GPRegister r =  GestionRegistre.obtainFreeRegister();
         DAddr op = this.getExpDefinition().getOperand();
+        if(getDefinition().isField()){
+            int index = ((FieldDefinition)getDefinition()).getIndex();
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, Register.getR(1)));
+            op = new RegisterOffset(index, Register.getR(1));
+            //compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, Register.getR(1)), Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+        }
+        else if(getDefinition().isParam()){
+            int index = getParamDefinition().getIndex();
+            DAddr addrParam = new RegisterOffset(index, Register.LB);
+            op = addrParam;
+            //compiler.addInstructionEnd(new LOAD(addrParam, Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+
+        }
         compiler.addInstruction(new LOAD(op, r));
 
 
@@ -269,6 +333,22 @@ public class Identifier extends AbstractIdentifier {
     public void genWhileCode(DecacCompiler compiler, Label label){
         GPRegister r =  GestionRegistre.obtainFreeRegister();
         DAddr op = this.getExpDefinition().getOperand();
+        if(getDefinition().isField()){
+            int index = ((FieldDefinition)getDefinition()).getIndex();
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, Register.getR(1)));
+            op = new RegisterOffset(index, Register.getR(1));
+            //compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, Register.getR(1)), Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+        }
+        else if(getDefinition().isParam()){
+            int index = getParamDefinition().getIndex();
+            DAddr addrParam = new RegisterOffset(index, Register.LB);
+            op = addrParam;
+            //compiler.addInstructionEnd(new LOAD(addrParam, Register.getR(1)));
+            //compiler.addInstructionEnd(new WINT());
+
+        }
         compiler.addInstruction(new LOAD(op, r));
 
         compiler.addInstruction(new CMP(0, r)); //si vrai
@@ -277,19 +357,41 @@ public class Identifier extends AbstractIdentifier {
     }
 
     @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstructionEnd(new LOAD(op, r));
+
+
+        Label E = new Label(thenIns.toString().replace('@', '_'));
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new CMP(0, r));
+        compiler.addInstructionEnd(new BNE(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        r.setInUse(false);
+    }
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        DAddr op = this.getExpDefinition().getOperand();
+        compiler.addInstructionEnd(new LOAD(op, r));
+
+        compiler.addInstructionEnd(new CMP(0, r)); //si vrai
+        compiler.addInstructionEnd(new BNE(label));
+        r.setInUse(false);
+    }
+
+    @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register ) {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(op, register));
     }
-
-    /*public void evalueExprField(DecacCompiler compiler, GPRegister register, DVal addrParent){
-        compiler.getToExecuteEnd().add(new Line(new LOAD(addrParent, register)));
-        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(indiceField, register), register)));
-    }*/
-
     @Override
-    public void evalueExprMethod(DecacCompiler compiler, GPRegister register) {
-
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
         if(getDefinition().isField()){
             int index = ((FieldDefinition)getDefinition()).getIndex();
             DAddr addrParent = new RegisterOffset(-2, Register.LB);
@@ -306,6 +408,31 @@ public class Identifier extends AbstractIdentifier {
         DAddr op = this.getExpDefinition().getOperand();
         compiler.addInstructionEnd(new LOAD(op, register));
     }
+
+    /*public void evalueExprField(DecacCompiler compiler, GPRegister register, DVal addrParent){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(addrParent, register)));
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(indiceField, register), register)));
+    }*/
+
+//    @Override
+//    public void evalueExprMethod(DecacCompiler compiler, GPRegister register) {
+//
+//        if(getDefinition().isField()){
+//            int index = ((FieldDefinition)getDefinition()).getIndex();
+//            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+//            compiler.addInstructionEnd(new LOAD(addrParent, register));
+//            compiler.addInstructionEnd(new LOAD(new RegisterOffset(index, register), register));
+//            return;
+//        }
+//        else if(getDefinition().isParam()){
+//            int index = getParamDefinition().getIndex();
+//            DAddr addrParam = new RegisterOffset(index, Register.LB);
+//            compiler.addInstructionEnd(new LOAD(addrParam, register));
+//            return;
+//        }
+//        DAddr op = this.getExpDefinition().getOperand();
+//        compiler.addInstructionEnd(new LOAD(op, register));
+//    }
 
     /**
      * Implements non-terminal "type" of [SyntaxeContextuelle] in the 3 passes
@@ -355,5 +482,15 @@ public class Identifier extends AbstractIdentifier {
             s.print(d);
             s.println();
         }
+    }
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }

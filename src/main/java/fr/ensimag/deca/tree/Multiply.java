@@ -6,10 +6,7 @@ import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.MUL;
-import fr.ensimag.ima.pseudocode.instructions.SUB;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
  * @author gl06
@@ -47,6 +44,22 @@ public class Multiply extends AbstractOpArith {
                 compiler.labelOverflow(compiler);
             }
         }
+        //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+    }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExprEnd(compiler, r1 );
+            getRightOperand().evalueExprEnd(compiler, register );
+            compiler.addInstructionEnd(new MUL(r1, register));
+            r1.setInUse(false); //on n'utilise plus r1
+            return;
+        }
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        compiler.addInstructionEnd(new MUL(Register.R0, register));
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
@@ -91,5 +104,34 @@ public class Multiply extends AbstractOpArith {
             r1.setInUse(false);
         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
 
+    }
+    @Override
+    public void codeGenPrintMethod(DecacCompiler compiler){
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExprEnd(compiler, register );
+            getRightOperand().evalueExprEnd(compiler, r1 );
+            compiler.addInstructionEnd(new MUL(r1, register));
+        }else{
+            GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstructionEnd(new MUL(Register.R0, register));
+        }
+
+        if (this.getType() instanceof IntType) {
+            compiler.addInstructionEnd(new WINT());
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstructionEnd(new WFLOAT());
+        }
+
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }

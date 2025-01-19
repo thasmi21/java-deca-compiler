@@ -11,9 +11,6 @@ import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
 import org.apache.log4j.Logger;
 
-import static fr.ensimag.ima.pseudocode.Register.LB;
-import static fr.ensimag.ima.pseudocode.Register.R0;
-
 /**
  *
  * @author gl06
@@ -70,17 +67,20 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
 
         // On doit écrire le code de la méthode de Object
         // Pour le moment on crée simplement l'étiquette qui met 0 dans R0 (elle ne fait rien)
-        GPRegister reg1 = GestionRegistre.obtainFreeRegister();
-        GPRegister reg2 = GestionRegistre.obtainFreeRegister();
+//        GPRegister reg1 = GestionRegistre.obtainFreeRegister();
+//        GPRegister reg2 = GestionRegistre.obtainFreeRegister();
         compiler.getToExecuteEnd().add(new Line(new Label("code.Object.equals")));
-        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(1,LB),reg1)));
-        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2,LB),reg2)));
-        compiler.getToExecuteEnd().add(new Line(new BEQ(new Label("code.Object.equals.true"))));
-        compiler.getToExecuteEnd().add(new Line(new LOAD(0,R0))); // Si ce n'est pas égal on met 0 dans R0
-        compiler.getToExecuteEnd().add(new Line(new RTS()));
-        compiler.getToExecuteEnd().add(new Line(new Label("code.Object.equals.true")));
-        compiler.getToExecuteEnd().add(new Line(new LOAD(1, R0))); // Si c'est égal on met 1 dans R0
+//        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-3,Register.LB),reg1))); // On récupère la valeur du paramètre other de la méthode equals
+//        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2,Register.LB),reg2))); // On récupère l'instance de this
+//        compiler.getToExecuteEnd().add(new Line(new CMP(reg1,reg2)));
+//        compiler.getToExecuteEnd().add(new Line(new BEQ(new Label("code.Object.equals.true"))));
+//        compiler.getToExecuteEnd().add(new Line(new LOAD(0,Register.R0))); // Si ce n'est pas égal on met 0 dans R0
+//        compiler.getToExecuteEnd().add(new Line(new RTS()));
+//        compiler.getToExecuteEnd().add(new Line(new Label("code.Object.equals.true")));
+//        compiler.getToExecuteEnd().add(new Line(new LOAD(1, Register.R0))); // Si c'est égal on met 1 dans R0
         compiler.getToExecuteEnd().add(new Line(new RTS())); // Pour le moment la méthode Object.equals ne fait rien
+//        reg1.setInUse(false);
+//        reg2.setInUse(false);
 
         for (AbstractDeclClass declClass : getList()) {
             // Ceci correspond à la passe 1

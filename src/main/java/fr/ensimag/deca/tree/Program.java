@@ -5,6 +5,7 @@ import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.AbstractLine;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -93,12 +94,22 @@ public class Program extends AbstractProgram {
         }
         int val = GestionRegistre.getIndiceRegistreGB() + GestionRegistre.getCompteurTempUsage();
         compiler.addFirst(new TSTO(val));
-
+        if (!compiler.getlabelZeroDefined()) {
+            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
+            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
+            compiler.getToExecuteEnd().add(new Line(new WNL()));
+            compiler.getToExecuteEnd().add(new Line(new ERROR()));
+        }
         Line firstCom = new Line("start main program");
         compiler.addFirst(firstCom);
 
         for (AbstractLine l : compiler.getToExecuteEnd()) {
             compiler.add(l);
+        }
+
+        for (int i = 0; i <=15; i++) {
+            GPRegister r = GPRegister.getR(i);
+            r.setInUse(false);
         }
     }
 

@@ -57,8 +57,29 @@ public class Not extends AbstractUnaryExpr {
         if(!r1EtaitNul) {
             r1.setInUse(false);
         }
+    }
 
-
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ) {
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNul = false;
+        if(r1 == null){
+            r1EtaitNul = true;
+            r1 = register;
+        }
+        getOperand().evalueExprEnd(compiler, r1);
+        Label E = new Label(this.toString().replace('@', '_'));
+        Label fin = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new CMP(0, r1));
+        compiler.addInstructionEnd(new BEQ(E));
+        compiler.addInstructionEnd(new LOAD(0, register));
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        compiler.addInstructionEnd(new LOAD(1, register));
+        compiler.addLabelEnd(fin);
+        if(!r1EtaitNul) {
+            r1.setInUse(false);
+        }
     }
 
     @Override
@@ -89,6 +110,37 @@ public class Not extends AbstractUnaryExpr {
 
         compiler.addInstruction(new CMP(0, r)); //si vrai
         compiler.addInstruction(new BEQ(label));
+        r.setInUse(false);
+    }
+
+    @Override
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+
+
+        getOperand().evalueExprEnd(compiler, r);
+
+
+        Label E = new Label(thenIns.toString().replace('@', '_')+"if");
+        Label fin = new Label(thenIns.toString().replace('@', '_')+"fin_if");
+        compiler.addInstructionEnd(new CMP(0, r));
+        compiler.addInstructionEnd(new BEQ(E));
+        elseIns.codeGenListInstMethod(compiler);
+        compiler.addInstructionEnd(new BRA(fin));
+        compiler.addLabelEnd(E);
+        thenIns.codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(fin);
+        r.setInUse(false);
+    }
+
+    @Override
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        GPRegister r =  GestionRegistre.obtainFreeRegister();
+        getOperand().evalueExprEnd(compiler, r);
+
+        compiler.addInstructionEnd(new CMP(0, r)); //si vrai
+        compiler.addInstructionEnd(new BEQ(label));
         r.setInUse(false);
     }
 
@@ -129,5 +181,10 @@ public class Not extends AbstractUnaryExpr {
         compiler.addInstruction(new WSTR("false"));
         compiler.addLabel(fin);
         r1.setInUse(false);
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }

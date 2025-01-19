@@ -1,0 +1,91 @@
+//test pour verifié la manipulation des boolean dans
+// dans les corps de methodes
+
+class B{
+    int bb = 0;
+}
+
+class A{
+    int m = 2001;
+    int ooo;
+    boolean a;
+    B leB = new B();
+    float f1 = 5.0;
+    boolean b = false || true && false;
+    int c = m + 8 + 9;
+    boolean f(boolean k, int p){
+        boolean z = this.a || k;
+        int a = 17/3;
+        //B unb = new B();
+        
+        //boolean z = true;
+        //unb.bb = 8;
+        //this.leB.bb = 6;
+        this.a = true;
+        ooo = this.getM();
+        this.setM(1000);
+        //this.m = 9999;
+        this.m;
+        println("c vaut: ", this.c-3, "et a vaut: " ,ooo+1);
+        while(a){
+            println("TOUT EST OKKKKK");
+        }
+        if((3>2 || false)){ 
+            println("OUI LES IF MARCHENT!");
+        }else{
+            println("NON LES IF NE MARCHENT PAS!");
+        }
+        
+        return z;
+
+        
+    }
+    void setM(int a){
+            m = m + a;
+        }
+
+        int getM(){
+            return this.m;
+        }
+        boolean tata(){
+            return true;
+        }
+    int z = 4;
+}
+{
+    int vic;
+    A obj = new A();
+    boolean t = true;
+    println("TRAITEMENT DE T");
+    t = obj.f(t, 58);
+    println("FIN TRAITEMENT DE T");
+    obj.a = obj.a && true;
+    println("FIN OBJETA +A");
+    if((t||true) && false){
+        println("OK!");
+    }else{
+        println("K0!");
+    }
+    
+    t=obj.a;
+    
+    if(!obj.tata()){
+        println("Oui");
+    }else if(obj.m <= 5000){
+        println("AAAAAAAA");
+    }else{
+        println("NON");
+    }
+    while(!obj.tata()){
+        println("######@#####");
+    }
+    //ASM("println(\"Yes\")");
+    vic = obj.getM();
+    obj.m;
+    obj.setM(39);
+    println("M vaut avant changement: ", obj.getM());
+     obj.setM(39);
+    vic = obj.getM();
+    println("M vaut après changement: ", vic);
+    
+}

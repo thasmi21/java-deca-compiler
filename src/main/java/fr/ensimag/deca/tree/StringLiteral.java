@@ -9,6 +9,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.ImmediateString;
+import fr.ensimag.ima.pseudocode.instructions.HALT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import java.io.PrintStream;
@@ -55,7 +56,11 @@ public class StringLiteral extends AbstractStringLiteral {
     protected void codeGenPrintMethod(DecacCompiler compiler) {
         compiler.addInstructionEnd(new WSTR(new ImmediateString(value)));
     }
-
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
     @Override
     public void decompile(IndentPrintStream s) {
         String string = this.value;
@@ -101,7 +106,9 @@ public class StringLiteral extends AbstractStringLiteral {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("Not finished yet.");
+        return;
+        //compiler.addInstruction(new HALT()); // On ne fait rien
+        //throw new UnsupportedOperationException("Not finished yet.");
 //        GPRegister reg = GestionRegistre.obtainFreeRegister();
 //        compiler.addInstruction(new LOAD(new ImmediateString(value)),reg);
     }
