@@ -5,6 +5,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
@@ -29,6 +30,19 @@ public class And extends AbstractOpBool {
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
 
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstruction(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstruction(new PUSH(r2));
+        }
 
         getLeftOperand().evalueExpr(compiler, r1);
         getRightOperand().evalueExpr(compiler, r2);
@@ -43,8 +57,16 @@ public class And extends AbstractOpBool {
         compiler.addLabel(sinon);
         elseIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r1));
+        }
     }
 
     @Override
@@ -52,7 +74,19 @@ public class And extends AbstractOpBool {
 
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstructionEnd(new PUSH(r1));
 
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstructionEnd(new PUSH(r2));
+        }
 
         getLeftOperand().evalueExprEnd(compiler, r1);
         getRightOperand().evalueExprEnd(compiler, r2);
@@ -67,8 +101,16 @@ public class And extends AbstractOpBool {
         compiler.addLabelEnd(sinon);
         elseIns.codeGenListInstMethod(compiler);
         compiler.addLabelEnd(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r1));
+        }
     }
 
     @Override
@@ -183,6 +225,21 @@ public class And extends AbstractOpBool {
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
 
+
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstruction(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstruction(new PUSH(r2));
+        }
+
         getLeftOperand().evalueExpr(compiler, r1);
         getRightOperand().evalueExpr(compiler, r2);
         Label fin = new Label(this.toString().replace('@', '_')+"fin_while");
@@ -191,14 +248,36 @@ public class And extends AbstractOpBool {
         compiler.addInstruction(new CMP(0, r2));
         compiler.addInstruction(new BNE(label));
         compiler.addLabel(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstruction(new POP(r1));
+        }
     }
 
     @Override
     public void genWhileCodeMethod(DecacCompiler compiler, Label label){
         GPRegister r1 =  GestionRegistre.obtainFreeRegister();
         GPRegister r2 =  GestionRegistre.obtainFreeRegister();
+
+        boolean r1EtaitNull = false;
+        boolean r2EtaitNull = false;
+        if(r1 == null){
+            r1EtaitNull = true;
+            r1 =Register.getR(2) ;
+            compiler.addInstructionEnd(new PUSH(r1));
+
+        }
+        if(r2 == null){
+            r2EtaitNull = true;
+            r2 =Register.getR(3) ;
+            compiler.addInstructionEnd(new PUSH(r2));
+        }
 
         getLeftOperand().evalueExprEnd(compiler, r1);
         getRightOperand().evalueExprEnd(compiler, r2);
@@ -208,8 +287,16 @@ public class And extends AbstractOpBool {
         compiler.addInstructionEnd(new CMP(0, r2));
         compiler.addInstructionEnd(new BNE(label));
         compiler.addLabelEnd(fin);
-        r1.setInUse(false);
-        r2.setInUse(false);
+        if(!r1EtaitNull){
+            r1.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r2));
+        }
+        if(!r2EtaitNull){
+            r2.setInUse(false);
+        }else{
+            compiler.addInstructionEnd(new POP(r1));
+        }
     }
 
     @Override

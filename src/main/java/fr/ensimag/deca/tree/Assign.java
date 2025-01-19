@@ -164,7 +164,7 @@ public class Assign extends AbstractBinaryExpr {
         }
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         DAddr regAdresse = ident.getExpDefinition().getOperand();
-        if(ident.getDefinition().isField()){
+        if(ident.getDefinition().isField() ||ident.getExpDefinition().isParam() ){
 
             GPRegister r = GestionRegistre.obtainFreeRegister();
             boolean rWasNul = false;
@@ -176,7 +176,12 @@ public class Assign extends AbstractBinaryExpr {
             getRightOperand().evalueExprEnd(compiler, reg);
             DAddr addrParent = new RegisterOffset(-2, Register.LB);
             compiler.addInstructionEnd(new LOAD(addrParent, r));
-            compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(ident.getDefinition().isField()){
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            }else{
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getParamDefinition().getIndex()),Register.LB)));
+            }
+
             if(rWasNul){
                 compiler.addInstructionEnd(new POP(Register.getR(5)));
             }else{
@@ -184,6 +189,7 @@ public class Assign extends AbstractBinaryExpr {
             }
             return;
         }
+
 
         if(reg != null){
             getRightOperand().evalueExprEnd(compiler, reg);
