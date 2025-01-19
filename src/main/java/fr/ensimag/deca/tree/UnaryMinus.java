@@ -5,10 +5,7 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.OPP;
-import fr.ensimag.ima.pseudocode.instructions.SUB;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
  * @author gl06
@@ -50,25 +47,58 @@ public class UnaryMinus extends AbstractUnaryExpr {
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
+        getOperand().evalueExpr(compiler,register);
+        compiler.addInstruction(new OPP(register, register));
+        System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+    }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getOperand().evalueExprEnd(compiler,r1);
+            compiler.addInstructionEnd(new OPP(r1, register));
+            r1.setInUse(false); //on n'utilise plus r1
+            return;
+        }
+        getOperand().evalueExprEnd(compiler,register);
+        compiler.addInstructionEnd(new OPP(register, register));
         System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
     @Override
     public void codeGenPrint(DecacCompiler compiler){
+        GPRegister r1 = Register.getR(2);
+        compiler.addInstruction(new PUSH(r1));
         if (this.getType() instanceof IntType) {
-            GPRegister r1 = GestionRegistre.obtainFreeRegister();
             getOperand().evalueExpr(compiler,r1);
             compiler.addInstruction(new OPP(r1, Register.R1));
-            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            //r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WINT());
         }else if (this.getType() instanceof FloatType) {
-            GPRegister r1 = GestionRegistre.obtainFreeRegister();
             getOperand().evalueExpr(compiler,r1);
             compiler.addInstruction(new OPP(r1, Register.R1));
-            r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            //r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
             compiler.addInstruction(new WFLOAT());
         }
-
+        compiler.addInstruction(new POP(r1));
+    }
+    @Override
+    public void codeGenPrintMethod(DecacCompiler compiler){
+        GPRegister r1 = Register.getR(2);
+        compiler.addInstructionEnd(new PUSH(r1));
+        if (this.getType() instanceof IntType) {
+            getOperand().evalueExprEnd(compiler,r1);
+            compiler.addInstructionEnd(new OPP(r1, Register.R1));
+            //r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            compiler.addInstructionEnd(new WINT());
+        }else if (this.getType() instanceof FloatType) {
+            getOperand().evalueExprEnd(compiler,r1);
+            compiler.addInstructionEnd(new OPP(r1, Register.R1));
+            //r1.setInUse(false); // il faut verifier ici si R1 est un registre ou une adresse
+            compiler.addInstructionEnd(new WFLOAT());
+        }
+        compiler.addInstructionEnd(new POP(r1));
     }
 
 }
