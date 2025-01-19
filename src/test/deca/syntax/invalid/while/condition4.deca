@@ -1,0 +1,13 @@
+// Descritpion:
+//      Une boucle while comme condition d'une boucle while
+//
+// Résultat :
+//      Ligne 8
+
+{
+int x=4;
+while (while (x<10){x=x+1;}{
+    x=x+1;
+}
+println("Succès");
+}

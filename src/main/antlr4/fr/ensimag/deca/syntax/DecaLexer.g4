@@ -17,7 +17,6 @@ options {
 
 fragment STRING_CAR: ~ ('"' | '\\' );
 
-
 ASM : 'asm';
 
 CLASS : 'class';

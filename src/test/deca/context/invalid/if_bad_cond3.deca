@@ -1,0 +1,12 @@
+// Description:
+//      On écrit un if avec un autre if en condition
+//
+// Résultats:
+//      Ligne 9:
+
+{
+    float a = 3.5;
+    if (if(true){println("Faux")}){
+        println("Faux");
+    }
+}

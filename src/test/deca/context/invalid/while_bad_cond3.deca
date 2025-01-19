@@ -1,0 +1,12 @@
+// Description:
+//      On écrit un while avec un autre while en condition
+//
+// Résultats:
+//      Ligne 9:
+
+{
+    float a = 3.5;
+    while (while(true){println("Faux")}){
+        println("Faux");
+    }
+}

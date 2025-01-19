@@ -1,0 +1,10 @@
+// Description:
+//      On met des commentaires au milieu d'une déclaration de variable
+//
+// Résultats:
+//
+
+{
+    int/*commentaire*/x=1;
+}
+

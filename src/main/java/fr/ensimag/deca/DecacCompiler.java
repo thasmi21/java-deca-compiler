@@ -213,7 +213,7 @@ public class DecacCompiler {
     private EnvironmentType envType = new EnvironmentType(this);
 
     public  Symbol createSymbol(String name) {
-        return this.symbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
+        return this.symbolTable.create(name); // À FAIRE: remplacer par la ligne en commentaire ci-dessous
     }
 
     /**
