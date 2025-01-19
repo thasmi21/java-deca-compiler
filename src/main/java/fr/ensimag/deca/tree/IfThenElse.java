@@ -54,8 +54,11 @@ public class IfThenElse extends AbstractInst {
         if(typeif.sameType(returnType) && typeelse.sameType(returnType)) {
             return typeelse;
         }
-        if(returnType==null || typeif.sameType(typeelse)) {
+        if(returnType==null && typeif.sameType(typeelse)) {
             return typeelse;
+        }
+        if(returnType==null && (typeif.isVoid() || typeelse.isVoid())) {
+            return compiler.environmentType.VOID;
         }
         else if((typeelse.sameType(returnType) && typeif.isVoid())|| (typeif.sameType(returnType) && typeelse.isVoid()) || (typeelse.isVoid() && typeif.isVoid())) {
             return compiler.getEnvironmentType().VOID;
