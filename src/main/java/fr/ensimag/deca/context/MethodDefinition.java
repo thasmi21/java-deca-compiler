@@ -66,6 +66,7 @@ public class MethodDefinition extends ExpDefinition {
         super(type, location);
         this.signature = signature;
         this.index = index;
+        this.offSet = 1;
     }
 
     public Signature getSignature() {

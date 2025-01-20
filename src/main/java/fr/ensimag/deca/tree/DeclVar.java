@@ -77,7 +77,7 @@ public class DeclVar extends AbstractDeclVar {
                 compiler.addInstruction(new PUSH(r));
                 compiler.addInstruction(new BSR(new Label("init."+def.getType().getName())));
                 compiler.addInstruction(new POP(r));
-                compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                //compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
                 if(rWasNull){
                     compiler.addInstruction(new POP(r));
                 }
