@@ -351,11 +351,22 @@ public class Dot extends AbstractLValue {
                         int i=0;
                         for(AbstractExpr arg : args.getList()) {
                             type2=arg.verifyExpr(compiler, localEnv, classType.getDefinition());
-                            if(type2.sameType(methodDefinition.getSignature().paramNumber(i))){
-                                i++;
+                            if (type2.isClass()) {
+                                ClassType classType2 = (ClassType)type2;
+                                if(classType2.sameType((ClassType)methodDefinition.getSignature().paramNumber(i)) || classType2.isSubClassOf((ClassType)methodDefinition.getSignature().paramNumber(i))){
+                                    i++;
+                                }
+                                else{
+                                    throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                }
                             }
                             else{
-                                throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                if(type2.sameType(methodDefinition.getSignature().paramNumber(i)) || type2.isSubTypeOf(methodDefinition.getSignature().paramNumber(i))){
+                                    i++;
+                                }
+                                else{
+                                    throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                }
                             }
                         }
                         Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());
