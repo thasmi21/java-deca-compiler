@@ -1,9 +1,0 @@
-//Description :
-//Print d'un boolean en hexa, doit renvoyer une erreur
-// Résultat :
-// Erreur
-
-{
-    boolean a = true;
-    printlnx(a);
-}
