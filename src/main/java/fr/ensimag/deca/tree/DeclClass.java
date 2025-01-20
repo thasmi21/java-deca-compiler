@@ -264,7 +264,6 @@ public class DeclClass extends AbstractDeclClass {
                 int d1 = 0; //Pour l'instant pas de TSTO
                 int dernierIndice = compiler.getToExecuteEnd().size();
 
-                compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXX"));
                 //init des varaibles avec leur index
                 compiler.addInstructionEnd(new ADDSP(method1.getDeclVar().getList().size()));
                 //les paramètres ont été gérer dans le verify
@@ -292,7 +291,6 @@ public class DeclClass extends AbstractDeclClass {
                 AbstractLine ligne_label_fin = new Line(new Label(nom_label_fin));
                 compiler.getToExecuteEnd().add(ligne_label_fin);
                 compiler.addInstructionEnd(new RTS());
-                compiler.getToExecuteEnd().add(new Line("XXXXXXXXXXXXXXX"));
             }
 
         }

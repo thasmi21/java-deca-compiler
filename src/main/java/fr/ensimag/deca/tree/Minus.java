@@ -138,6 +138,6 @@ public class Minus extends AbstractOpArith {
     @Override
     protected void codeGenInstMethod(DecacCompiler compiler) {
         //ne fait rien
-        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+        //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }

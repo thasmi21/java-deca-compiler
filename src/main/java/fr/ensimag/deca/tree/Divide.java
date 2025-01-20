@@ -112,7 +112,9 @@ public class Divide extends AbstractOpArith {
             compiler.addInstructionEnd(new DIV(r1, register));
         }
 
-        compiler.labelDivZeroEnd(compiler);
+        if (!compiler.getN()){
+            compiler.labelDivZeroEnd(compiler);
+        }
         if(r1 != null){
             r1.setInUse(false);
         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
@@ -201,6 +203,6 @@ public class Divide extends AbstractOpArith {
             compiler.labelDivZeroEnd(compiler);
             compiler.addInstructionEnd(new WFLOAT());
         }
-        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+        //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
 }
