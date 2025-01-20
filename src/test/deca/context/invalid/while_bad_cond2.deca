@@ -1,0 +1,12 @@
+// Description:
+//      On écrit un while avec une condition non booléenne
+//
+// Résultats:
+//      Ligne 9:
+
+{
+    float a = 3.5;
+    while (a){
+        println("Faux");
+    }
+}

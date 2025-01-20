@@ -1,0 +1,8 @@
+// test pour vérifier que la duplication d'opérateurs renvoie une erreur
+
+{
+    int x = 0;
+    if(true){
+        x++;
+    }
+}

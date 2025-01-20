@@ -1,0 +1,11 @@
+// Description:
+//      On écrit un if avec une condition non booléenne
+//
+// Résultats:
+//      Ligne 8:
+
+{
+    if (42){
+        println("Faux");
+    }
+}

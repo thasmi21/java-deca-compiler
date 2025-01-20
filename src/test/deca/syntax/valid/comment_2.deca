@@ -1,0 +1,15 @@
+// Description:
+//      On met un commentaire qui ne fonctionne pas
+//
+// Résultats:
+//
+
+{
+    //j'effectue un test
+    //Sur plusieurs lignes
+}
+
+/*sortie attendu:
+   OBRACE: [@0,101:101='{',<15>,7:0]
+   CBRACE: [@1,128:128='}',<27>,9:0]
+*/

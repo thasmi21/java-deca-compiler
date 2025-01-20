@@ -1,0 +1,9 @@
+// Descritpion:
+//      On essaye d'appeler une variable float par asm
+//
+// Résultats:
+//      Lignes 8
+
+{
+    float asm = 1.2;
+}

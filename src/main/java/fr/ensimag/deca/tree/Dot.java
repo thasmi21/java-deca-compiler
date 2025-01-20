@@ -119,7 +119,7 @@ public class Dot extends AbstractLValue {
             } else if (select_expr instanceof This) {
 
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset(-2, Register.LB), register));
-                //GestionRegistre.verifieNullReference(compiler, register);
+                GestionRegistre.verifieNullReferenceEnd(compiler, register);
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset((identifier.getFieldDefinition()).getIndex(),register), register));
 
             }
@@ -193,7 +193,7 @@ public class Dot extends AbstractLValue {
         compiler.addInstruction(new SUBSP(nbrParam));
         //compiler.addInstructionEnd(new LOAD(Register.R0, register));
         //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
-        compiler.addInstruction(new PUSH(register));
+        compiler.addInstruction(new POP(register));
     }
 
     @Override
@@ -233,7 +233,7 @@ public class Dot extends AbstractLValue {
         compiler.addInstructionEnd(new SUBSP(nbrParam));
         //compiler.addInstructionEnd(new LOAD(Register.R0, register));
         //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
-        compiler.addInstructionEnd(new PUSH(register));
+        compiler.addInstructionEnd(new POP(register));
     }
 
 
@@ -338,11 +338,22 @@ public class Dot extends AbstractLValue {
                         int i=0;
                         for(AbstractExpr arg : args.getList()) {
                             type2=arg.verifyExpr(compiler, localEnv, classType.getDefinition());
-                            if(type2.sameType(methodDefinition.getSignature().paramNumber(i))){
-                                i++;
+                            if (type2.isClass()) {
+                                ClassType classType2 = (ClassType)type2;
+                                if(classType2.sameType((ClassType)methodDefinition.getSignature().paramNumber(i)) || classType2.isSubClassOf((ClassType)methodDefinition.getSignature().paramNumber(i))){
+                                    i++;
+                                }
+                                else{
+                                    throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                }
                             }
                             else{
-                                throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                if(type2.sameType(methodDefinition.getSignature().paramNumber(i)) || type2.isSubTypeOf(methodDefinition.getSignature().paramNumber(i))){
+                                    i++;
+                                }
+                                else{
+                                    throw new ContextualError(select_expr.prettyPrint() + "l'argument n'est pas du bon type" + identifier.prettyPrint(),getLocation());
+                                }
                             }
                         }
                         Type type1 = identifier.verifyExpr(compiler,environmentExp,classType.getDefinition());

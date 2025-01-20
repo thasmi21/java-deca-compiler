@@ -1,0 +1,13 @@
+// Description :
+//      Test d'une expression if avec un ||
+//
+
+
+{
+    if(1==2 || 2==1){
+    println("Je ne suis au bon endroit");
+    }
+    else{
+    println("je suis au bon endroit");
+    }
+}

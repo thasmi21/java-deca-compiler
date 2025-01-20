@@ -1,0 +1,9 @@
+// Description:
+//      On essaye d'appeler une variable int par if
+//
+// Résultats:
+//      Lignes 4
+
+{
+    int if = 10;
+}

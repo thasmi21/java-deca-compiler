@@ -65,7 +65,7 @@ public class While extends AbstractInst {
             throws ContextualError {
         this.condition.verifyCondition(compiler,localEnv,currentClass);
         this.condition.verifyInst(compiler, localEnv, currentClass, compiler.environmentType.BOOLEAN);
-        Type t=this.body.verifyListInst(compiler,localEnv,currentClass,null);
+        Type t=this.body.verifyListInst(compiler,localEnv,currentClass,returnType);
         return t;
     }
 

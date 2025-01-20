@@ -18,6 +18,8 @@ public final class GestionRegistre {
     private GestionRegistre() {
         throw new IllegalStateException("Utility class: On ne peut pas l'instancier");
     }
+    public static String classFinCour="";
+    public static String etiqFinCour="";
     private static int indiceRegistreGB = 0;
     private static int indiceRegistreLB = 0;
     private static int indiceRegistreSP = 0;

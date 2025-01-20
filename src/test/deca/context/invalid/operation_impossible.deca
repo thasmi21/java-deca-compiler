@@ -1,0 +1,11 @@
+// Descritpion:
+//      Opération avec 2 types incompatibles
+//
+// Resultats:
+//      Ligne 9
+
+{
+    boolean a = true;
+    float b = 3.2 + a;
+    println(b);
+}

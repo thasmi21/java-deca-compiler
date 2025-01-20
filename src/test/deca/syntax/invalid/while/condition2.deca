@@ -1,0 +1,13 @@
+// Descritpion:
+//      Mauvaise syntaxe sur un while : absence d'une deuxième condition
+//
+// Résultats:
+//      Ligne 9
+
+{
+int x=4;
+while (x<10 &&){
+    x=x+1;
+}
+println("Succès");
+}

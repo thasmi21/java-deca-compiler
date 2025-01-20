@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import org.apache.commons.lang.Validate;
@@ -73,11 +74,14 @@ public class DeclMethod extends AbstractBody {
     @Override
     protected void verifyClassBody(DecacCompiler compiler,
                                    EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError{
+
+        GestionRegistre.etiqFinCour = this.getVarName().getName().getName();
         EnvironmentExp environmentExp=new EnvironmentExp(localEnv);
         params.verifyParams(compiler,environmentExp);
         declVar.verifyListDeclVar(compiler,environmentExp,currentClass);
         inst.setLocation(getLocation());
         inst.verifyListInst(compiler,environmentExp,currentClass,varName.getType());
+
     }
 
     @Override
