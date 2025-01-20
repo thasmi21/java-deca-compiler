@@ -1,11 +1,8 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.codegen.GestionRegistre;
-import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
@@ -142,6 +139,24 @@ public class Modulo extends AbstractOpArith {
     protected void codeGenInstMethod(DecacCompiler compiler) {
         //ne fait rien
         //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+        GPRegister register = Register.R1;
+        GPRegister r1 = Register.R0;
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        GestionRegistre.IncCompteurTempUsage();
+        if (this.getType() instanceof IntType) {
+
+            compiler.addInstructionEnd(new REM(r1, register));
+            if (!compiler.getN()){
+                compiler.labelDivZeroEnd(compiler);
+            }
+            //compiler.addInstructionEnd(new WINT());
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstructionEnd(new REM(r1, register));
+            if (!compiler.getN()){
+                compiler.labelDivZeroEnd(compiler);
+            }
+            //compiler.addInstructionEnd(new WFLOAT());
+        }
     }
 
 }

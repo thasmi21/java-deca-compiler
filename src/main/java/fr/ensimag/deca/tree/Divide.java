@@ -196,12 +196,16 @@ public class Divide extends AbstractOpArith {
         if (this.getType() instanceof IntType) {
 
             compiler.addInstructionEnd(new QUO(r1, register));
-            compiler.labelDivZeroEnd(compiler);
-            compiler.addInstructionEnd(new WINT());
+            if (!compiler.getN()){
+                compiler.labelDivZeroEnd(compiler);
+            }
+            //compiler.addInstructionEnd(new WINT());
         } else if (this.getType() instanceof FloatType) {
             compiler.addInstructionEnd(new DIV(r1, register));
-            compiler.labelDivZeroEnd(compiler);
-            compiler.addInstructionEnd(new WFLOAT());
+            if (!compiler.getN()){
+                compiler.labelDivZeroEnd(compiler);
+            }
+            //compiler.addInstructionEnd(new WFLOAT());
         }
         //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
     }
