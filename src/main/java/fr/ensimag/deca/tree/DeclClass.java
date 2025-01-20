@@ -279,7 +279,7 @@ public class DeclClass extends AbstractDeclClass {
                     }
                 }
                 AbstractIdentifier var = (AbstractIdentifier) ((DeclMethod) method).getVarName();
-                if(!var.getType().isVoid()){
+                if(!var.getType().isVoid() && !compiler.getN()){
                     compiler.addLabelEnd(new Label("etq_fin.1_"+this.getSymbol().getName()+"."+ method1.getVarName().getName()));
                     compiler.addInstructionEnd(new WSTR("Erreur:Sortie de la methode "+this.getSymbol().getName()+"."+ method1.getVarName().getName()+"sans return"));
                     compiler.addInstructionEnd(new WNL());
