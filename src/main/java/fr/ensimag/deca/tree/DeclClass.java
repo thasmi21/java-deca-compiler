@@ -147,7 +147,9 @@ public class DeclClass extends AbstractDeclClass {
             compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2, Register.LB), Register.R1)));
             compiler.getToExecuteEnd().add(new Line(new STORE(r, new RegisterOffset(cpt, Register.R1))));
 
-            compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+            if (!compiler.getN()) {
+                compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+            }
             compiler.addInstructionEnd(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
             compiler.addInstructionEnd(new STORE(Register.R0, new RegisterOffset(0, r)));
             compiler.addInstructionEnd(new PUSH(r));
@@ -279,9 +281,9 @@ public class DeclClass extends AbstractDeclClass {
                     }
                 }
                 AbstractIdentifier var = (AbstractIdentifier) ((DeclMethod) method).getVarName();
-                if(!var.getType().isVoid()){
+                if(!var.getType().isVoid() && !compiler.getN()){
                     compiler.addLabelEnd(new Label("etq_fin.1_"+this.getSymbol().getName()+"."+ method1.getVarName().getName()));
-                    compiler.addInstructionEnd(new WSTR("Erreur:Sortie de la methode "+this.getSymbol().getName()+"."+ method1.getVarName().getName()+"sans return"));
+                    compiler.addInstructionEnd(new WSTR("Erreur:Sortie de la methode "+this.getSymbol().getName()+"."+ method1.getVarName().getName()+" sans return"));
                     compiler.addInstructionEnd(new WNL());
                     compiler.addInstructionEnd(new ERROR());
                 }
@@ -402,6 +404,7 @@ public class DeclClass extends AbstractDeclClass {
             ExpDefinition expDefinition= clas.getMembers().getLocalEnv().get(meth);
             if (expDefinition instanceof MethodDefinition) { // Si on est bien avec une méthode
                 MethodDefinition methodDefinition = (MethodDefinition) expDefinition;
+                //System.out.println("L'index de est "+clas.getType().getName().getName() + "." + meth.getName()+" : "+ this.tabLabel.indexOf(new Label("code."+ clas.getType().getName().getName() + "." + meth.getName())));
                 methodDefinition.setoffSet(this.tabLabel.indexOf(new Label("code."+ clas.getType().getName().getName() + "." + meth.getName())) + 1);
             }
 
