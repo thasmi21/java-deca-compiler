@@ -71,7 +71,9 @@ public class DeclVar extends AbstractDeclVar {
                 int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
                 compiler.addInstruction(new NEW(nbrTotFields+1, r));
                 compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-                compiler.addInstruction(new BOV(new Label("tas_plein")));
+                if (!compiler.getN()){
+                    compiler.addInstruction(new BOV(new Label("tas_plein")));
+                }
                 compiler.addInstruction(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
                 compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(0, r)));
                 compiler.addInstruction(new PUSH(r));
@@ -114,7 +116,9 @@ public class DeclVar extends AbstractDeclVar {
                 int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
                 compiler.addInstructionEnd(new NEW(nbrTotFields+1, r));
                 compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
-                compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+                if (!compiler.getN()){
+                    compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+                }
                 compiler.addInstructionEnd(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
                 compiler.addInstructionEnd(new STORE(Register.R0, new RegisterOffset(0, r)));
                 compiler.addInstructionEnd(new PUSH(r));
