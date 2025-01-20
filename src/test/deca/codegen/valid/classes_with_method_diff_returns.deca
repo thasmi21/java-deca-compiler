@@ -1,0 +1,19 @@
+// Descritpion:
+//      On déclare deux classe avec des méthodes avec des return différents
+//
+// Résultats:
+//
+
+class A {
+    void m() {
+        println("Voici la methode m de la classe A");
+    }
+    int p() {
+        println("Methode p de A");
+        return 1;
+    }
+}
+
+{
+    println("C'est good !!");
+}
