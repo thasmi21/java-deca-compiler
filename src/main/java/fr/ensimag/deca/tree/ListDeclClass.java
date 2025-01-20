@@ -70,8 +70,8 @@ public class ListDeclClass extends TreeList<AbstractDeclClass> {
         GPRegister reg1 = GestionRegistre.obtainFreeRegister();
         GPRegister reg2 = GestionRegistre.obtainFreeRegister();
         compiler.getToExecuteEnd().add(new Line(new Label("code.Object.equals")));
-        compiler.getToExecuteEnd().add(new Line(new LEA(new RegisterOffset(-3,Register.LB),reg1))); // On récupère la valeur du paramètre other de la méthode equals
-        compiler.getToExecuteEnd().add(new Line(new LEA(new RegisterOffset(-2,Register.LB),reg2))); // On récupère l'instance de this
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-3,Register.LB),reg1))); // On récupère la valeur du paramètre other de la méthode equals
+        compiler.getToExecuteEnd().add(new Line(new LOAD(new RegisterOffset(-2,Register.LB),reg2))); // On récupère l'instance de this
         compiler.getToExecuteEnd().add(new Line(new CMP(reg1,reg2)));
         compiler.getToExecuteEnd().add(new Line(new BEQ(new Label("code.Object.equals.true"))));
         compiler.getToExecuteEnd().add(new Line(new LOAD(0,Register.R0))); // Si ce n'est pas égal on met 0 dans R0

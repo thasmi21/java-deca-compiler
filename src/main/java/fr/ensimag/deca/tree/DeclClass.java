@@ -402,6 +402,7 @@ public class DeclClass extends AbstractDeclClass {
             ExpDefinition expDefinition= clas.getMembers().getLocalEnv().get(meth);
             if (expDefinition instanceof MethodDefinition) { // Si on est bien avec une méthode
                 MethodDefinition methodDefinition = (MethodDefinition) expDefinition;
+                //System.out.println("L'index de est "+clas.getType().getName().getName() + "." + meth.getName()+" : "+ this.tabLabel.indexOf(new Label("code."+ clas.getType().getName().getName() + "." + meth.getName())));
                 methodDefinition.setoffSet(this.tabLabel.indexOf(new Label("code."+ clas.getType().getName().getName() + "." + meth.getName())) + 1);
             }
 
