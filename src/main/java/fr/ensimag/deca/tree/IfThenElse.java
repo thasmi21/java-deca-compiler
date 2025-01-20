@@ -49,16 +49,10 @@ public class IfThenElse extends AbstractInst {
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         this.condition.verifyCondition(compiler, localEnv, currentClass);
-        Type typeif=this.thenBranch.verifyListInst(compiler, localEnv, currentClass, null);
-        Type typeelse=this.elseBranch.verifyListInst(compiler, localEnv, currentClass, null);
+        Type typeif=this.thenBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        Type typeelse=this.elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
         if(typeif.sameType(returnType) && typeelse.sameType(returnType)) {
             return typeelse;
-        }
-        if(returnType==null && typeif.sameType(typeelse)) {
-            return typeelse;
-        }
-        if(returnType==null && (typeif.isVoid() || typeelse.isVoid())) {
-            return compiler.environmentType.VOID;
         }
         else if((typeelse.sameType(returnType) && typeif.isVoid())|| (typeif.sameType(returnType) && typeelse.isVoid()) || (typeelse.isVoid() && typeif.isVoid())) {
             return compiler.getEnvironmentType().VOID;
