@@ -274,8 +274,9 @@ public class DeclClass extends AbstractDeclClass {
                     //RegisterOffset parentRegister = new RegisterOffset(-2, Register.LB);
                     if(ins instanceof Return){
                         ((Return)ins).codeGenInstReturn(compiler, nom_label_fin);
+                    }else {
+                        ins.codeGenInstMethod(compiler);
                     }
-                    ins.codeGenInstMethod(compiler);
                 }
                 AbstractIdentifier var = (AbstractIdentifier) ((DeclMethod) method).getVarName();
                 if(!var.getType().isVoid()){
