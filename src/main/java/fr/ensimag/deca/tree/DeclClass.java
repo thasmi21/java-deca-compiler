@@ -274,8 +274,9 @@ public class DeclClass extends AbstractDeclClass {
                     //RegisterOffset parentRegister = new RegisterOffset(-2, Register.LB);
                     if(ins instanceof Return){
                         ((Return)ins).codeGenInstReturn(compiler, nom_label_fin);
+                    }else {
+                        ins.codeGenInstMethod(compiler);
                     }
-                    ins.codeGenInstMethod(compiler);
                 }
                 compiler.addLabelEnd(new Label("etq_fin.1"));
                 compiler.addInstructionEnd(new WSTR("Erreur:Sortie de la methode "+this.getSymbol().getName()+"."+ method1.getVarName().getName()+"sans return"));
