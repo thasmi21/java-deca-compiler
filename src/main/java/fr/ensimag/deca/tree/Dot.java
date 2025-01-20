@@ -49,7 +49,12 @@ public class Dot extends AbstractLValue {
             GestionRegistre.verifieNullReference(compiler, register);
             compiler.addInstruction(new LOAD(new RegisterOffset(indice, register), register));
             compiler.addInstruction(new LOAD(register, Register.R1));
-            compiler.addInstruction(new WINT());
+
+            if (this.getType().isInt()){
+                compiler.addInstruction(new WINT());
+            } else if (this.getType().isFloat()) {
+                compiler.addInstruction(new WFLOAT());
+            }
             if(rWasNul){
                 compiler.addInstruction(new POP(register));
             }else{
@@ -59,7 +64,11 @@ public class Dot extends AbstractLValue {
             GPRegister r = Register.getR(1);
             compiler.addInstructionEnd(new PUSH(r));
             this.evalueExpr(compiler, r);
-            compiler.addInstruction(new WINT());
+            if (this.getType().isInt()){
+                compiler.addInstruction(new WINT());
+            } else if (this.getType().isFloat()) {
+                compiler.addInstruction(new WFLOAT());
+            }
             compiler.addInstructionEnd(new POP(r));
         }
     }
@@ -290,7 +299,11 @@ public class Dot extends AbstractLValue {
 
             //System.out.println("Il y'a "+ args.getList().size()+" paramètres");
         }
-        compiler.addInstructionEnd(new WINT());
+        if (this.getType().isInt()){
+            compiler.addInstructionEnd(new WINT());
+        } else if (this.getType().isFloat()) {
+            compiler.addInstructionEnd(new WFLOAT());
+        }
     }
 
 
