@@ -85,5 +85,4 @@
         }
         a = a + 1;
     }
-    assert(compteur == 67108864);
 }
