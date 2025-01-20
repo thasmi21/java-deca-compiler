@@ -1,0 +1,9 @@
+// Description:
+//    test d'un print sans aucun argument, doit s'éxecuter
+// Résultats:
+//
+
+
+{
+    print();
+}

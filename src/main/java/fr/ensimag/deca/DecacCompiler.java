@@ -349,13 +349,7 @@ public class DecacCompiler {
 
     public void labelDivZero(DecacCompiler compiler){
         compiler.addInstruction(new BOV(new Label("division_by_zero")));
-//        if (!compiler.getlabelZeroDefined()) {
-//            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
-//            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
-//            compiler.getToExecuteEnd().add(new Line(new WNL()));
-//            compiler.getToExecuteEnd().add(new Line(new ERROR()));
-//        }
-//        compiler.setlabelZeroDefined(true);
+        compiler.setlabelZeroDefined(true);
     }
 
     public void labelOverflow(DecacCompiler compiler) {

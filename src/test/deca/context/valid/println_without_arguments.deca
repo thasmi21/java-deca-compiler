@@ -1,0 +1,9 @@
+// Description:
+//    test d'un println sans aucun argument, doit s'éxecuter
+// Résultats:
+//
+
+
+{
+    println();
+}
