@@ -52,6 +52,12 @@ public class DeclVar extends AbstractDeclVar {
     @Override
     public void codeGenDeclVar(DecacCompiler compiler){
         GPRegister r = GestionRegistre.obtainFreeRegister();
+        boolean rWasNull = false;
+        if(r==null){
+            rWasNull = true;
+            r = Register.getR(2);
+            compiler.addInstruction(new PUSH(r));
+        }
             //throw new UnsupportedOperationException("Not Yet implemented by us");
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         //initialiser l'adresse
@@ -72,7 +78,13 @@ public class DeclVar extends AbstractDeclVar {
                 compiler.addInstruction(new BSR(new Label("init."+def.getType().getName())));
                 compiler.addInstruction(new POP(r));
                 compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
-                r.setInUse(false);
+                if(rWasNull){
+                    compiler.addInstruction(new POP(r));
+                }
+                else{
+                    r.setInUse(false);
+                }
+
                 return ;
             }
 

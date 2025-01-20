@@ -120,6 +120,12 @@ public class Assign extends AbstractBinaryExpr {
         // On prend ensuite un registre libre
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         if(ident.getDefinition().isField()){
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
 
             GPRegister r = GestionRegistre.obtainFreeRegister();
             boolean rWasNul = false;
@@ -137,6 +143,15 @@ public class Assign extends AbstractBinaryExpr {
             if(rWasNul){
                 compiler.addInstruction(new POP(Register.getR(5)));
             }
+            else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
+                reg.setInUse(false);
+            }
             return;
         }
         if(reg != null){
@@ -149,7 +164,7 @@ public class Assign extends AbstractBinaryExpr {
         else {
             reg = Register.getR(2);
             compiler.addInstruction(new PUSH(reg));
-            getRightOperand().evalueExprEnd(compiler, reg);
+            getRightOperand().evalueExpr(compiler, reg);
             compiler.addInstruction(new STORE(reg, regAdresse));
             compiler.addInstruction(new POP(reg));
         }
@@ -174,7 +189,12 @@ public class Assign extends AbstractBinaryExpr {
         GPRegister reg = GestionRegistre.obtainFreeRegister();
         DAddr regAdresse = ident.getExpDefinition().getOperand();
         if(ident.getDefinition().isField() ||ident.getExpDefinition().isParam() ){
-
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
             GPRegister r = GestionRegistre.obtainFreeRegister();
             boolean rWasNul = false;
             if(r == null){
@@ -194,6 +214,12 @@ public class Assign extends AbstractBinaryExpr {
             if(rWasNul){
                 compiler.addInstructionEnd(new POP(Register.getR(5)));
             }else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
                 reg.setInUse(false);
             }
             return;

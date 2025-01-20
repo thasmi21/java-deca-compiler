@@ -9,6 +9,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
@@ -86,7 +87,12 @@ public class Not extends AbstractUnaryExpr {
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
-
+        boolean rwasNul = false;
+        if(r == null){
+            r = Register.getR(2);
+            rwasNul =true;
+            compiler.addInstruction(new PUSH(r));
+        }
 
         getOperand().evalueExpr(compiler, r);
 
@@ -100,24 +106,46 @@ public class Not extends AbstractUnaryExpr {
         compiler.addLabel(E);
         thenIns.codeGenListInst(compiler);
         compiler.addLabel(fin);
-        r.setInUse(false);
+        if(rwasNul){
+            compiler.addInstruction(new POP(r));
+        }
+        else{
+            r.setInUse(false);
+        }
+
     }
 
     @Override
     public void genWhileCode(DecacCompiler compiler, Label label){
         GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rwasNul = false;
+        if(r == null){
+            r = Register.getR(2);
+            rwasNul =true;
+            compiler.addInstruction(new PUSH(r));
+        }
         getOperand().evalueExpr(compiler, r);
 
         compiler.addInstruction(new CMP(0, r)); //si vrai
         compiler.addInstruction(new BEQ(label));
-        r.setInUse(false);
+        if(rwasNul){
+            compiler.addInstruction(new POP(r));
+        }
+        else{
+            r.setInUse(false);
+        }
     }
 
     @Override
     public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
 
         GPRegister r =  GestionRegistre.obtainFreeRegister();
-
+        boolean rwasNul = false;
+        if(r == null){
+            r = Register.getR(2);
+            rwasNul =true;
+            compiler.addInstructionEnd(new PUSH(r));
+        }
 
         getOperand().evalueExprEnd(compiler, r);
 
@@ -131,17 +159,33 @@ public class Not extends AbstractUnaryExpr {
         compiler.addLabelEnd(E);
         thenIns.codeGenListInstMethod(compiler);
         compiler.addLabelEnd(fin);
-        r.setInUse(false);
+        if(rwasNul){
+            compiler.addInstructionEnd(new POP(r));
+        }
+        else{
+            r.setInUse(false);
+        }
     }
 
     @Override
     public void genWhileCodeMethod(DecacCompiler compiler, Label label){
         GPRegister r =  GestionRegistre.obtainFreeRegister();
+        boolean rwasNul = false;
+        if(r == null){
+            r = Register.getR(2);
+            rwasNul =true;
+            compiler.addInstructionEnd(new PUSH(r));
+        }
         getOperand().evalueExprEnd(compiler, r);
 
         compiler.addInstructionEnd(new CMP(0, r)); //si vrai
         compiler.addInstructionEnd(new BEQ(label));
-        r.setInUse(false);
+        if(rwasNul){
+            compiler.addInstructionEnd(new POP(r));
+        }
+        else{
+            r.setInUse(false);
+        }
     }
 
     @Override
