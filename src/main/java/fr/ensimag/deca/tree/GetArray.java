@@ -110,8 +110,8 @@ public class GetArray extends AbstractLValue {
             if (!(listIndex.get(dim) instanceof IntLiteral)) {
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
                 listIndex.get(dim).evalueExpr(compiler, rIndex);
-                // A compléter ici aussi
-
+                compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
                 rIndex.setInUse(false);
             }
             else{
@@ -132,11 +132,16 @@ public class GetArray extends AbstractLValue {
             // a) Récupérer l’indice
             AbstractExpr indexExpr = listIndex.get(dim);
             if (!(indexExpr instanceof IntLiteral)) {
-                // A implémenter ici aussi
-                throw new UnsupportedOperationException("codeGenAddressOf ne gère ici que des indices IntLiteral pour l'instant.");
+                GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                listIndex.get(dim).evalueExpr(compiler, rIndex);
+                compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                rIndex.setInUse(false);
             }
-            int offset = ((IntLiteral) indexExpr).getValue();
-            compiler.addInstruction(new LEA(new RegisterOffset(offset, rBase), rBase));
+            else {
+                int offset = ((IntLiteral) indexExpr).getValue();
+                compiler.addInstruction(new LEA(new RegisterOffset(offset, rBase), rBase));
+            }
             boolean isLastDim = (dim == nbDims - 1);
             if (!isLastDim) {
                 //rBase = contenu de [rBase] (pointeur vers le sous-bloc)
@@ -160,15 +165,16 @@ public class GetArray extends AbstractLValue {
         int nbDims = listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {
             // a) Vérification si l’indice est un littéral int (ou on gère autrement)
-            //    Ici, on suppose seulement des int littéraux pour l’exemple :
             if (!(listIndex.get(dim) instanceof IntLiteral)) {
+                // ça fonctionne
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
                 listIndex.get(dim).evalueExpr(compiler, rIndex);
+                compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
                 compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
-                // A compléter
+                rIndex.setInUse(false);
             }
             else {
-                // ça marche ici
+                // ça fonctionne
                 int offset = ((IntLiteral) listIndex.get(dim)).getValue();
                 compiler.addInstruction(new LEA(new RegisterOffset(offset, rBase), rBase));
                 compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
