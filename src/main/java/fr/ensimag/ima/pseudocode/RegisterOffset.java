@@ -21,16 +21,6 @@ public class RegisterOffset extends DAddr {
         this.register = register;
     }
 
-    public RegisterOffset(DVal dval, Register register) {
-        super();
-        if(dval instanceof ImmediateInteger) {
-            this.offset = ((ImmediateInteger) dval).getValue();
-        }
-        else {
-            throw new IllegalArgumentException("dval is not an integer type");
-        }
-        this.register = register;
-    }
     @Override
     public String toString() {
         return offset + "(" + register + ")";
