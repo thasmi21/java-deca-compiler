@@ -1,0 +1,18 @@
+
+// Description :
+//      Test des tableaux deca
+//      avec initialisation explicite
+//     et assignation d'un flottant 
+// Resultats :
+//     Le coefficient n'est pas du type souhaité. Type voulu : float. Type reçu : int
+
+
+
+
+{
+    float[] x = {1, 2};
+    x[0] = 8.0;
+    println("x[0] vaut: ", x[0]); 
+}
+
+
