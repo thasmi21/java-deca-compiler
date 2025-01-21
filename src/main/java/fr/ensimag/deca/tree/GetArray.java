@@ -135,7 +135,7 @@ public class GetArray extends AbstractLValue {
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
                 listIndex.get(dim).evalueExpr(compiler, rIndex);
                 compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
-                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                //compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
                 rIndex.setInUse(false);
             }
             else {
