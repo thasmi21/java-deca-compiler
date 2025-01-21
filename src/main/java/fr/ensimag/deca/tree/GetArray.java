@@ -16,6 +16,7 @@ import java.util.List;
 public class GetArray extends AbstractLValue {
     private AbstractIdentifier identifier;
     private List<AbstractExpr> listIndex;
+    private int size;
 
     public GetArray(AbstractIdentifier identifier, List<DecaParser.ExprContext> ListIndex) {
         //super(identifier.getName());
@@ -25,7 +26,33 @@ public class GetArray extends AbstractLValue {
             liste.add(coefficient.tree);
         }
         this.listIndex = liste;
+        //this.size = CalculateSize();
     }
+
+    public void CalculateSize(EnvironmentExp localEnv) {
+        Symbol symbolIdentifier = identifier.getName();
+        ExpDefinition defIdentifier = localEnv.get(symbolIdentifier);
+        Initialization initIdent = ((ArrayDefinition) defIdentifier).getInitialization();
+        int profondeur = listIndex.size();
+        if (initIdent.getExpression() instanceof ArrayNoInit) {
+            AbstractExpr tailleVoulue = ((ArrayNoInit) initIdent.getExpression()).getIndices().get(profondeur);
+            if(tailleVoulue instanceof IntLiteral){
+                this.size = ((IntLiteral)tailleVoulue).getValue();
+            }
+        }
+        else if (initIdent.getExpression() instanceof ArrayLiteral){
+            int tailleVoulue = ((ArrayLiteral) initIdent.getExpression()).getSize().get(profondeur);
+            this.size = tailleVoulue;
+        }
+        else {
+            throw new RuntimeException("Erreur inattendue");
+        }
+    }
+
+    public int getSize(){
+        return size;
+    }
+
 
     public List<AbstractExpr> getListIndex() {
         return listIndex;
@@ -58,6 +85,7 @@ public class GetArray extends AbstractLValue {
             }
         }
         this.setType(typeVoulu);
+        CalculateSize(localEnv);
         return typeVoulu;
     }
 

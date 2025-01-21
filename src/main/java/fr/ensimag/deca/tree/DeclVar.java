@@ -183,6 +183,12 @@ public class DeclVar extends AbstractDeclVar {
                     // Libérer le registre utilisé pour la base
                     rBase.setInUse(false);
                 }
+                else if(expr instanceof GetArray){
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    expr.evalueExpr(compiler, r);
+                    compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+                    r.setInUse(false);
+                }
                 else {
                     throw new IllegalArgumentException(
                             "Structure inattendue lors de l'initialisation d'un tableau."

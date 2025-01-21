@@ -90,6 +90,11 @@ public class LengthArray extends AbstractExpr {
             ArrayLiteral expr = (ArrayLiteral) identDef.getInitialization().getExpression();
             compiler.addInstruction(new LOAD(new ImmediateInteger(expr.getArray().getSize()), Register.R1));
         }
+        else if(identDef.getInitialization().getExpression() instanceof GetArray){
+            GetArray expr = (GetArray) identDef.getInitialization().getExpression();
+            int size = expr.getSize();
+            compiler.addInstruction(new LOAD(new ImmediateInteger(size), Register.R1));
+        }
         else {
             throw new UnsupportedOperationException("erreur inattendue");
         }
