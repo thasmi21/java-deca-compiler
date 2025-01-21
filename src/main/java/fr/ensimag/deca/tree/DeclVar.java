@@ -115,12 +115,7 @@ public class DeclVar extends AbstractDeclVar {
     public void codeGenDeclVar(DecacCompiler compiler) {
         // Initialisation de l'adresse de la variable dans la pile
         this.varName.getExpDefinition().setOperand(
-                new RegisterOffset(
-                        GestionRegistre.obtainIndiceGPandIncrement(1),
-                        Register.GB
-                )
-        );
-
+                new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
         if (initialization instanceof Initialization) {
             AbstractExpr expr = ((Initialization) initialization).getExpression();
 
@@ -128,9 +123,7 @@ public class DeclVar extends AbstractDeclVar {
             if (!(expr.getType() instanceof ArrayType)) {
                 GPRegister r = GestionRegistre.obtainFreeRegister();
                 expr.evalueExpr(compiler, r);
-                compiler.addInstruction(
-                        new STORE(r, varName.getExpDefinition().getOperand())
-                );
+                compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
                 r.setInUse(false);
             }
             // Cas tableau
@@ -138,19 +131,14 @@ public class DeclVar extends AbstractDeclVar {
                 // Hypothèse : si l'expression est un ArrayLiteral, on gère le tableau multidimensionnel
                 if (expr instanceof ArrayLiteral) {
                     ArrayLiteral tabLiteral = (ArrayLiteral) expr;
-
                     // Allouer le bloc principal (au niveau "racine")
                     int size = tabLiteral.getArray().getSize();
                     GPRegister rBase = GestionRegistre.obtainFreeRegister();
                     compiler.addInstruction(new NEW(size, rBase));
-
                     // Appel récursif pour remplir
-                    fillArrayRecursive(compiler, tabLiteral, rBase);
-
+                    remplissageRecursif(compiler, tabLiteral, rBase);
                     // Stocker l'adresse du tableau dans la variable
-                    compiler.addInstruction(
-                            new STORE(rBase, varName.getExpDefinition().getOperand())
-                    );
+                    compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
                     rBase.setInUse(false);
                 }
                 else if(expr instanceof ArrayNoInit){
@@ -159,7 +147,8 @@ public class DeclVar extends AbstractDeclVar {
                     int numDimensions = indices.size();
                     List<Integer> sizes = new ArrayList<>();
 
-
+                    // jsp que faire ici
+                    // À compléter
                 }
                 else {
                     throw new IllegalArgumentException(
@@ -174,54 +163,56 @@ public class DeclVar extends AbstractDeclVar {
      * Remplit récursivement un bloc mémoire alloué en partant d'un Array ou ArrayLiteral.
      * @param element Peut être un ArrayLiteral, un Array, un Integer, ou null.
      */
-    private void fillArrayRecursive(
+    private void remplissageRecursif(
             DecacCompiler compiler,
-            Object element,
+            AbstractExpr element,
             GPRegister baseReg
     ) {
         // 1) Si on reçoit un ArrayLiteral, on récupère le Array réel :
         if (element instanceof ArrayLiteral) {
             element = ((ArrayLiteral) element).getArray();
         }
-
         // 2) Si c'est un Array, on parcourt ses sous-éléments :
         if (element instanceof Array) {
             Array array = (Array) element;
             for (int i = 0; i < array.getSize(); i++) {
-                Object subElement = array.getCoefficients(i);
-
+                AbstractExpr coeffCourant = array.getCoefficients(i);
                 // Sous-élément = sous-tableau ?
-                if (subElement instanceof Array
-                        || subElement instanceof ArrayLiteral) {
-
+                if (coeffCourant instanceof Array
+                        || coeffCourant instanceof ArrayLiteral) {
                     // a) Calcul de la taille du sous-tableau :
-                    int subSize = getArraySize(subElement);
-
+                    int subSize = getArraySize(coeffCourant);
                     // b) Allouer un bloc pour ce sous-tableau
                     GPRegister subReg = GestionRegistre.obtainFreeRegister();
                     compiler.addInstruction(new NEW(subSize, subReg));
-
                     // c) Stocker la référence dans baseReg[i]
                     compiler.addInstruction(
                             new STORE(subReg, new RegisterOffset(i, baseReg))
                     );
 
                     // d) Remplir récursivement
-                    fillArrayRecursive(compiler, subElement, subReg);
+                    remplissageRecursif(compiler, coeffCourant, subReg);
                     subReg.setInUse(false);
                 }
-                // Sous-élément = null ? on stocke 0
-                else if (subElement == null) {
+                else if (coeffCourant == null) {
                     GPRegister r = GestionRegistre.obtainFreeRegister();
-                    compiler.addInstruction(new LOAD(new ImmediateInteger(0), r));
+                    // Initialisation suivant le type
+                    if(((Array) element).getType().isInt() || ((Array) element).getType().isBoolean() ) {
+                        compiler.addInstruction(new LOAD(new ImmediateInteger(0), r));
+                    }
+                    else if(((Array) element).getType().isFloat()){
+                        compiler.addInstruction(new LOAD(new ImmediateFloat(0.0F), r));
+                    }
+                    else {
+                        compiler.addInstruction(new LOAD(new NullOperand(), r));
+                    }
                     compiler.addInstruction(
                             new STORE(r, new RegisterOffset(i, baseReg))
                     );
                     r.setInUse(false);
                 }
-                // Sous-élément = entier ?
-                else if (subElement instanceof IntLiteral) {
-                    int val = ((IntLiteral) subElement).getValue();
+                else if (coeffCourant instanceof IntLiteral) {
+                    int val = ((IntLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
                     compiler.addInstruction(new LOAD(new ImmediateInteger(val), r));
                     compiler.addInstruction(
@@ -229,20 +220,37 @@ public class DeclVar extends AbstractDeclVar {
                     );
                     r.setInUse(false);
                 }
-                // Autre type (String, float, etc.) ?
-                else {
-                    throw new IllegalArgumentException(
-                            "Structure inattendue dans le tableau : "
-                                    + subElement.getClass().getName()
+                else if(coeffCourant instanceof FloatLiteral) {
+                    float val = ((FloatLiteral) coeffCourant).getValue();
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new LOAD(new ImmediateFloat(val), r));
+                    compiler.addInstruction(
+                            new STORE(r, new RegisterOffset(i, baseReg))
                     );
+                    r.setInUse(false);
+                }
+                else if(coeffCourant instanceof BooleanLiteral) {
+                    boolean val = ((BooleanLiteral) coeffCourant).getValue();
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    if(val){
+                        compiler.addInstruction(new LOAD(new ImmediateInteger(1), r));
+                    }
+                    else{
+                        compiler.addInstruction(new LOAD(new ImmediateInteger(0), r));
+
+                    }
+                    compiler.addInstruction(
+                            new STORE(r, new RegisterOffset(i, baseReg))
+                    );
+                    r.setInUse(false);
+                }
+                else {
+                    throw new IllegalArgumentException("Pas encore implémenté les objets de classe");
                 }
             }
         }
-        // 3) Si ce n'est pas un Array, on jette une exception
         else {
-            throw new IllegalArgumentException(
-                    "fillArrayRecursive ne peut remplir qu'un Array ou ArrayLiteral."
-            );
+            throw new IllegalArgumentException("La méthode ne peut remplir qu'un Array ou ArrayLiteral.");
         }
     }
 
