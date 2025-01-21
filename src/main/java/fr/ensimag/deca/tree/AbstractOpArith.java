@@ -21,7 +21,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
         Type type;
-        if (!(typeLeft.isFloat() || typeLeft.isInt() || typeLeft.isArray()) && !(typeRight.isFloat() || typeRight.isInt() || typeRight.isArray())) {
+        if (!(typeLeft.isFloat() || typeLeft.isInt()) && !(typeRight.isFloat() || typeRight.isInt())) {
             throw new ContextualError("Les deux opérandes ne sont pas du même type (ou l'operation n'est pas prise en charge) !" + typeLeft + typeRight, getLocation());
         }
         if (typeLeft.isFloat() || typeRight.isFloat()) {
@@ -45,40 +45,6 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         else if (typeLeft.isInt() && typeRight.isInt()) {
             this.setType(compiler.environmentType.INT);
             return typeLeft;
-        }
-        else if(typeLeft.isArray() && typeRight.isArray()) {
-            if (typeLeft.sameType(typeRight)) {
-                int tailleDroit = 0;
-                int tailleGauche = 0;
-                if(getRightOperand() instanceof ArrayLiteral && getLeftOperand() instanceof ArrayLiteral) {
-                    tailleDroit = ((ArrayLiteral) getRightOperand()).getArray().getSize();
-                    tailleGauche = ((ArrayLiteral) getLeftOperand()).getArray().getSize();
-                }
-                else if (getRightOperand() instanceof Identifier && getLeftOperand() instanceof Identifier) {
-                    ArrayDefinition arrayDefDroit = (ArrayDefinition) ((Identifier) getRightOperand()).getExpDefinition();
-                    tailleDroit = ((ArrayLiteral)arrayDefDroit.getInitialization().getExpression()).getArray().getSize();
-                    ArrayDefinition arrayDefGauche = (ArrayDefinition) ((Identifier) getLeftOperand()).getExpDefinition();
-                    tailleGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray().getSize();
-                }
-                if(tailleDroit != tailleGauche){
-                    throw new ContextualError("Les tableaux n'ont pas la même taille !", getLocation());
-                }
-                this.setType(typeLeft);
-                return typeLeft;
-            }
-            else{
-                throw new ContextualError("Les tableaux ne sont pas de la meme dimension !", getLocation());
-            }
-        }
-        else if(typeLeft.isArray() && typeRight.isInt() || typeRight.isArray() && typeLeft.isInt()) {
-            if(typeLeft.isArray()) {
-                this.setType(typeLeft);
-                return typeLeft;
-            }
-            else {
-                this.setType(typeRight);
-                return typeRight;
-            }
         }
         else {
             throw new ContextualError("Probleme lors de la vérification contextuelle !", getLocation());
