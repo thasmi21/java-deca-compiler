@@ -143,12 +143,45 @@ public class DeclVar extends AbstractDeclVar {
                 }
                 else if(expr instanceof ArrayNoInit){
                     ArrayNoInit exprArray = (ArrayNoInit) expr;
-                    List<AbstractExpr> indices = exprArray.getIndices();
-                    int numDimensions = indices.size();
-                    List<Integer> sizes = new ArrayList<>();
+                    List<AbstractExpr> dimensions = exprArray.getIndices();
+                    GPRegister rTotalSize = GestionRegistre.obtainFreeRegister();
 
-                    // jsp que faire ici
-                    // À compléter
+                    int taillePremiereDim = 1;
+                    if (dimensions.get(0) instanceof IntLiteral) {
+                        taillePremiereDim *= ((IntLiteral) dimensions.get(0)).getValue();
+                    }
+                    else {
+                        throw new UnsupportedOperationException("Pas encore implémenté");
+                    }
+                    GPRegister rBase = GestionRegistre.obtainFreeRegister();
+                    compiler.addInstruction(new NEW(taillePremiereDim, rBase));
+
+                    if(dimensions.size() > 1){
+                        List<AbstractExpr> sousDimension = dimensions.subList(1, dimensions.size());
+                        for (int i = 0; i < taillePremiereDim; i++) {
+                            // Allouer chaque sous-tableau
+                            GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
+                            allocateSubArray(compiler, sousDimension, rSubArray);
+                            // Stocker l'adresse du sous-tableau dans le tableau principal
+                            compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
+                            // Libérer le registre temporaire pour le sous-tableau
+                            rSubArray.setInUse(false);
+                        }
+                    }
+                    else {
+                        GPRegister rTemp = GestionRegistre.obtainFreeRegister();
+                        compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
+                        for (int offset = 0; offset < taillePremiereDim; offset++) {
+                            compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
+                        }
+                        rTemp.setInUse(false);
+                    }
+                    // Initialiser chaque case du tableau à une valeur par défaut (exemple : 0 pour les int)
+                    // Stocker l'adresse de base du tableau dans la variable
+                    compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
+
+                    // Libérer le registre utilisé pour la base
+                    rBase.setInUse(false);
                 }
                 else {
                     throw new IllegalArgumentException(
@@ -156,6 +189,43 @@ public class DeclVar extends AbstractDeclVar {
                     );
                 }
             }
+        }
+    }
+
+    private void allocateSubArray(DecacCompiler compiler, List<AbstractExpr> dimensions, GPRegister rBase) {
+        // Calculer la taille de la première dimension
+        int firstDimensionSize;
+        if (dimensions.get(0) instanceof IntLiteral) {
+            firstDimensionSize = ((IntLiteral) dimensions.get(0)).getValue();
+        } else {
+            throw new UnsupportedOperationException(
+                    "Les dimensions dynamiques pour ArrayNoInit ne sont pas encore supportées."
+            );
+        }
+
+        // Allouer la mémoire pour la première dimension
+        compiler.addInstruction(new NEW(firstDimensionSize, rBase));
+
+        // Si d'autres dimensions restent, allouer les sous-tableaux récursivement
+        if (dimensions.size() > 1) {
+            List<AbstractExpr> subDimensions = dimensions.subList(1, dimensions.size());
+
+            for (int i = 0; i < firstDimensionSize; i++) {
+                GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
+                allocateSubArray(compiler, subDimensions, rSubArray);
+
+                compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
+
+                rSubArray.setInUse(false);
+            }
+        } else {
+            // Si c'est un tableau unidimensionnel, initialiser à zéro
+            GPRegister rTemp = GestionRegistre.obtainFreeRegister();
+            compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
+            for (int offset = 0; offset < firstDimensionSize; offset++) {
+                compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
+            }
+            rTemp.setInUse(false);
         }
     }
 
