@@ -29,25 +29,25 @@ public class GetArray extends AbstractLValue {
         //this.size = CalculateSize();
     }
 
-    public void CalculateSize(EnvironmentExp localEnv) {
-        Symbol symbolIdentifier = identifier.getName();
-        ExpDefinition defIdentifier = localEnv.get(symbolIdentifier);
-        Initialization initIdent = ((ArrayDefinition) defIdentifier).getInitialization();
-        int profondeur = listIndex.size();
-        if (initIdent.getExpression() instanceof ArrayNoInit) {
-            AbstractExpr tailleVoulue = ((ArrayNoInit) initIdent.getExpression()).getIndices().get(profondeur);
-            if(tailleVoulue instanceof IntLiteral){
-                this.size = ((IntLiteral)tailleVoulue).getValue();
-            }
-        }
-        else if (initIdent.getExpression() instanceof ArrayLiteral){
-            int tailleVoulue = ((ArrayLiteral) initIdent.getExpression()).getSize().get(profondeur);
-            this.size = tailleVoulue;
-        }
-        else {
-            throw new RuntimeException("Erreur inattendue");
-        }
-    }
+//    public void CalculateSize(EnvironmentExp localEnv) {
+//        Symbol symbolIdentifier = identifier.getName();
+//        ExpDefinition defIdentifier = localEnv.get(symbolIdentifier);
+//        Initialization initIdent = ((ArrayDefinition) defIdentifier).getInitialization();
+//        int profondeur = listIndex.size();
+//        if (initIdent.getExpression() instanceof ArrayNoInit) {
+//            AbstractExpr tailleVoulue = ((ArrayNoInit) initIdent.getExpression()).getIndices().get(profondeur);
+//            if(tailleVoulue instanceof IntLiteral){
+//                this.size = ((IntLiteral)tailleVoulue).getValue();
+//            }
+//        }
+//        else if (initIdent.getExpression() instanceof ArrayLiteral){
+//            int tailleVoulue = ((ArrayLiteral) initIdent.getExpression()).getSize().get(profondeur);
+//            this.size = tailleVoulue;
+//        }
+//        else {
+//            throw new RuntimeException("Erreur inattendue");
+//        }
+//    }
 
     public int getSize(){
         return size;
@@ -85,7 +85,7 @@ public class GetArray extends AbstractLValue {
             }
         }
         this.setType(typeVoulu);
-        CalculateSize(localEnv);
+        //CalculateSize(localEnv);
         return typeVoulu;
     }
 
@@ -131,6 +131,31 @@ public class GetArray extends AbstractLValue {
         // 1) On se réserve un registre temporaire (rBase) pour tout calcul
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
         DAddr xAddr = this.identifier.getExpDefinition().getOperand();
+        compiler.addInstruction(new LOAD(xAddr, rBase));
+        int nbDims = listIndex.size();
+        for (int dim = 0; dim < nbDims; dim++) {
+            // a) Vérification si l’indice est un IntLiteral (ou on gère autrement)
+            if (!(listIndex.get(dim) instanceof IntLiteral)) {
+                GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                listIndex.get(dim).evalueExpr(compiler, rIndex);
+                compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                rIndex.setInUse(false);
+            }
+            else{
+                int offset = ((IntLiteral) listIndex.get(dim)).getValue();
+                compiler.addInstruction(new LEA(new RegisterOffset(offset, rBase), rBase));
+                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+            }
+        }
+        compiler.addInstruction(new LOAD(rBase, register));
+    }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register) {
+        // 1) On se réserve un registre temporaire (rBase) pour tout calcul
+        GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        DAddr xAddr = this.identifier.getParamDefinition().getOperand();
         compiler.addInstruction(new LOAD(xAddr, rBase));
         int nbDims = listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {

@@ -55,7 +55,7 @@ public class LengthArray extends AbstractExpr {
         if(identDef.getInitialization().getExpression() instanceof ArrayNoInit){
             ArrayNoInit expr = (ArrayNoInit) identDef.getInitialization().getExpression();
             if(expr.getIndices().get(0) instanceof IntLiteral){
-                compiler.addInstruction(new LOAD(new ImmediateInteger(((IntLiteral) expr.getIndices().get(0)).getValue()), register));
+                compiler.addInstructionEnd(new LOAD(new ImmediateInteger(((IntLiteral) expr.getIndices().get(0)).getValue()), register));
             }
             else {
                 throw new UnsupportedOperationException("pas encore implémenté !");
@@ -63,7 +63,7 @@ public class LengthArray extends AbstractExpr {
         }
         else if (identDef.getInitialization().getExpression() instanceof ArrayLiteral){
             ArrayLiteral expr = (ArrayLiteral) identDef.getInitialization().getExpression();
-            compiler.addInstruction(new LOAD(new ImmediateInteger(expr.getArray().getSize()), register));
+            compiler.addInstructionEnd(new LOAD(new ImmediateInteger(expr.getArray().getSize()), register));
         }
         else {
             throw new UnsupportedOperationException("erreur inattendue");
