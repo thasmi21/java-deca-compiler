@@ -163,6 +163,12 @@ public class GetArray extends AbstractLValue {
             if (!(listIndex.get(dim) instanceof IntLiteral)) {
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
                 listIndex.get(dim).evalueExprEnd(compiler, rIndex);
+                if(identifier.getParamDefinition().isParam()){
+                    int index = identifier.getParamDefinition().getIndex();
+                    DAddr addrParam = new RegisterOffset(index, Register.LB);
+                    compiler.addInstructionEnd(new LOAD(addrParam, rBase));
+                }
+                compiler.addInstructionEnd(new LOAD(rIndex, rIndex));
                 compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
                 rIndex.setInUse(false);
@@ -171,9 +177,9 @@ public class GetArray extends AbstractLValue {
                 int offset = ((IntLiteral) listIndex.get(dim)).getValue();
                 compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
                 compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
+                compiler.addInstruction(new LOAD(rBase, register));
             }
         }
-        compiler.addInstruction(new LOAD(rBase, register));
     }
 
     public DAddr codeGenAddressOf(DecacCompiler compiler) {
