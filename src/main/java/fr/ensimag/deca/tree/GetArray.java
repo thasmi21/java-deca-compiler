@@ -153,34 +153,33 @@ public class GetArray extends AbstractLValue {
 
     @Override
     public void evalueExprEnd(DecacCompiler compiler, GPRegister register) {
-        // 1) On se réserve un registre temporaire (rBase) pour tout calcul
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        if (rBase == null) {
+            throw new RuntimeException("Aucun registre disponible pour rBase.");
+        }
         identifier.evalueExprEnd(compiler, rBase);
-        //compiler.addInstruction(new LOAD(xAddr, rBase));
         int nbDims = listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {
-            // a) Vérification si l’indice est un IntLiteral (ou on gère autrement)
-            if (!(listIndex.get(dim) instanceof IntLiteral)) {
+            AbstractExpr indexExpr = listIndex.get(dim);
+            if (!(indexExpr instanceof IntLiteral)) {
+                // a) L'indice est une expression complexe, pas un littéral entier
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
-                listIndex.get(dim).evalueExprEnd(compiler, rIndex);
-                if(identifier.getParamDefinition().isParam()){
-                    int index = identifier.getParamDefinition().getIndex();
-                    DAddr addrParam = new RegisterOffset(index, Register.LB);
-                    compiler.addInstructionEnd(new LOAD(addrParam, rBase));
-                }
-                compiler.addInstructionEnd(new LOAD(rIndex, rIndex));
+                indexExpr.evalueExprEnd(compiler, rIndex);
                 compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
-                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
                 rIndex.setInUse(false);
-            }
-            else{
-                int offset = ((IntLiteral) listIndex.get(dim)).getValue();
+            } else {
+                int offset = ((IntLiteral) indexExpr).getValue();
                 compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
-                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
-                compiler.addInstruction(new LOAD(rBase, register));
+                if (dim < nbDims - 1) {
+                    compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
+                }
             }
         }
+        compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), register));
+        rBase.setInUse(false);
     }
+
+
 
     public DAddr codeGenAddressOf(DecacCompiler compiler) {
         DAddr xAddr = this.identifier.getExpDefinition().getOperand();
