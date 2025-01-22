@@ -155,22 +155,22 @@ public class GetArray extends AbstractLValue {
     public void evalueExprEnd(DecacCompiler compiler, GPRegister register) {
         // 1) On se réserve un registre temporaire (rBase) pour tout calcul
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
-        DAddr xAddr = this.identifier.getParamDefinition().getOperand();
-        compiler.addInstruction(new LOAD(xAddr, rBase));
+        identifier.evalueExprEnd(compiler, rBase);
+        //compiler.addInstruction(new LOAD(xAddr, rBase));
         int nbDims = listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {
             // a) Vérification si l’indice est un IntLiteral (ou on gère autrement)
             if (!(listIndex.get(dim) instanceof IntLiteral)) {
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
-                listIndex.get(dim).evalueExpr(compiler, rIndex);
-                compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
-                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                listIndex.get(dim).evalueExprEnd(compiler, rIndex);
+                compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
                 rIndex.setInUse(false);
             }
             else{
                 int offset = ((IntLiteral) listIndex.get(dim)).getValue();
-                compiler.addInstruction(new LEA(new RegisterOffset(offset, rBase), rBase));
-                compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
             }
         }
         compiler.addInstruction(new LOAD(rBase, register));

@@ -55,6 +55,31 @@ public class LengthArray extends AbstractExpr {
         if(identDef.getInitialization().getExpression() instanceof ArrayNoInit){
             ArrayNoInit expr = (ArrayNoInit) identDef.getInitialization().getExpression();
             if(expr.getIndices().get(0) instanceof IntLiteral){
+                compiler.addInstruction(new LOAD(new ImmediateInteger(((IntLiteral) expr.getIndices().get(0)).getValue()), register));
+            }
+            else {
+                throw new UnsupportedOperationException("pas encore implémenté !");
+            }
+        }
+        else if (identDef.getInitialization().getExpression() instanceof ArrayLiteral){
+            ArrayLiteral expr = (ArrayLiteral) identDef.getInitialization().getExpression();
+            compiler.addInstruction(new LOAD(new ImmediateInteger(expr.getArray().getSize()), register));
+        }
+        else {
+            throw new UnsupportedOperationException("erreur inattendue");
+        }
+    }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        if(!(ident instanceof Identifier)){
+            throw new UnsupportedOperationException("Le tableau n'est pas initialisé !");
+        }
+        Identifier ident = (Identifier) this.ident;
+        ArrayDefinition identDef = (ArrayDefinition) ident.getVariableDefinition();
+        if(identDef.getInitialization().getExpression() instanceof ArrayNoInit){
+            ArrayNoInit expr = (ArrayNoInit) identDef.getInitialization().getExpression();
+            if(expr.getIndices().get(0) instanceof IntLiteral){
                 compiler.addInstructionEnd(new LOAD(new ImmediateInteger(((IntLiteral) expr.getIndices().get(0)).getValue()), register));
             }
             else {
