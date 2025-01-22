@@ -1,0 +1,15 @@
+// Description:
+//    déclaration d'une méthode float qui ne retourne rien
+//
+//
+//
+//
+
+class A {}
+
+class B {
+    A getX(){
+
+    }
+}
+

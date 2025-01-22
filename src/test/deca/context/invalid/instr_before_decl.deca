@@ -1,0 +1,8 @@
+// Description :
+//      on déclare une variable avant une instruction. Pas possible en deca
+//
+
+{
+    println(2.0);
+    int a = 1;
+}

@@ -1,0 +1,9 @@
+// Descritpion:
+//      On teste de simplement écrire un booleen dans le programme
+//
+// Résultats:
+//      Nothing
+
+{
+    true;
+}

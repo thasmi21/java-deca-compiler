@@ -1,0 +1,27 @@
+// Description :
+//      tests des méthodes des extends
+//
+
+class Shape {
+    float area() {
+        return 0.0;
+    }
+}
+
+class Circle extends Shape {
+    float radius;
+
+    void initialize(float r) {
+        this.radius = r;
+    }
+
+    float area() {
+        return 3.14 * radius * radius;
+    }
+}
+
+{
+    Circle c = new Circle();
+    c.initialize(5.0);
+    println("Area of Circle: ",c.area());
+}

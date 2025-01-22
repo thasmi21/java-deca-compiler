@@ -1,0 +1,11 @@
+// Descritpion:
+//      Une boucle while mais dont la condition bouleene n'est pas bonne
+//
+// Résultat :
+//      Ligne 8
+
+{
+    while (int a = 1) {
+        println("C'est juste");
+    }
+}

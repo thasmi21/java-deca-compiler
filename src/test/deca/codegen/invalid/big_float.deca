@@ -1,0 +1,11 @@
+// Descritpion:
+//      On va créer une variable qui est censé lever une erreur de débordement de flottants
+//
+// Résultats:
+//
+
+{
+    float x = 2.0e+38;
+    float result = x * 2;
+    println(result);
+}

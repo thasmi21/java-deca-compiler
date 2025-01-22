@@ -102,7 +102,7 @@ public abstract class AbstractExprArray extends AbstractInst {
 
 
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
                               ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
@@ -114,7 +114,7 @@ public abstract class AbstractExprArray extends AbstractInst {
                     this.getLocation()
             );
         }
-
+        return exprType;
     }
 
     /**

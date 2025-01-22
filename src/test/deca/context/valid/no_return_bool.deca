@@ -1,0 +1,12 @@
+// Description:
+//    déclaration d'une méthode boolean qui ne retourne rien
+//
+//
+//
+//
+
+class A {
+
+    boolean getX(){
+    }
+}

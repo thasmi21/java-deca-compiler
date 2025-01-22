@@ -8,10 +8,13 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.Label;
 import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -44,6 +47,13 @@ public abstract class AbstractExpr extends AbstractInst {
         throw new UnsupportedOperationException("Expression connot be a condition");
     }
     public void genIfElseCode(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
+        throw  new IllegalArgumentException("Expression connot be a condition");
+    }
+
+    public void genWhileCodeMethod(DecacCompiler compiler, Label label){
+        throw new UnsupportedOperationException("Expression connot be a condition");
+    }
+    public void genIfElseCodeMethod(DecacCompiler compiler, ListInst thenIns, ListInst elseIns){
         throw  new IllegalArgumentException("Expression connot be a condition");
     }
 
@@ -108,19 +118,11 @@ public abstract class AbstractExpr extends AbstractInst {
     
     
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-        Type exprType = this.verifyExpr(compiler, localEnv, currentClass);
-
-        // Vérification : une expression de type void ne peut pas être utilisée comme instruction
-        if (exprType.isVoid()) {
-            throw new ContextualError(
-                    "Une expression de type void ne peut pas être utilisée comme instruction.",
-                    this.getLocation()
-            );
-        }
-
+        this.verifyExpr(compiler, localEnv, currentClass);
+        return compiler.environmentType.VOID;
     }
 
     /**
@@ -147,12 +149,24 @@ public abstract class AbstractExpr extends AbstractInst {
      * @param compiler
      */
     protected void codeGenPrint(DecacCompiler compiler) {
-
         throw new UnsupportedOperationException("not yet implemented by us");
+    }
+
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented by us");
+    }
+
+    protected void codeGenPrintX(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("Impossible de l'écrire en Hexa");
     }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -163,6 +177,13 @@ public abstract class AbstractExpr extends AbstractInst {
     *
     * */
     public void evalueExpr(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register ){
+        throw new UnsupportedOperationException("Not yet implemented by us");
+    }
+
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ){
         throw new UnsupportedOperationException("Not yet implemented by us");
     }
 

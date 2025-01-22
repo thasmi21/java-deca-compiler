@@ -1,13 +1,7 @@
 //programme deca pour bien vérifier l'analyseur reconnait la syntaxe du while
 
 {
-  // ne reconnait pas encore les while
     while(true){
     };
 }
 
-//doit reconnaitre le type float  pour le '0x5af.bp-5f'
-/*sortie attendu:
-   good_synt2.deca:
-
-*/

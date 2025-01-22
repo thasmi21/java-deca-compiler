@@ -1,0 +1,11 @@
+// Description :
+//
+//
+//
+//
+
+{
+    float x;
+    x = readFloat() + readFloat();
+    println("Val x :", x);
+}

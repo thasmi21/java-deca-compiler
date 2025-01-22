@@ -46,8 +46,11 @@ public class CompilerOptions {
     private boolean printBanner = false;
     private List<File> sourceFiles = new ArrayList<File>();
     private int arret=0;
+    private int n=0;
 
-
+    public int getN(){
+        return n;
+    }
     
     public void parseArgs(String[] args) throws CLIException {
         // A FAIRE : parcourir args pour positionner les options correctement.
@@ -68,9 +71,9 @@ public class CompilerOptions {
         int p=0;
         int r=0;
         int P=0;
-        int n=0;
         int w=0;
         int d=0;
+        boolean flag=false;
         for (int i = 0; i < args.length; i++) {
             if(args[i].equals("-v")) {
                 if(v==0 && p==0) {
@@ -85,7 +88,9 @@ public class CompilerOptions {
                     p=1;
                     arret=1;
                 }
-                throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
+                else{
+                    throw new CLIException("l'option -p n'est utilisable qu'une seule fois ou sans l'option -v");
+                }
             }
             else if(args[i].equals("-r") ) {
                 if(r==0){
@@ -93,6 +98,7 @@ public class CompilerOptions {
                         int digit = Integer.parseInt(args[i+1]);
                         if(4<=digit && digit<=16){
                             r=1;
+                            flag=true;
                             for(int j=15;j>=digit;j--){
                                 Register.getR(j).setInUse(true);
                             }
@@ -151,6 +157,9 @@ public class CompilerOptions {
                     throw new CLIException("Il faut au maximum 3 -d");
                 }
             }
+            else if(flag){
+                flag=false;
+            }
             else {
                 chemins.add(args[i]);
             }
@@ -197,6 +206,5 @@ public class CompilerOptions {
     }
 
     protected void displayUsage() {
-        throw new UnsupportedOperationException("not yet implemented");
     }
 }

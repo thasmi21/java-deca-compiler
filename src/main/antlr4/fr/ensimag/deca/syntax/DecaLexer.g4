@@ -97,13 +97,13 @@ IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )*;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;
-fragment SIGN : '+' | '-' | ' ' ;
+fragment SIGN : ('+' | '-')? ;
 fragment EXP : ('E' | 'e') SIGN NUM ;
 fragment DEC : NUM '.' NUM ;
 fragment FLOATDEC : (DEC | DEC EXP) ('F' | 'f')? ;
 fragment DIGITTHEX : [0-9A-Fa-f] ;
 fragment NUMHEX : DIGITTHEX+ ;
-fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') SIGN (NUM ('F' | 'f') | NUM) ;
+fragment FLOATHEX : ('0x' | '0X') NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM ('F' | 'f')?;
 
 
 // FLOAT est prioritaire sur DEC
@@ -149,23 +149,6 @@ EOL : ( '\t' |'\r'| '\n');
 COMMA : ',';
 
 MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
-
-// méthodes pour le calcul matriciel
-
-SORT : 'sort';
-
-TRANSPOSE : 'transpose' ;
-
-SCALARMULT : 'scalarmult';
-
-SCALARDIV : 'scalardiv';
-
-TRACE : 'trace';
-
-DET : 'det';
-
-ISINVERSIBLE : 'isInversible';
-
 
 INCLUDE : '#include' (' ')* '"' FILENAME '"'{
     doInclude(getText());

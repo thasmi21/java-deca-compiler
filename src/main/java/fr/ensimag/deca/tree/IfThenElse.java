@@ -45,33 +45,34 @@ public class IfThenElse extends AbstractInst {
 
 
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         this.condition.verifyCondition(compiler, localEnv, currentClass);
-        this.thenBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
-        this.elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        Type typeif=this.thenBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        Type typeelse=this.elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType);
+        if(typeif.sameType(returnType) && typeelse.sameType(returnType)) {
+            return typeelse;
+        }
+        else if((typeelse.sameType(returnType) && typeif.isVoid())|| (typeif.sameType(returnType) && typeelse.isVoid()) || (typeelse.isVoid() && typeif.isVoid())) {
+            return compiler.getEnvironmentType().VOID;
+        }
+        else{
+            throw new ContextualError("le type renvoyer dans le if n'est pas le meme que dans le else",getLocation());
+        }
     }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-            //on recupeere un registre pour y mettre la valeur de la condition
-        /*if(condition instanceof BooleanLiteral){
-            GPRegister r =  GestionRegistre.obtainFreeRegister();
+            //on recupere un registre pour y mettre la valeur de la condition
 
-            int entier = ((BooleanLiteral)condition).getValue()?1:0;
-            compiler.addInstruction(new LOAD(entier, r));
-            Label E = new Label(thenBranch.toString().replace('@', '_'));
-            Label fin = new Label(thenBranch.toString().replace('@', '_')+"_fin");
-            compiler.addInstruction(new CMP(0, r));
-            compiler.addInstruction(new BNE(E));
-            elseBranch.codeGenListInst(compiler);
-            compiler.addInstruction(new BRA(fin));
-            compiler.addLabel(E);
-            thenBranch.codeGenListInst(compiler);
-            compiler.addLabel(fin);
-        }*/
         condition.genIfElseCode(compiler, thenBranch, elseBranch);
+
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+
+        condition.genIfElseCodeMethod(compiler, thenBranch, elseBranch);
 
     }
 

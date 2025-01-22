@@ -1,0 +1,12 @@
+// Description:
+//    class de base avec methode
+//
+//
+//
+//
+
+class A {
+
+    void m(){
+    }
+}

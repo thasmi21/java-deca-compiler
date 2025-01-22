@@ -1,0 +1,10 @@
+// Description:
+//      On met des commentaires au milieu d'un identifiant, ça ne marche pas car le lexer découpe le token 'int' en deux
+//
+// Résultats:
+//
+
+{
+    in/*commentaire*/t x=1;
+}
+

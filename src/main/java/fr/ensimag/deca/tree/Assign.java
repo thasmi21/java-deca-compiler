@@ -7,6 +7,8 @@ import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.*;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.REM;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
@@ -33,31 +35,47 @@ public class Assign extends AbstractBinaryExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+        Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-        Type typeRight;
         if(getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
             getRightOperand().setType(typeLeft);
             getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             return typeLeft;
         }
         else {
-            typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-            if (typeRight.sameType(typeLeft) || ((typeLeft.isFloat() && typeRight.isInt() || typeLeft.isInt()) && (typeRight.isFloat()))) {
+            Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isClassOrNull())) {
                 if (typeRight.sameType(typeLeft)) {
                     this.setType(typeLeft);
                     return typeLeft;
                 }
-                if (typeLeft.isFloat()) {
+                if (typeRight.isClass()) {
+                    ClassType classType1 = (ClassType) typeLeft;
+                    ClassType classType2 = (ClassType) typeRight;
+                    if (!classType1.sameType(classType2) && !classType2.isSubClassOf(classType1)) {
+                        throw new ContextualError("la class n'est pas la même class ni une sous class", getLocation());
+                    }
                     this.setType(typeLeft);
                     return typeLeft;
                 }
-                this.setType(typeRight);
-                return typeRight;
+                this.setType(compiler.environmentType.FLOAT);
+                if (typeLeft.isFloat()) {
+                    type = typeLeft;
+                } else {
+                    type = typeRight;
+                }
+                //Pour ajouter l'enrichissement Convfloat
+                if (!typeRight.isFloat()) {
+                    setRightOperand(new ConvFloat(getRightOperand()));
+                    getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+                }
+                return type;
             } else {
-                throw new ContextualError("Les deux opérandes ne sont pas du même type : " + typeLeft + typeRight, getLocation());
+                throw new ContextualError("Les deux opérandes ne sont pas du même type : " + typeLeft + " " + typeRight, getLocation());
             }
         }
     }
+
 
     /*@Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register) {
@@ -83,34 +101,34 @@ public class Assign extends AbstractBinaryExpr {
         //compiler.addInstruction(new WINT());
         getLeftOperand().codeGenPrint(compiler);
     }
-        @Override
-        public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
-                ClassDefinition currentClass, Type returnType) throws ContextualError {
-            // Vérifie le type de l'affectation
-            Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-            Type typeRight;
-            if (getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
-                getRightOperand().setType(typeLeft);
-                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-                this.setType(typeLeft);
-            } else {
-                typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-                // Vérifie la compatibilité des types
-                if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
-                    if (typeLeft.isFloat() && typeRight.isInt()) {
-                        // Promotion implicite de int vers float
-                        setRightOperand(new ConvFloat(getRightOperand()));
-                    }
-                    this.setType(typeLeft);
-                } else {
-                    throw new ContextualError(
-                            "Erreur de type : impossible d'affecter une expression de type " +
-                                    typeRight + " à une variable de type " + typeLeft,
-                            getLocation()
-                    );
-                }
-            }
-        }
+//        @Override
+//        public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+//                ClassDefinition currentClass, Type returnType) throws ContextualError {
+//            // Vérifie le type de l'affectation
+//            Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+//            Type typeRight;
+//            if (getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
+//                getRightOperand().setType(typeLeft);
+//                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+//                this.setType(typeLeft);
+//            } else {
+//                typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+//                // Vérifie la compatibilité des types
+//                if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
+//                    if (typeLeft.isFloat() && typeRight.isInt()) {
+//                        // Promotion implicite de int vers float
+//                        setRightOperand(new ConvFloat(getRightOperand()));
+//                    }
+//                    this.setType(typeLeft);
+//                } else {
+//                    throw new ContextualError(
+//                            "Erreur de type : impossible d'affecter une expression de type " +
+//                                    typeRight + " à une variable de type " + typeLeft,
+//                            getLocation()
+//                    );
+//                }
+//            }
+//        }
 
 
     @Override
@@ -124,25 +142,294 @@ public class Assign extends AbstractBinaryExpr {
         //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
         // On commence par récupérer le registre dans lequel
         // stocker la valeur, qui est l'opérand gauche
-        DAddr regAdresse;
-        // On prend ensuite un registre libre
-        GPRegister reg = GestionRegistre.obtainFreeRegister();
-        // On y stock la valeur contenue dans l'opérand droite
-        getRightOperand().evalueExpr(compiler, reg);
-        if(getLeftOperand() instanceof GetArray){
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }
+        else if(getLeftOperand() instanceof GetArray){
+            GPRegister reg = GestionRegistre.obtainFreeRegister();
+            getRightOperand().evalueExpr(compiler, reg);
             DAddr idAdresse=((GetArray) getLeftOperand()).codeGenAddressOf(compiler);
             compiler.addInstruction(new STORE(reg, idAdresse));
+            reg.setInUse(false);
+            return;
         }
         else{
-            regAdresse = ((AbstractIdentifier)getLeftOperand()).getExpDefinition().getOperand();
-            compiler.addInstruction(new STORE(reg, regAdresse));
+            ident = (AbstractIdentifier)getLeftOperand();
         }
-        // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
+        // On prend ensuite un registre libre
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        if(ident.getDefinition().isField()){
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
 
-        reg.setInUse(false);
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstruction(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+
+            DAddr addrParent = ((AbstractIdentifier)((Dot)getLeftOperand()).getSelectExpr()).getExpDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addrParent, r));
+            GestionRegistre.verifieNullReference(compiler, r);
+            getRightOperand().evalueExpr(compiler, reg);
+            compiler.addInstruction(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(rWasNul){
+                compiler.addInstruction(new POP(Register.getR(5)));
+            }
+            else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
+                reg.setInUse(false);
+            }
+            return;
+        }
+        if(reg != null){
+            // On y stock la valeur contenue dans l'opérand droite
+            getRightOperand().evalueExpr(compiler, reg);
+            // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else {
+            reg = Register.getR(2);
+            compiler.addInstruction(new PUSH(reg));
+            getRightOperand().evalueExpr(compiler, reg);
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            compiler.addInstruction(new POP(reg));
+        }
+
     }
 
+    @Override
+    public void evalueExpr(DecacCompiler compiler, GPRegister register) {
+        // On prend un registre libre
+        //compiler.addInstruction(new STORE(Register.getR(3), getLeftOperand().getMemoryLocation()));
+        // On commence par récupérer le registre dans lequel
+        // stocker la valeur, qui est l'opérand gauche
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }else{
+            ident = (AbstractIdentifier)getLeftOperand();
+        }
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
+        // On prend ensuite un registre libre
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        if(ident.getDefinition().isField()){
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
+
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstruction(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+
+            DAddr addrParent = ((AbstractIdentifier)((Dot)getLeftOperand()).getSelectExpr()).getExpDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addrParent, r));
+            GestionRegistre.verifieNullReference(compiler, r);
+            getRightOperand().evalueExpr(compiler, reg);
+            compiler.addInstruction(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            if(rWasNul){
+                compiler.addInstruction(new POP(Register.getR(5)));
+            }
+            else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
+                reg.setInUse(false);
+            }
+            return;
+        }
+        if(reg != null){
+            // On y stock la valeur contenue dans l'opérand droite
+            getRightOperand().evalueExpr(compiler, reg);
+            // On stock la valeur mise dans le registre choisi a l'adresse de l'operand gauche
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else {
+            reg = Register.getR(2);
+            compiler.addInstruction(new PUSH(reg));
+            getRightOperand().evalueExpr(compiler, reg);
+            compiler.addInstruction(new STORE(reg, regAdresse));
+            compiler.addInstruction(new POP(reg));
+        }
+        compiler.addInstruction(new LOAD(reg, register));
+    }
+
+    @Override
+    public void codeGenInstMethod(DecacCompiler compiler) {
+        //AbstractLValue left = getLeftOperand();
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }else{
+            ident = (AbstractIdentifier)getLeftOperand();
+        }
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
+        if(ident.getDefinition().isField() ||ident.getExpDefinition().isParam() ){
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstructionEnd(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+            getRightOperand().evalueExprEnd(compiler, reg);
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, r));
+            if(ident.getDefinition().isField()){
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            }else{
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getParamDefinition().getIndex()),Register.LB)));
+            }
+
+            if(rWasNul){
+                compiler.addInstructionEnd(new POP(Register.getR(5)));
+            }else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
+                reg.setInUse(false);
+            }
+            return;
+        }
 
 
+        if(reg != null){
+            getRightOperand().evalueExprEnd(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else{
+            reg = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(reg));
+            getRightOperand().evalueExprEnd(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            compiler.addInstructionEnd(new POP(reg));
+        }
 
+
+    }
+
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register) {
+        //AbstractLValue left = getLeftOperand();
+        AbstractIdentifier ident;
+        if(getLeftOperand() instanceof Dot){
+            if(((Dot)getLeftOperand()).getDotField()){
+                ident = ((Dot) getLeftOperand()).getIdentifier();
+            }
+            else{
+                throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
+            }
+
+        }else{
+            ident = (AbstractIdentifier)getLeftOperand();
+        }
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        DAddr regAdresse = ident.getExpDefinition().getOperand();
+        if(ident.getDefinition().isField() ||ident.getExpDefinition().isParam() ){
+            boolean regWasNul = false;
+            if(reg == null){
+                regWasNul = true;
+                reg = Register.getR(2);
+                compiler.addInstruction(new PUSH(reg));
+            }
+            GPRegister r = GestionRegistre.obtainFreeRegister();
+            boolean rWasNul = false;
+            if(r == null){
+                compiler.addInstructionEnd(new PUSH(Register.getR(5)));
+                r=Register.getR(5);
+                rWasNul = true;
+            }
+            getRightOperand().evalueExprEnd(compiler, reg);
+            DAddr addrParent = new RegisterOffset(-2, Register.LB);
+            compiler.addInstructionEnd(new LOAD(addrParent, r));
+            if(ident.getDefinition().isField()){
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getFieldDefinition()).getIndex(),r)));
+            }else{
+                compiler.addInstructionEnd(new STORE(reg, new RegisterOffset((ident.getParamDefinition().getIndex()),Register.LB)));
+            }
+
+            if(rWasNul){
+                compiler.addInstructionEnd(new POP(Register.getR(5)));
+            }else{
+                r.setInUse(false);
+            }
+            if(regWasNul){
+                compiler.addInstruction(new POP(Register.getR(2)));
+            }
+            else{
+                reg.setInUse(false);
+            }
+            return;
+        }
+
+
+        if(reg != null){
+            getRightOperand().evalueExprEnd(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            reg.setInUse(false);
+        }
+        else{
+            reg = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(reg));
+            getRightOperand().evalueExprEnd(compiler, reg);
+            compiler.addInstructionEnd(new STORE(reg, regAdresse));
+            compiler.addInstructionEnd(new POP(reg));
+        }
+        compiler.addInstructionEnd(new LOAD(reg, register));
+
+    }
 }

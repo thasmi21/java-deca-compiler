@@ -1,0 +1,10 @@
+// Description :
+//      tests de minus avec un float
+//
+//
+
+
+
+{
+    - 1.903;
+}

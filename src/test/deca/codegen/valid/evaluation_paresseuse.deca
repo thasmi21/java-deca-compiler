@@ -1,0 +1,20 @@
+// Tests de l'évaluation paresseuse des && et des ||
+// censé fonctionner
+
+class A{
+    boolean f() {
+        println("Evaluation de f()");
+        return false;
+    }
+
+    boolean g() {
+        println("Evaluation de g()");
+        return true;
+    }
+}
+
+{
+    A a = new A();
+    boolean x = a.f() && a.g();
+    boolean y = a.f() || a.g();
+}

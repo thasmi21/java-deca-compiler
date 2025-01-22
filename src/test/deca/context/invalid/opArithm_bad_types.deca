@@ -1,0 +1,8 @@
+// Description :
+// Opérations arithmétiques entre mauvais types
+
+{
+    boolean a = true;
+    int b = 1;
+    a+b;
+}

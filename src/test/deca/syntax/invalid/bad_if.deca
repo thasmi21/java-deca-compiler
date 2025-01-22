@@ -1,11 +1,11 @@
 // Description:
-//      On declare une variable juste après un if
+//      On écrit if avec une faute (syntaxiquement incorrect)
 //
 // Résultats:
 //      Ligne 8:
 
 {
-    if int x (true){
+    ifx (true){
         println("Faux");
     }
 }

@@ -1,0 +1,17 @@
+// Description:
+//    class extends protected
+
+
+class A {
+
+    protected int x;
+
+
+}
+
+class B extends A{
+
+    void l(){
+        x=2;
+    }
+}

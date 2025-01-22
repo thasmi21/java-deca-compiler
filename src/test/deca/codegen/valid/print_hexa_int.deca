@@ -1,0 +1,9 @@
+//Description :
+//Print d'un entier en hexadecimal,
+// Résultat :
+// Val a 0x1.4p+3
+
+{
+    int a = 10;
+    printlnx("Val a ", a);
+}

@@ -1,0 +1,9 @@
+//Description :
+//Print d'un boolean, doit renvoyer une erreur
+// Résultat :
+// Erreur
+
+{
+    boolean a = true;
+    println(a);
+}

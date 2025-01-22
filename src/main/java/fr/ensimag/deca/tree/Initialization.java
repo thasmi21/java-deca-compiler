@@ -27,16 +27,29 @@ public class Initialization extends AbstractInitialization {
         Validate.notNull(expression);
         this.expression = expression;
 
-        //bonne positionnement de la Localisation de l'initialisation
+        //bon positionnement de la Localisation de l'initialisation
         this.setLocation(expression.getLocation());
     }
 
     @Override
     protected void verifyInitialization(DecacCompiler compiler, Type t,
-            EnvironmentExp localEnv, ClassDefinition currentClass)
+                                        EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
         Type typeExpr = expression.verifyExpr(compiler, localEnv, currentClass);
-        if (!typeExpr.sameType(t)) {
+        if (typeExpr.sameType(t) || (t.isFloat() && typeExpr.isInt()) || (t.isClass() &&typeExpr.isClassOrNull())) {
+            if(t.isFloat() && typeExpr.isInt()){
+                this.expression=new ConvFloat(expression);
+                expression.verifyExpr(compiler,localEnv,currentClass);
+            }
+            if(typeExpr.isClass()){
+                ClassType classType1 = (ClassType)typeExpr;
+                ClassType classType2 = (ClassType)t;
+                if(!classType1.sameType(classType2) && !classType1.isSubClassOf(classType2)){
+                    throw new ContextualError("la class n'est pas la même class ni une sous class" ,getLocation());
+                }
+            }
+        }
+        else{
             throw new ContextualError("Types incompatibles dans l'initialisation ! (attendu "+t+" ), (trouvé "+typeExpr+")",expression.getLocation());
         }
     }

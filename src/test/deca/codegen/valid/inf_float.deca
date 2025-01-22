@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une < entre float
+//
+//
+
+
+
+{
+    1.8736<3.8736;
+}

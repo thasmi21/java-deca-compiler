@@ -33,6 +33,7 @@ public class NoInitialization extends AbstractInitialization {
         // nothing
     }
 
+
     @Override
     public void decompile(IndentPrintStream s) {
         // nothing

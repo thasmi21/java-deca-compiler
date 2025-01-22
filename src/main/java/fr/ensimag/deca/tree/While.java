@@ -47,14 +47,26 @@ public class While extends AbstractInst {
         condition.genWhileCode(compiler, debut);
 
     }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        Label debut = new Label(this.toString().replace('@', '_'));
+        Label cond = new Label(this.toString().replace('@', '_')+"_fin");
+        compiler.addInstructionEnd(new BRA(cond));
+        compiler.addLabelEnd(debut);
+        getBody().codeGenListInstMethod(compiler);
+        compiler.addLabelEnd(cond);
+        condition.genWhileCodeMethod(compiler, debut);
+
+    }
 
     @Override
-    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+    protected Type verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
         this.condition.verifyCondition(compiler,localEnv,currentClass);
-        this.condition.verifyInst(compiler, localEnv, currentClass, returnType);
-        this.body.verifyListInst(compiler,localEnv,currentClass,returnType);
+        this.condition.verifyInst(compiler, localEnv, currentClass, compiler.environmentType.BOOLEAN);
+        Type t=this.body.verifyListInst(compiler,localEnv,currentClass,returnType);
+        return t;
     }
 
     @Override

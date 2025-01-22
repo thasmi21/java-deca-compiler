@@ -14,7 +14,9 @@ import java.util.concurrent.*;
  */
 public class DecacMain {
     private static Logger LOG = Logger.getLogger(DecacMain.class);
-    
+
+    public static boolean err=false;
+
     public static void main(String[] args) throws InterruptedException{
         // example log4j message.
         LOG.info("Decac compiler started");
@@ -66,17 +68,29 @@ public class DecacMain {
             // instance en parallèle. Il est conseillé d'utiliser
             // java.util.concurrent de la bibliothèque standard Java.
             ArrayList<Thread> threads = new ArrayList<>();
+            Thread thread;
+            boolean fini = false;
+            Semaphore semaphore = new Semaphore(1);
             for (File source : options.getSourceFiles()) {
-                Thread thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source)));
+                if(options.getN()==1) {
+                    thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source),true,semaphore));
+                }
+                else{
+                    thread = new Thread(new RunnableCompiler(new DecacCompiler(options, source),false,semaphore));
+                }
                 threads.add(thread);
                 thread.start();
             }
-            for (Thread thread : threads) {
-                thread.join();
+            for (Thread t : threads) {
+                t.join();
             }
+            System.exit(err ? 1 : 0);
         } else {
             for (File source : options.getSourceFiles()) {
                 DecacCompiler compiler = new DecacCompiler(options, source);
+                if(options.getN()==1) {
+                    compiler.setN(true);
+                }
                 if (compiler.compile()) {
                     error = true;
                 }

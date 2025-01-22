@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une diff entre int
+//
+//
+
+
+
+{
+    1!=3;
+}

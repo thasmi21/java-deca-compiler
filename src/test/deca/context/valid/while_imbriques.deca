@@ -1,0 +1,88 @@
+// Descrition:
+//      26 boucles while imbriquées pour vérifier que le compilateur arrive bien à toutes les gérer en meme temps
+//      Incrémentation d'une variable à chaque itération
+//      Vérification à la fin du programme qu'on a bien effectué le bon nombre d'itérations (2²⁶ =  67,108,864)
+
+{
+    int compteur = 0, a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0;
+
+    while (a < 2) {
+        while (b < 2) {
+            while (c < 2) {
+                while (d < 2) {
+                    while (e < 2) {
+                        while (f < 2) {
+                            while (g < 2) {
+                                while (h < 2) {
+                                    while (i < 2) {
+                                        while (j < 2) {
+                                            while (k < 2) {
+                                                while (l < 2) {
+                                                    while (m < 2) {
+                                                        while (n < 2) {
+                                                            while (o < 2) {
+                                                                while (p < 2) {
+                                                                    while (q < 2) {
+                                                                        while (r < 2) {
+                                                                            while (s < 2) {
+                                                                                while (t < 2) {
+                                                                                    while (u < 2) {
+                                                                                        while (v < 2) {
+                                                                                            while (w < 2) {
+                                                                                                while (x < 2) {
+                                                                                                    while (y < 2) {
+                                                                                                        while (z < 2) {
+                                                                                                            compteur = compteur + 1;
+                                                                                                            z = z + 1;
+                                                                                                        }
+                                                                                                        y = y + 1;
+                                                                                                    }
+                                                                                                    x = x + 1;
+                                                                                                }
+                                                                                                w = w + 1;
+                                                                                            }
+                                                                                            v = v + 1;
+                                                                                        }
+                                                                                        u = u + 1;
+                                                                                    }
+                                                                                    t = t + 1;
+                                                                                }
+                                                                                s = s + 1;
+                                                                            }
+                                                                            r = r + 1;
+                                                                        }
+                                                                        q = q + 1;
+                                                                    }
+                                                                    p = p + 1;
+                                                                }
+                                                                o = o + 1;
+                                                            }
+                                                            n = n + 1;
+                                                        }
+                                                        m = m + 1;
+                                                    }
+                                                    l = l + 1;
+                                                }
+                                                k = k + 1;
+                                            }
+                                            j = j + 1;
+                                        }
+                                        i = i + 1;
+                                    }
+                                    h = h + 1;
+                                }
+                                g = g + 1;
+                            }
+                            f = f + 1;
+                        }
+                        e = e + 1;
+                    }
+                    d = d + 1;
+                }
+                c = c + 1;
+            }
+            b = b + 1;
+        }
+        a = a + 1;
+    }
+}

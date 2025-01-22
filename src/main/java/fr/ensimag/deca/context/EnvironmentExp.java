@@ -35,6 +35,9 @@ public class EnvironmentExp {
         this.parentEnvironment = parentEnvironment;
     }
 
+    public EnvironmentExp getParentEnvironment() {
+        return parentEnvironment;
+    }
     public Map<Symbol, ExpDefinition> getLocalEnv() {
         return localEnv;
     }

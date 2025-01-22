@@ -4,7 +4,8 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.codegen.GestionRegistre;
 import fr.ensimag.deca.context.*;
-import fr.ensimag.ima.pseudocode.*;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.*;
 
 /**
@@ -30,115 +31,143 @@ public class Plus extends AbstractOpArith {
             getLeftOperand().evalueExpr(compiler, r1 );
             getRightOperand().evalueExpr(compiler, register );
             compiler.addInstruction(new ADD(r1, register));
+            if (this.getType().isFloat()) {
+                if (!compiler.getN()){
+                    compiler.labelOverflow(compiler);
+                }
+            }
             r1.setInUse(false); //on n'utilise plus r1
             return;
         }
         //si on doit conserver dans la pile
         GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
         compiler.addInstruction(new ADD(Register.R0, register));
+        if (this.getType().isFloat()) {
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
+        }
         GestionRegistre.IncCompteurTempUsage();
         //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
     }
 
     @Override
-    protected void codeGenInst(DecacCompiler compiler) {
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExprEnd(compiler, r1 );
+            getRightOperand().evalueExprEnd(compiler, register );
+            compiler.addInstructionEnd(new ADD(r1, register));
+            r1.setInUse(false); //on n'utilise plus r1
+            return;
+        }
+        //si on doit conserver dans la pile
+        GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+        compiler.addInstructionEnd(new ADD(Register.R0, register));
+        GestionRegistre.IncCompteurTempUsage();
+        //System.out.println("Pas de registre dispo"); // à retirer, il faudra prendre un espace pile alors
+    }
+
+//    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
+//        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+//        //GPRegister r2 = GestionRegistre.obtainFreeRegister();
+//        if (r1 != null){
+//            getLeftOperand().evalueExprMethod(compiler, r1 );
+//            getRightOperand().evalueExprMethod(compiler, register );
+//            compiler.addInstructionEnd(new ADD(r1, register));
+//            r1.setInUse(false); //on n'utilise plus r1
+//            return;
+//        }
+//        //si on doit conserver dans la pile
+//        GestionRegistre.pushETpopMethod(compiler, getRightOperand(), getLeftOperand(), register);
+//        compiler.addInstructionEnd(new ADD(Register.R0, register));
+//    }
+
+    @Override
+    public void codeGenInst(DecacCompiler compiler){
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        if (r1 != null) {
-            getLeftOperand().evalueExpr(compiler, r1);
-            getRightOperand().evalueExpr(compiler, register);
+        if (r1 != null){
+            getLeftOperand().evalueExpr(compiler, r1 );
+            getRightOperand().evalueExpr(compiler, register );
             compiler.addInstruction(new ADD(r1, register));
-        } else {
+        }else{
             GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
             compiler.addInstruction(new ADD(Register.R0, register));
             GestionRegistre.IncCompteurTempUsage();
         }
 
-        if (r1 != null) {
-            r1.setInUse(false);
+        if (this.getType().isFloat()) {
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
+            }
         }
+
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
     }
 
-
-
     @Override
-    public void codeGenPrint(DecacCompiler compiler) {
+    public void codeGenPrint(DecacCompiler compiler){
+
         GPRegister register = Register.R1;
         GPRegister r1 = GestionRegistre.obtainFreeRegister();
-        if (this.getLeftOperand().getType() instanceof ArrayType && this.getRightOperand().getType() instanceof ArrayType) {
-            ArrayDefinition arrayDefDroit = ((ArrayDefinition) ((Identifier)getLeftOperand()).getExpDefinition());
-            ArrayDefinition arrayDefGauche = ((ArrayDefinition) ((Identifier)getRightOperand()).getExpDefinition());
-            Array tableauDroit = ((ArrayLiteral)(arrayDefDroit.getInitialization().getExpression())).getArray();
-            Array tableauGauche = ((ArrayLiteral)(arrayDefGauche.getInitialization().getExpression())).getArray();
-            int tailleTableauDroit = tableauDroit.getSize();
-            // Boucle pour additionner chaque élément des tableaux
-            compiler.addInstruction(new WSTR("["));
-            for (int i = 0; i < tailleTableauDroit; i++) {
-                if (r1 != null) {
-                    tableauDroit.getCoefficients(i).evalueExpr(compiler, r1);
-                    tableauGauche.getCoefficients(i).evalueExpr(compiler, register);
-                    compiler.addInstruction(new ADD(r1, register));
-                } else {
-                    GestionRegistre.pushETpop(compiler, tableauDroit.getCoefficients(i), tableauGauche.getCoefficients(i), register);
-                    compiler.addInstruction(new ADD(Register.R0, register));
-                    GestionRegistre.IncCompteurTempUsage();
-                }
-                if (tableauDroit.getCoefficients(0).getType() instanceof IntType) {
-                    compiler.addInstruction(new WINT());
-                } else if (tableauDroit.getCoefficients(0).getType() instanceof FloatType) {
-                    compiler.addInstruction(new WFLOAT());
-                }
-                if(i!= tailleTableauDroit-1){
-                    compiler.addInstruction(new WSTR(","));
-                }
-            }
-            compiler.addInstruction(new WSTR("]"));
-            if (r1 != null) {
-                r1.setInUse(false);
-            }// il faut verifier ici si R1 a été obtenu et le rendre si oui
+        if (r1 != null){
+            getLeftOperand().evalueExpr(compiler, r1 );
+            getRightOperand().evalueExpr(compiler, register );
+            compiler.addInstruction(new ADD(r1, register));
+        }else{
+            GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstruction(new ADD(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
         }
-        else {
-            if (r1 != null) {
-                getLeftOperand().evalueExpr(compiler, r1);
-                getRightOperand().evalueExpr(compiler, register);
-                compiler.addInstruction(new ADD(r1, register));
-            } else {
-                GestionRegistre.pushETpop(compiler, getRightOperand(), getLeftOperand(), register);
-                compiler.addInstruction(new ADD(Register.R0, register));
-                GestionRegistre.IncCompteurTempUsage();
-            }
 
-            if (this.getType() instanceof IntType) {
-                compiler.addInstruction(new WINT());
-            } else if (this.getType() instanceof FloatType) {
-                compiler.addInstruction(new WFLOAT());
+        if (this.getType().isFloat()) {
+            if (!compiler.getN()){
+                compiler.labelOverflow(compiler);
             }
-
-            if (r1 != null) {
-                r1.setInUse(false);
-            }// il faut verifier ici si R1 a été obtenu et le rendre si oui
         }
+
+        if (this.getType() instanceof IntType) {
+            compiler.addInstruction(new WINT());
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstruction(new WFLOAT());
+        }
+
+         if(r1 != null){
+             r1.setInUse(false);
+         }// il faut verifier ici si R1 a été obtenu et le rendre si oui
     }
-
     @Override
-    public void doOpArray(DecacCompiler compiler){
-        Identifier identGauche = (Identifier) getLeftOperand();
-        Identifier identDroit = (Identifier) getRightOperand();
-        ArrayDefinition arrayDefGauche = (ArrayDefinition) identGauche.getExpDefinition();
-        ArrayDefinition arrayDefDroit = (ArrayDefinition) identDroit.getExpDefinition();
-        Array tableauGauche = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray();
-        Array tableauDroit = ((ArrayLiteral)arrayDefDroit.getInitialization().getExpression()).getArray();
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
+    @Override
+    public void codeGenPrintMethod(DecacCompiler compiler){
 
-        int size = ((ArrayLiteral)arrayDefGauche.getInitialization().getExpression()).getArray().getSize();
-        int indiceGP = GestionRegistre.obtainIndiceGPandIncrement(size-1);
-        for(int i=0 ; i < size ; i++) {
-            GPRegister r = GestionRegistre.obtainFreeRegister();
-            evalueExpr(compiler, r);
-            int coeffDroit = ((IntLiteral)tableauDroit.getCoefficients(i)).getValue();
-            int coeffGauche = ((IntLiteral)tableauGauche.getCoefficients(i)).getValue();
-            compiler.addInstruction(new LOAD(new ImmediateInteger(coeffGauche+coeffDroit), r));
-            compiler.addInstruction(new STORE(r, new RegisterOffset(indiceGP-size+i+1, Register.GB)));
-            r.setInUse(false);
+        GPRegister register = Register.R1;
+        GPRegister r1 = GestionRegistre.obtainFreeRegister();
+        if (r1 != null){
+            getLeftOperand().evalueExprEnd(compiler, r1 );
+            getRightOperand().evalueExprEnd(compiler, register );
+            compiler.addInstructionEnd(new ADD(r1, register));
+        }else{
+            GestionRegistre.pushETpopEnd(compiler, getRightOperand(), getLeftOperand(), register);
+            compiler.addInstructionEnd(new ADD(Register.R0, register));
+            GestionRegistre.IncCompteurTempUsage();
         }
+
+        if (this.getType() instanceof IntType) {
+            compiler.addInstructionEnd(new WINT());
+        } else if (this.getType() instanceof FloatType) {
+            compiler.addInstructionEnd(new WFLOAT());
+        }
+
+        if(r1 != null){
+            r1.setInUse(false);
+        }// il faut verifier ici si R1 a été obtenu et le rendre si oui
     }
 }

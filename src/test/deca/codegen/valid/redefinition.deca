@@ -1,0 +1,30 @@
+// Description :
+//   tests de la redéfinition de méthodes
+//
+
+class Animal {
+    void speak() {
+        println("This is an animal.");
+    }
+}
+
+class Dog extends Animal {
+    void speak() {
+        println("Woof!");
+    }
+}
+
+class Cat extends Animal {
+    void speak() {
+        println("Meow!");
+    }
+}
+{
+    Animal a = new Animal();
+    Animal d = new Dog();
+    Animal c = new Cat();
+
+    a.speak();
+    d.speak();
+    c.speak();
+}

@@ -1,0 +1,20 @@
+// Description:
+//    class de base
+//
+//
+//
+//
+
+class Point {
+    int x=1;
+
+    int getX(){
+        return 5;
+    }
+}
+{
+    Point p = new Point();
+    int x ;
+    x = p.getX();
+    println(x);
+}

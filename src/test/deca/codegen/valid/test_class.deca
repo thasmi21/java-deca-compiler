@@ -1,0 +1,16 @@
+// Descritpion:
+//      On va essayer de modifier la valeur d'un champ d'une classe
+//
+// Résultats:
+//
+
+class Animal {
+    int nbPate;
+}
+
+{
+    Animal paolo = new Animal();
+    println("Paolo a ", paolo.nbPate, " pates");
+    paolo.nbPate = 4;
+    println("Paolo a maintenant ", paolo.nbPate, " pates");
+}

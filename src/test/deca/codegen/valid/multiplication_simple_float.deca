@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une mutiplication entre int et int
+//
+//
+
+
+
+{
+    1.0*6.8;
+}

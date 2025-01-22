@@ -9,10 +9,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.RINT;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.*;
 
 import java.io.PrintStream;
 
@@ -36,10 +33,26 @@ public class ReadInt extends AbstractReadExpr {
         compiler.addInstruction(new RINT());
         compiler.addInstruction(new LOAD(Register.R1, register));
     }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new RINT());
+        compiler.addInstructionEnd(new LOAD(Register.R1, register));
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WINT());
+        //compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new RINT());
+        //compiler.addInstruction(new WINT());
+    }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new RINT());
         //compiler.addInstruction(new WINT());
     }
 

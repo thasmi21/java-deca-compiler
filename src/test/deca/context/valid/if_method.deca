@@ -1,0 +1,19 @@
+// Description:
+//    class de base avec methode
+//
+//
+//
+//
+
+class A {
+
+    int m(){
+        return 1;
+        println("Je ne suis pas censé etre print");
+    }
+}
+
+{
+    A a = new A();
+    println(a.m());
+}

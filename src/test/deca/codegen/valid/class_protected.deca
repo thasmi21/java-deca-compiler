@@ -1,0 +1,25 @@
+// Description :
+// Test pour voir si on peut bien accéder aux attributs protected
+
+class Base {
+    protected int value;
+
+    void setValue(int v) {
+        this.value = v;
+    }
+
+    int getValue() {
+        return value;
+    }
+}
+
+class Derived extends Base {
+    void printValue() {
+        println("Value from Base: ",this.value);
+    }
+}
+{
+    Derived d = new Derived();
+    d.setValue(42);
+    d.printValue();
+}

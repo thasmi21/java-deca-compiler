@@ -7,11 +7,8 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
-import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
-import fr.ensimag.ima.pseudocode.GPRegister;
 
 import java.io.PrintStream;
 
@@ -43,7 +40,14 @@ public class IntLiteral extends AbstractExpr {
     @Override
     public void evalueExpr(DecacCompiler compiler, GPRegister register){
         compiler.addInstruction(new LOAD(value, register));
-
+    }
+    @Override
+    public void evalueExprMethod(DecacCompiler compiler, GPRegister register){
+        compiler.addInstructionEnd(new LOAD(value, register));
+    }
+    @Override
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register){
+        compiler.getToExecuteEnd().add(new Line(new LOAD(value, register)));
     }
 
     @Override
@@ -97,5 +101,27 @@ public class IntLiteral extends AbstractExpr {
         compiler.addInstruction(new LOAD(this.getValue(),Register.R1));
         compiler.addInstruction(new WINT());
     }
+    @Override
+    protected void codeGenPrintX(DecacCompiler compiler) {
+        ConvFloat valFloat = new ConvFloat(this);
+        valFloat.evalueExpr(compiler, Register.R1);
+        compiler.addInstruction(new WFLOATX());
+    }
+    @Override
+    protected void codeGenPrintMethod(DecacCompiler compiler) {
+        compiler.addInstructionEnd(new LOAD(this.getValue(),Register.R1));
+        compiler.addInstructionEnd(new WINT());
+    }
+    @Override
+    protected void codeGenInstMethod(DecacCompiler compiler) {
+        //ne fait rien
+        compiler.addInstructionEnd(new WSTR("L'instruction n'est pas utilisé ! On préfère ne rien génerer"));
+    }
 
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        GPRegister reg = GestionRegistre.obtainFreeRegister();
+        compiler.addInstruction(new LOAD(new ImmediateInteger(value), reg));
+        reg.setInUse(false);
+    }
 }

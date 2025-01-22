@@ -1,0 +1,10 @@
+// Description :
+//      tests d'une diff entre float
+//
+//
+
+
+
+{
+    1.674!=3.983;
+}

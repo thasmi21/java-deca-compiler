@@ -1,0 +1,11 @@
+// Description:
+//      On essaye d'exécuter un while sans instruction
+//
+// Résultats:
+//      Lignes 9
+
+{
+    while(true){
+
+    }
+}

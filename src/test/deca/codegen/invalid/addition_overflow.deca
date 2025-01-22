@@ -1,0 +1,11 @@
+// Descritpion:
+//      Test d'un débordement en nombre flottants pour une addition
+//
+// Résultats:
+//
+
+{
+    float i = 3.40282e+38;
+    //println("i: ",i);
+    i = i + i;
+}

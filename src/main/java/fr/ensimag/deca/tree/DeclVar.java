@@ -5,6 +5,7 @@ import fr.ensimag.deca.context.*;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.NEW;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.*;
+import fr.ensimag.ima.pseudocode.instructions.*;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -112,16 +115,50 @@ public class DeclVar extends AbstractDeclVar {
     }
 
     @Override
-    public void codeGenDeclVar(DecacCompiler compiler) {
-        // Initialisation de l'adresse de la variable dans la pile
-        this.varName.getExpDefinition().setOperand(
-                new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
-        if (initialization instanceof Initialization) {
+    public void codeGenDeclVar(DecacCompiler compiler){
+            //throw new UnsupportedOperationException("Not Yet implemented by us");
+        GPRegister r = GestionRegistre.obtainFreeRegister();
+        boolean rWasNull = false;
+        if(r==null){
+            rWasNull = true;
+            r = Register.getR(2);
+            compiler.addInstruction(new PUSH(r));
+        }
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
+        //initialiser l'adresse
+        if(initialization instanceof Initialization){
+            if(((Initialization) initialization).getExpression() instanceof New){
+                New ident = (New)((Initialization) initialization).getExpression();
+                //si c'est une classe definition
+                ClassDefinition def = ident.getClassDef();
+                //System.out.println(def);
+
+                int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
+                compiler.addInstruction(new NEW(nbrTotFields+1, r));
+                compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
+                if (!compiler.getN()){
+                    compiler.addInstruction(new BOV(new Label("tas_plein")));
+                }
+                compiler.addInstruction(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
+                compiler.addInstruction(new STORE(Register.R0, new RegisterOffset(0, r)));
+                compiler.addInstruction(new PUSH(r));
+                compiler.addInstruction(new BSR(new Label("init."+def.getType().getName())));
+                compiler.addInstruction(new POP(r));
+                //compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                if(rWasNull){
+                    compiler.addInstruction(new POP(r));
+                }
+                else{
+                    r.setInUse(false);
+                }
+
+                return ;
+            }
             AbstractExpr expr = ((Initialization) initialization).getExpression();
 
             // Cas simple : pas un tableau
             if (!(expr.getType() instanceof ArrayType)) {
-                GPRegister r = GestionRegistre.obtainFreeRegister();
+                r = GestionRegistre.obtainFreeRegister();
                 expr.evalueExpr(compiler, r);
                 compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
                 r.setInUse(false);
@@ -184,7 +221,7 @@ public class DeclVar extends AbstractDeclVar {
                     rBase.setInUse(false);
                 }
                 else if(expr instanceof GetArray){
-                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    r = GestionRegistre.obtainFreeRegister();
                     expr.evalueExpr(compiler, r);
                     compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
                     r.setInUse(false);
@@ -197,7 +234,6 @@ public class DeclVar extends AbstractDeclVar {
             }
         }
     }
-
     private void allocateSubArray(DecacCompiler compiler, List<AbstractExpr> dimensions, GPRegister rBase) {
         // Calculer la taille de la première dimension
         int firstDimensionSize;
@@ -329,12 +365,6 @@ public class DeclVar extends AbstractDeclVar {
             throw new IllegalArgumentException("La méthode ne peut remplir qu'un Array ou ArrayLiteral.");
         }
     }
-
-    /**
-     * Calcule la taille (nombre d'éléments) nécessaire pour un bloc correspondant
-     * à 'element', qui peut être un Array ou ArrayLiteral.
-     * Dans cet exemple, on suppose qu'on n'a qu'un "niveau" de taille à allouer.
-     */
     private int getArraySize(Object element) {
         if (element instanceof ArrayLiteral) {
             return ((ArrayLiteral) element).getArray().getSize();
@@ -408,5 +438,44 @@ public class DeclVar extends AbstractDeclVar {
             return fullName; // Pas de crochets, le type est directement le type de base
         }
         return fullName.substring(0, bracketIndex);
+    }
+    @Override
+    public void codeGenDeclVarMethod(DecacCompiler compiler){
+        //throw new UnsupportedOperationException("Not Yet implemented by us");
+        this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceLBandIncrement(1), Register.LB));
+        //initialiser l'adresse
+        if(initialization instanceof Initialization){
+            //prendre un registre libre;
+            //evaluer l'expression et charger dans le registre
+            //puis affecter
+            GPRegister r = Register.getR(2);
+            compiler.addInstructionEnd(new PUSH(r));
+            if(((Initialization) initialization).getExpression() instanceof New){
+                New ident = (New)((Initialization) initialization).getExpression();
+                //si c'est une classe definition
+                ClassDefinition def = ident.getClassDef();
+                //System.out.println(def);
+
+                int nbrTotFields = def.getNumberOfFields() + def.getSuperClass().getNumberOfFields();
+                compiler.addInstructionEnd(new NEW(nbrTotFields+1, r));
+                compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
+                if (!compiler.getN()){
+                    compiler.addInstructionEnd(new BOV(new Label("tas_plein")));
+                }
+                compiler.addInstructionEnd(new LEA(new RegisterOffset(def.getAdrTableMethode(), Register.GB), Register.R0));
+                compiler.addInstructionEnd(new STORE(Register.R0, new RegisterOffset(0, r)));
+                compiler.addInstructionEnd(new PUSH(r));
+                compiler.addInstructionEnd(new BSR(new Label("init."+def.getType().getName())));
+                compiler.addInstructionEnd(new POP(r));
+                compiler.addInstructionEnd(new POP(r));
+                //compiler.addComment("Ok Ok OKOKKKKKKKKKKKKK");
+                //r.setInUse(false);
+                return ;
+            }
+            //compiler.addInstructionEnd(new PUSH(r));
+            ((Initialization) initialization).getExpression().evalueExprEnd(compiler, r);
+            compiler.addInstructionEnd(new STORE(r, varName.getExpDefinition().getOperand()));
+            compiler.addInstructionEnd(new POP(r));
+        }
     }
 }

@@ -1,0 +1,27 @@
+// Descritpion:
+//      On va définir deux méthodes, dont une est la sous classe de l'autre,
+//      et la sous classe va avoir accées aux méthodes de la super classe
+//
+// Résultats:
+//
+
+class Mobilier {
+    float prix;
+
+    void reduction(float prixDepart) {
+        this.prix = 10.0;
+    }
+}
+
+class Chaise extends Mobilier {
+    int nbPieds;
+
+    int creation() {
+        return 2010;
+    }
+}
+
+{
+    Chaise confort = new Chaise();
+    println("La chaise a ", confort.nbPieds, " pieds");
+}

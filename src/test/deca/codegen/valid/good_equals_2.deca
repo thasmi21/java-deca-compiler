@@ -1,0 +1,20 @@
+// Description:
+// Test de la méthode equals
+// Doit renvoyer true car a3 et b1 pointent sur les memes instances
+
+class A{}
+
+class B extends A {}
+
+{
+    B b1 = new B();
+
+    A a1 = b1;
+
+    if(b1.equals(a1)){
+        println("true");
+    }
+    else{
+        println("false");
+    }
+}

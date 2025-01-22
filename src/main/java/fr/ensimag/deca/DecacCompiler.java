@@ -43,16 +43,54 @@ import org.apache.log4j.Logger;
  */
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
-    private EnvironmentType envType = new EnvironmentType(this);
-    private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
-    private boolean labelDefined = false;
 
-    public boolean getlabelDefined() {
-        return labelDefined;
+    private ArrayList<AbstractLine> toExecuteEnd = new ArrayList<AbstractLine>();
+    private boolean labelZeroDefined = false;
+    private boolean labelOvFloat;
+    private boolean N=false;
+
+    public boolean getN(){
+        return N;
     }
 
-    public void setlabelDefined(boolean labelDefined) {
-        this.labelDefined = labelDefined;
+    public void setN(boolean N){
+        this.N = N;
+    }
+
+    public boolean getLabelOvFloat() {
+        return labelOvFloat;
+    }
+
+    public void setLabelOvFloat(boolean lab) {
+        this.labelOvFloat = lab;
+    }
+    private boolean labelDefined = false;
+    private int nbVarGlo = 0;
+    private int toAddStack = 2;
+
+    public int getToAddStack(){
+        return toAddStack;
+    }
+
+    public void setToAddStack(int toAddStack){
+        this.toAddStack = toAddStack;
+    }
+
+
+    public int getNbVarGlo() {
+        return nbVarGlo;
+    }
+
+    public void IncrNbVarGlo() {
+        this.nbVarGlo++;
+    }
+
+    public boolean getlabelZeroDefined() {
+        return labelZeroDefined;
+    }
+
+    public void setlabelZeroDefined(boolean labelDefined) {
+        this.labelZeroDefined = labelDefined;
     }
 
     public ArrayList<AbstractLine> getToExecuteEnd() {
@@ -68,6 +106,22 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.source = source;
+    }
+
+    /*
+    * Fonction qui permet de dire si une instruction est à ajouter  à la fin(pos1 à 1)
+    * pos = 0: on ajoute à la position actuelle
+    * pos=1: on ajoute à la fin
+    * */
+
+    public void addInstructionEnd(Instruction instruction){
+            toExecuteEnd.add(new Line(instruction));
+
+    }
+
+    public void addLabelEnd(Label label){
+        toExecuteEnd.add(new Line(label));
+
     }
 
     public EnvironmentType getEnvironmentType() {
@@ -154,11 +208,13 @@ public class DecacCompiler {
  
 
     /** The global environment for types (and the symbolTable) */
-    public final EnvironmentType environmentType = new EnvironmentType(this);
-    public final SymbolTable symbolTable = new SymbolTable();
 
-    public Symbol createSymbol(String name) {
-        return SymbolTable.create(name); // A FAIRE: remplacer par la ligne en commentaire ci-dessous
+    public final SymbolTable symbolTable = new SymbolTable();
+    public final EnvironmentType environmentType = new EnvironmentType(this);
+    private EnvironmentType envType = new EnvironmentType(this);
+
+    public  Symbol createSymbol(String name) {
+        return this.symbolTable.create(name); // À FAIRE: remplacer par la ligne en commentaire ci-dessous
     }
 
     /**
@@ -198,7 +254,8 @@ public class DecacCompiler {
                     + ":", e);
             err.println("Internal compiler error while compiling file " + sourceFile + ", sorry.");
             return true;
-        } catch (AssertionError e) {
+        }
+        catch (AssertionError e) {
             LOG.fatal("Assertion failed while compiling file " + sourceFile
                     + ":", e);
             err.println("Internal compiler error while compiling file " + sourceFile + ", sorry.");
@@ -220,6 +277,9 @@ public class DecacCompiler {
     private boolean doCompile(String sourceName, String destName,
             PrintStream out, PrintStream err)
             throws DecacFatalError, LocationException {
+
+
+
         AbstractProgram prog = doLexingAndParsing(sourceName, err);
 
         if (prog == null) {
@@ -243,7 +303,7 @@ public class DecacCompiler {
 
         //addComment("start main program");
         prog.codeGenProgram(this);
-        addComment("end main program");
+        //addComment("end main program");
         LOG.debug("Generated assembly code:" + nl + program.display());
         LOG.info("Output file assembly file is: " + destName);
 
@@ -291,12 +351,44 @@ public class DecacCompiler {
 
     public void labelDivZero(DecacCompiler compiler){
         compiler.addInstruction(new BOV(new Label("division_by_zero")));
-        if (!compiler.getlabelDefined()) {
-            compiler.getToExecuteEnd().add(new Line(new Label("division_by_zero")));
-            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Division by zero")));
+        if (!compiler.getlabelZeroDefined()) {
+            compiler.setlabelZeroDefined(true);
+        }
+        //compiler.setlabelZeroDefined(true);
+    }
+
+    public void labelOverflow(DecacCompiler compiler) {
+        compiler.addInstruction(new BOV(new Label("Overflow")));
+        if (!compiler.getLabelOvFloat()) {
+            compiler.getToExecuteEnd().add(new Line(new Label("Overflow")));
+            compiler.getToExecuteEnd().add(new Line(new WSTR("Erreur: Débordement en nombre flottant")));
             compiler.getToExecuteEnd().add(new Line(new WNL()));
             compiler.getToExecuteEnd().add(new Line(new ERROR()));
         }
-        compiler.setlabelDefined(true);
+        compiler.setLabelOvFloat(true);
+    }
+
+    public void labelDivZeroEnd(DecacCompiler compiler){
+        compiler.addInstructionEnd(new BOV(new Label("division_by_zero")));
+        if (!compiler.getlabelZeroDefined()) {
+            compiler.setlabelZeroDefined(true);
+        }
+    }
+
+    /**
+     * Method that calculate how much we need to add to the SP
+     * @param compiler
+     * @return The int value to add to the stack pointer at the begining of a program
+     */
+    public int toADDSP(DecacCompiler compiler){
+        int result = 0;
+        //int nbVarGlo = compiler.getEnvironmentType().getEnvironmentMain().getLocalEnv().size();
+        int nbVarGlo = compiler.getNbVarGlo();
+        result += nbVarGlo;
+        //int nbVarGlo = compiler.environmentType.getEnvironmentMain().getLocalEnv().size();
+        //int nbVarGlo = this.envType.getEnvironmentMain().getLocalEnv().size();
+        //System.out.println("nbVarGlo = " + nbVarGlo);
+        //throw new UnsupportedOperationException("Not finish yet");
+        return result;
     }
 }

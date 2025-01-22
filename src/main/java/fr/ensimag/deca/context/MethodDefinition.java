@@ -33,6 +33,19 @@ public class MethodDefinition extends ExpDefinition {
 
     private int index;
 
+    private int offSet;
+
+    public void setoffSet(int offSet) {
+        this.offSet = offSet;
+    }
+    public int getOffSet() {
+        return offSet;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Override
     public MethodDefinition asMethodDefinition(String errorMessage, Location l)
             throws ContextualError {
@@ -53,6 +66,7 @@ public class MethodDefinition extends ExpDefinition {
         super(type, location);
         this.signature = signature;
         this.index = index;
+        this.offSet = 1;
     }
 
     public Signature getSignature() {
