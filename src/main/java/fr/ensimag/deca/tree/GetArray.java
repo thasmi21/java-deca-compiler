@@ -251,7 +251,7 @@ public class GetArray extends AbstractLValue {
 
     public DAddr codeGenAddressOf(DecacCompiler compiler) {
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
-        identifier.evalueExprEnd(compiler, rBase);
+        identifier.evalueExpr(compiler, rBase);
 
         int nbDims = this.listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {

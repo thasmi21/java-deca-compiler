@@ -116,17 +116,20 @@ public class DeclVar extends AbstractDeclVar {
 
     @Override
     public void codeGenDeclVar(DecacCompiler compiler){
-            //throw new UnsupportedOperationException("Not Yet implemented by us");
+        // 1) On se crée un registre de travail
         GPRegister r = GestionRegistre.obtainFreeRegister();
         boolean rWasNull = false;
-        if(r==null){
+        if (r == null) {
             rWasNull = true;
             r = Register.getR(2);
             compiler.addInstruction(new PUSH(r));
         }
+        // 2) Associer la variable (this.varName) à un emplacement mémoire (offset) dans GB
+        //    (chaque variable occupant 1 mot)
         this.varName.getExpDefinition().setOperand(new RegisterOffset(GestionRegistre.obtainIndiceGPandIncrement(1), Register.GB));
-        //initialiser l'adresse
-        if(initialization instanceof Initialization){
+
+        // 3) Si on a une initialisation :
+        if (initialization instanceof Initialization) {
             if(((Initialization) initialization).getExpression() instanceof New){
                 New ident = (New)((Initialization) initialization).getExpression();
                 //si c'est une classe definition
@@ -156,7 +159,6 @@ public class DeclVar extends AbstractDeclVar {
             }
             AbstractExpr expr = ((Initialization) initialization).getExpression();
 
-            // Cas simple : pas un tableau
             if (!(expr.getType() instanceof ArrayType)) {
                 r = GestionRegistre.obtainFreeRegister();
                 rWasNull = false;
@@ -174,181 +176,246 @@ public class DeclVar extends AbstractDeclVar {
                     r.setInUse(false);
                 }
             }
-            // Cas tableau
+
+            // 3.b) Si c’est un tableau => on appelle allocateSubArray
             else {
-                // Hypothèse : si l'expression est un ArrayLiteral, on gère le tableau multidimensionnel
+                // Récupérer l’expression : ArrayLiteral, ArrayNoInit, etc.
                 if (expr instanceof ArrayLiteral) {
                     ArrayLiteral tabLiteral = (ArrayLiteral) expr;
-                    // Allouer le bloc principal (au niveau "racine")
-                    int size = tabLiteral.getArray().getSize();
+
+                    // (1) Obtenir un registre pour stocker l’adresse de base du tableau
                     GPRegister rBase = GestionRegistre.obtainFreeRegister();
-                    boolean rbaseWasNul = false;
+                    boolean rbaseWasNull = false;
                     if (rBase == null) {
-                        rbaseWasNul = true;
+                        rbaseWasNull = true;
+                        // Choix arbitraire de R(5), dépend de vos conventions
                         rBase = Register.getR(5);
                         compiler.addInstruction(new PUSH(rBase));
                     }
+
+                    // (2) Calculer la taille du tableau “racine”.
+                    //     Dans votre 'remplissageRecursif', vous traitez un Array ou ArrayLiteral.
+                    //     Ici, tabLiteral.getArray() est l’objet 'Array' interne, d’où on peut tirer la taille.
+                    int size = tabLiteral.getArray().getSize();
+
+                    // (3) Allouer le bloc de 'size' mots
                     compiler.addInstruction(new NEW(size, rBase));
-                    // Appel récursif pour remplir
+                    // (Facultatif) Gérer un éventuel BOV si vous gérez l’overflow du tas :
+                    // if (!compiler.getN()) {
+                    //    compiler.addInstruction(new BOV(new Label("tas_plein")));
+                    // }
+
+                    // (4) Appel récursif pour remplir le bloc :
+                    //     `remplissageRecursif(compiler, tabLiteral, rBase);`
+                    //     Cette méthode ira parcourir l’Array (ou ArrayLiteral) et remplir chaque sous-élément.
                     remplissageRecursif(compiler, tabLiteral, rBase);
-                    // Stocker l'adresse du tableau dans la variable
+
+                    // (5) Stocker l’adresse du tableau dans la variable (GB offset)
+                    //     varName.getExpDefinition().getOperand() pointe vers l’emplacement de la variable.
                     compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
-                    if(rbaseWasNul){
+
+                    // (6) Libération / restauration du registre
+                    if (rbaseWasNull) {
+                        // si on avait “poussé” le registre (car il n’y en avait plus de libre),
+                        // on le POP maintenant
                         compiler.addInstruction(new POP(rBase));
-                    }else{
+                    } else {
                         rBase.setInUse(false);
                     }
                 }
-                else if(expr instanceof ArrayNoInit){
+
+                // Cas : c'est un ArrayNoInit
+                else if (expr instanceof ArrayNoInit) {
                     ArrayNoInit exprArray = (ArrayNoInit) expr;
                     List<AbstractExpr> dimensions = exprArray.getIndices();
-                    GPRegister rTotalSize = GestionRegistre.obtainFreeRegister();
 
-                    int taillePremiereDim = 1;
-                    if (dimensions.get(0) instanceof IntLiteral) {
-                        taillePremiereDim *= ((IntLiteral) dimensions.get(0)).getValue();
-                    }
-                    else {
-                        throw new UnsupportedOperationException("Pas encore implémenté");
-                    }
+                    // Obtenir un registre libre pour stocker l'adresse du tableau
                     GPRegister rBase = GestionRegistre.obtainFreeRegister();
-                    boolean rbaseWasNul = false;
                     if (rBase == null) {
-                        rbaseWasNul = true;
-                        rBase = Register.getR(5);
+                        // Si aucun registre libre n'est disponible, on peut par ex. prendre R(2) et le pousser
+                        rBase = Register.getR(2);
                         compiler.addInstruction(new PUSH(rBase));
                     }
 
-                    compiler.addInstruction(new NEW(taillePremiereDim, rBase));
+                    // Appel de la méthode qui alloue tout le tableau (simple ou multidimensionnel)
+                    allocateSubArray(compiler, dimensions, rBase);
 
-                    if(dimensions.size() > 1){
-                        List<AbstractExpr> sousDimension = dimensions.subList(1, dimensions.size());
-                        for (int i = 0; i < taillePremiereDim; i++) {
-                            // Allouer chaque sous-tableau
-                            GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
-                            boolean rSubArrayWasNul = false;
-                            if (rSubArray == null) {
-                                rSubArrayWasNul = true;
-                                rSubArray = Register.getR(7);
-                                compiler.addInstruction(new PUSH(rSubArray));
-                            }
-                            allocateSubArray(compiler, sousDimension, rSubArray);
-                            // Stocker l'adresse du sous-tableau dans le tableau principal
-                            compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
-                            // Libérer le registre temporaire pour le sous-tableau
-                            //rSubArray.setInUse(false);
-                            if(rSubArrayWasNul){
-                                compiler.addInstruction(new POP(rSubArray));
-                            }else{
-                                rSubArray.setInUse(false);
-                            }
-                        }
-                    }
-                    else {
-                        GPRegister rTemp = GestionRegistre.obtainFreeRegister();
-                        boolean rTempwasNul = false;
-                        if (rTemp == null) {
-                            rTempwasNul = true;
-                            rTemp = Register.getR(8);
-                            compiler.addInstruction(new PUSH(rTemp));
-                        }
-                        compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
-                        for (int offset = 0; offset < taillePremiereDim; offset++) {
-                            compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
-                        }
-                        //rTemp.setInUse(false);
-                        if(rTempwasNul){
-                            compiler.addInstruction(new POP(rTemp));
-                        }else{
-                            rTemp.setInUse(false);
-                        }
-                    }
-                    // Initialiser chaque case du tableau à une valeur par défaut (exemple : 0 pour les int)
-                    // Stocker l'adresse de base du tableau dans la variable
-                    compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
+                    // Stocker l'adresse résultante dans la variable
+                    // (varName.getExpDefinition().getOperand() pointe vers la case mémoire de la variable)
+                    compiler.addInstruction(
+                            new STORE(rBase, varName.getExpDefinition().getOperand())
+                    );
 
-                    // Libérer le registre utilisé pour la base
-                    if(rbaseWasNul){
-                        compiler.addInstruction(new POP(rBase));
-                    }else{
-                        rBase.setInUse(false);
-                    }
+                    // Libérer le registre (si vous avez fait un PUSH, POPpez-le, sinon setInUse(false))
+                    rBase.setInUse(false);
+
+                    return;
                 }
-                else{
-                    r = GestionRegistre.obtainFreeRegister();
-                    boolean rWasNul = false;
-                    if (r == null) {
-                        rWasNul = true;
-                        r = Register.getR(9);
-                        compiler.addInstruction(new PUSH(r));
+                else {
+                    // Autres cas (ex: expr evalueExpr d'un autre type renvoyant un array)
+                    GPRegister rVal = GestionRegistre.obtainFreeRegister();
+                    boolean rValWasNull = false;
+                    if (rVal == null) {
+                        rValWasNull = true;
+                        rVal = Register.getR(4);
+                        compiler.addInstruction(new PUSH(rVal));
                     }
-                    expr.evalueExpr(compiler, r);
-                    compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-                    if(rWasNul){
-                        compiler.addInstruction(new POP(r));
-                    }else{
-                        r.setInUse(false);
+
+                    expr.evalueExpr(compiler, rVal);
+                    // Si c'est pas littéral => on charge la valeur
+                    // (Ici, si c'est un tableau, c'est peut-être déjà une adresse, alors on n'a pas besoin
+                    //  de LOAD offset(0, rVal) mais tout dépend de la logique globale.
+                    //  On suppose qu'un 'new array' renverra l'adresse direct ?)
+
+                    compiler.addInstruction(new STORE(rVal, varName.getExpDefinition().getOperand()));
+                    if (rValWasNull) {
+                        compiler.addInstruction(new POP(rVal));
+                    } else {
+                        rVal.setInUse(false);
                     }
                 }
             }
         }
-    }
-    private void allocateSubArray(DecacCompiler compiler, List<AbstractExpr> dimensions, GPRegister rBase) {
-        // Calculer la taille de la première dimension
-        int firstDimensionSize;
-        if (dimensions.get(0) instanceof IntLiteral) {
-            firstDimensionSize = ((IntLiteral) dimensions.get(0)).getValue();
+
+        // Libération du registre initial (r)
+        if (rWasNull) {
+            compiler.addInstruction(new POP(r));
         } else {
-            throw new UnsupportedOperationException(
-                    "Les dimensions dynamiques pour ArrayNoInit ne sont pas encore supportées."
-            );
+            r.setInUse(false);
+        }
+    }
+
+    /**
+     * Alloue récursivement un tableau (potentiellement multidimensionnel)
+     * et initialise chaque élément à 0 par défaut.
+     *
+     * @param compiler     Le compilateur gérant la génération de code.
+     * @param dimensions   La liste des dimensions (chacune est une AbstractExpr).
+     * @param rBase        Le registre dans lequel l'adresse du tableau est placée.
+     */
+    public static void allocateSubArray(DecacCompiler compiler,
+                                        List<AbstractExpr> dimensions,
+                                        GPRegister rBase) {
+        // 1) Vérifier s'il reste des dimensions à traiter
+        if (dimensions.isEmpty()) {
+            return;
         }
 
-        // Allouer la mémoire pour la première dimension
-        compiler.addInstruction(new NEW(firstDimensionSize, rBase));
+        // 2) Récupérer la première dimension : constante ou dynamique ?
+        AbstractExpr firstDimExpr = dimensions.get(0);
+        boolean isFirstDimLiteral = (firstDimExpr instanceof IntLiteral);
+        int firstDimensionSize = 0;
+        GPRegister rSize = null;  // Pour les dimensions dynamiques
 
-        // Si d'autres dimensions restent, allouer les sous-tableaux récursivement
+        // 3) Allouer le tableau principal pour la première dimension
+        if (isFirstDimLiteral) {
+            // a) Dimension connue à la compilation
+            firstDimensionSize = ((IntLiteral) firstDimExpr).getValue();
+            compiler.addInstruction(new NEW(firstDimensionSize, rBase));
+            // (Facultatif : gérer un BOV si vous gérez le débordement de tas)
+        } else {
+            // b) Dimension dynamique : on évalue l'expression
+            rSize = GestionRegistre.obtainFreeRegister();
+            firstDimExpr.evalueExpr(compiler, rSize);
+            compiler.addInstruction(new NEW(rSize, rBase));
+            // (Facultatif : BOV pour le débordement)
+        }
+
+        // 4) Vérifier s'il reste d'autres dimensions (tableau multidimensionnel)
         if (dimensions.size() > 1) {
+            // => Il faut allouer des sous-tableaux dans chaque case du tableau
             List<AbstractExpr> subDimensions = dimensions.subList(1, dimensions.size());
 
-            for (int i = 0; i < firstDimensionSize; i++) {
-                GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
-                boolean rSubArrayWasNul = false;
-                if (rSubArray == null) {
-                    rSubArrayWasNul = true;
-                    rSubArray = Register.getR(7);
-                    compiler.addInstruction(new PUSH(rSubArray));
-                }
-                allocateSubArray(compiler, subDimensions, rSubArray);
+            if (isFirstDimLiteral) {
+                // a) Boucle "classique" en Java (pour dimension constante)
+                for (int i = 0; i < firstDimensionSize; i++) {
+                    GPRegister rSub = GestionRegistre.obtainFreeRegister();
+                    // Appel récursif pour allouer le sous-tableau
+                    allocateSubArray(compiler, subDimensions, rSub);
 
-                compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
-
-                if(rSubArrayWasNul){
-                    compiler.addInstruction(new POP(rSubArray));
-                }else{
-                    rSubArray.setInUse(false);
+                    // Stocker l'adresse du sous-tableau dans la case i
+                    compiler.addInstruction(new STORE(rSub, new RegisterOffset(i, rBase)));
+                    rSub.setInUse(false);
                 }
+            } else {
+                // b) Dimension dynamique => générer une boucle assembleur
+                Label loopStart = new Label("alloc_subarray_start");
+                Label loopEnd   = new Label("alloc_subarray_end");
+                GPRegister rLimit = rSize;  // La taille du tableau
+                GPRegister rCounter = GestionRegistre.obtainFreeRegister();
+
+                // Initialiser le compteur à 0
+                compiler.addInstruction(new LOAD(new ImmediateInteger(0), rCounter));
+                compiler.addLabel(loopStart);
+
+                // Comparer rCounter < rLimit
+                compiler.addInstruction(new CMP(rLimit, rCounter));
+                compiler.addInstruction(new BGE(loopEnd)); // sort de la boucle si >=
+
+                // Allouer le sous-tableau
+                GPRegister rSub = GestionRegistre.obtainFreeRegister();
+                allocateSubArray(compiler, subDimensions, rSub);
+
+                // Stocker le sous-tableau dans le tableau à l'indice rCounter
+                // (accès indirect si votre back-end le gère : new RegisterOffset(0, rBase, rCounter))
+                compiler.addInstruction(new STORE(rSub, new RegisterIndirect(rBase, rCounter)));
+                rSub.setInUse(false);
+
+                // Incrémenter rCounter
+                compiler.addInstruction(new ADD(new ImmediateInteger(1), rCounter));
+                // Retour en début de boucle
+                compiler.addInstruction(new BRA(loopStart));
+
+                // Fin de boucle
+                compiler.addLabel(loopEnd);
+                rCounter.setInUse(false);
             }
         } else {
-            // Si c'est un tableau unidimensionnel, initialiser à zéro
-            GPRegister rTemp = GestionRegistre.obtainFreeRegister();
-            boolean rTempwasNul = false;
-            if (rTemp == null) {
-                rTempwasNul = true;
-                rTemp = Register.getR(8);
-                compiler.addInstruction(new PUSH(rTemp));
+            // 5) S'il n'y a plus qu'une dimension, on initialise les éléments à 0
+            GPRegister rZero = GestionRegistre.obtainFreeRegister();
+            compiler.addInstruction(new LOAD(new ImmediateInteger(0), rZero));
+
+            if (isFirstDimLiteral) {
+                // a) Taille constante => simple boucle "for"
+                for (int offset = 0; offset < firstDimensionSize; offset++) {
+                    compiler.addInstruction(new STORE(rZero, new RegisterOffset(offset, rBase)));
+                }
+            } else {
+                // b) Taille dynamique => boucle assembleur
+                Label initLoopStart = new Label("init_loop_start");
+                Label initLoopEnd   = new Label("init_loop_end");
+                GPRegister rLimit   = rSize;
+                GPRegister rCounter = GestionRegistre.obtainFreeRegister();
+
+                compiler.addInstruction(new LOAD(new ImmediateInteger(0), rCounter));
+                compiler.addLabel(initLoopStart);
+
+                // Condition : rCounter < rLimit ?
+                compiler.addInstruction(new CMP(rLimit, rCounter));
+                compiler.addInstruction(new BGE(initLoopEnd));
+
+                // Initialiser la case [rCounter] à 0
+                compiler.addInstruction(new STORE(rZero, new RegisterIndirect(rBase, rCounter)));
+
+                // Incrémenter le compteur
+                compiler.addInstruction(new ADD(new ImmediateInteger(1), rCounter));
+                compiler.addInstruction(new BRA(initLoopStart));
+
+                // Fin de boucle
+                compiler.addLabel(initLoopEnd);
+                rCounter.setInUse(false);
             }
-            compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
-            for (int offset = 0; offset < firstDimensionSize; offset++) {
-                compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
-            }
-            if(rTempwasNul){
-                compiler.addInstruction(new POP(rTemp));
-            }else{
-                rTemp.setInUse(false);
-            }
+            rZero.setInUse(false);
+        }
+
+        // 6) Libérer le registre ayant servi pour la taille dynamique s'il existe
+        if (rSize != null) {
+            rSize.setInUse(false);
         }
     }
+
+
+
 
     /**
      * Remplit récursivement un bloc mémoire alloué en partant d'un Array ou ArrayLiteral.
