@@ -130,6 +130,12 @@ public class GetArray extends AbstractLValue {
     public void evalueExpr(DecacCompiler compiler, GPRegister register) {
         // 1) On se réserve un registre temporaire (rBase) pour tout calcul
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        boolean rbaseWasNul = false;
+        if (rBase == null) {
+            rbaseWasNul = true;
+            rBase = Register.getR(5);
+            compiler.addInstruction(new PUSH(rBase));
+        }
         DAddr xAddr = this.identifier.getExpDefinition().getOperand();
         compiler.addInstruction(new LOAD(xAddr, rBase));
         int nbDims = listIndex.size();
@@ -137,10 +143,20 @@ public class GetArray extends AbstractLValue {
             // a) Vérification si l’indice est un IntLiteral (ou on gère autrement)
             if (!(listIndex.get(dim) instanceof IntLiteral)) {
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                boolean rIndexWasNul = false;
+                if (rIndex == null) {
+                    rIndexWasNul = true;
+                    rIndex = Register.getR(6);
+                    compiler.addInstruction(new PUSH(rIndex));
+                }
                 listIndex.get(dim).evalueExpr(compiler, rIndex);
                 compiler.addInstruction(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
                 compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
-                rIndex.setInUse(false);
+                if(rIndexWasNul){
+                    compiler.addInstructionEnd(new POP(rIndex));
+                }else{
+                    rIndex.setInUse(false);
+                }
             }
             else{
                 int offset = ((IntLiteral) listIndex.get(dim)).getValue();
@@ -149,13 +165,21 @@ public class GetArray extends AbstractLValue {
             }
         }
         compiler.addInstruction(new LOAD(rBase, register));
+        if(rbaseWasNul){
+            compiler.addInstruction(new POP(rBase));
+        }else{
+            rBase.setInUse(false);
+        }
     }
 
     @Override
     public void evalueExprEnd(DecacCompiler compiler, GPRegister register) {
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        boolean rbaseWasNul = false;
         if (rBase == null) {
-            throw new RuntimeException("Aucun registre disponible pour rBase.");
+            rbaseWasNul = true;
+            rBase = Register.getR(5);
+            compiler.addInstructionEnd(new PUSH(rBase));
         }
         identifier.evalueExprEnd(compiler, rBase);
         int nbDims = listIndex.size();
@@ -164,9 +188,20 @@ public class GetArray extends AbstractLValue {
             if (!(indexExpr instanceof IntLiteral)) {
                 // a) L'indice est une expression complexe, pas un littéral entier
                 GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                boolean rIndexWasNul = false;
+                if (rIndex == null) {
+                    rIndexWasNul = true;
+                    rIndex = Register.getR(6);
+                    compiler.addInstructionEnd(new PUSH(rIndex));
+                }
                 indexExpr.evalueExprEnd(compiler, rIndex);
                 compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
-                rIndex.setInUse(false);
+                if(rIndexWasNul){
+                    compiler.addInstructionEnd(new POP(rIndex));
+                }else{
+                    rIndex.setInUse(false);
+                }
+
             } else {
                 int offset = ((IntLiteral) indexExpr).getValue();
                 compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
@@ -176,7 +211,12 @@ public class GetArray extends AbstractLValue {
             }
         }
         compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), register));
-        rBase.setInUse(false);
+        if(rbaseWasNul){
+            compiler.addInstructionEnd(new POP(rBase));
+        }else{
+            rBase.setInUse(false);
+        }
+
     }
 
 

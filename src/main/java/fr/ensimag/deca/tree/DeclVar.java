@@ -159,9 +159,20 @@ public class DeclVar extends AbstractDeclVar {
             // Cas simple : pas un tableau
             if (!(expr.getType() instanceof ArrayType)) {
                 r = GestionRegistre.obtainFreeRegister();
+                rWasNull = false;
+                if(r==null){
+                    rWasNull = true;
+                    r = Register.getR(2);
+                    compiler.addInstruction(new PUSH(r));
+                }
                 expr.evalueExpr(compiler, r);
                 compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-                r.setInUse(false);
+                if(rWasNull){
+                    compiler.addInstruction(new POP(r));
+                }
+                else{
+                    r.setInUse(false);
+                }
             }
             // Cas tableau
             else {
@@ -171,12 +182,22 @@ public class DeclVar extends AbstractDeclVar {
                     // Allouer le bloc principal (au niveau "racine")
                     int size = tabLiteral.getArray().getSize();
                     GPRegister rBase = GestionRegistre.obtainFreeRegister();
+                    boolean rbaseWasNul = false;
+                    if (rBase == null) {
+                        rbaseWasNul = true;
+                        rBase = Register.getR(5);
+                        compiler.addInstruction(new PUSH(rBase));
+                    }
                     compiler.addInstruction(new NEW(size, rBase));
                     // Appel récursif pour remplir
                     remplissageRecursif(compiler, tabLiteral, rBase);
                     // Stocker l'adresse du tableau dans la variable
                     compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
-                    rBase.setInUse(false);
+                    if(rbaseWasNul){
+                        compiler.addInstruction(new POP(rBase));
+                    }else{
+                        rBase.setInUse(false);
+                    }
                 }
                 else if(expr instanceof ArrayNoInit){
                     ArrayNoInit exprArray = (ArrayNoInit) expr;
@@ -191,6 +212,13 @@ public class DeclVar extends AbstractDeclVar {
                         throw new UnsupportedOperationException("Pas encore implémenté");
                     }
                     GPRegister rBase = GestionRegistre.obtainFreeRegister();
+                    boolean rbaseWasNul = false;
+                    if (rBase == null) {
+                        rbaseWasNul = true;
+                        rBase = Register.getR(5);
+                        compiler.addInstruction(new PUSH(rBase));
+                    }
+
                     compiler.addInstruction(new NEW(taillePremiereDim, rBase));
 
                     if(dimensions.size() > 1){
@@ -198,33 +226,69 @@ public class DeclVar extends AbstractDeclVar {
                         for (int i = 0; i < taillePremiereDim; i++) {
                             // Allouer chaque sous-tableau
                             GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
+                            boolean rSubArrayWasNul = false;
+                            if (rSubArray == null) {
+                                rSubArrayWasNul = true;
+                                rSubArray = Register.getR(7);
+                                compiler.addInstruction(new PUSH(rSubArray));
+                            }
                             allocateSubArray(compiler, sousDimension, rSubArray);
                             // Stocker l'adresse du sous-tableau dans le tableau principal
                             compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
                             // Libérer le registre temporaire pour le sous-tableau
-                            rSubArray.setInUse(false);
+                            //rSubArray.setInUse(false);
+                            if(rSubArrayWasNul){
+                                compiler.addInstruction(new POP(rSubArray));
+                            }else{
+                                rSubArray.setInUse(false);
+                            }
                         }
                     }
                     else {
                         GPRegister rTemp = GestionRegistre.obtainFreeRegister();
+                        boolean rTempwasNul = false;
+                        if (rTemp == null) {
+                            rTempwasNul = true;
+                            rTemp = Register.getR(8);
+                            compiler.addInstruction(new PUSH(rTemp));
+                        }
                         compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
                         for (int offset = 0; offset < taillePremiereDim; offset++) {
                             compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
                         }
-                        rTemp.setInUse(false);
+                        //rTemp.setInUse(false);
+                        if(rTempwasNul){
+                            compiler.addInstruction(new POP(rTemp));
+                        }else{
+                            rTemp.setInUse(false);
+                        }
                     }
                     // Initialiser chaque case du tableau à une valeur par défaut (exemple : 0 pour les int)
                     // Stocker l'adresse de base du tableau dans la variable
                     compiler.addInstruction(new STORE(rBase, varName.getExpDefinition().getOperand()));
 
                     // Libérer le registre utilisé pour la base
-                    rBase.setInUse(false);
+                    if(rbaseWasNul){
+                        compiler.addInstruction(new POP(rBase));
+                    }else{
+                        rBase.setInUse(false);
+                    }
                 }
                 else{
                     r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNul = false;
+                    if (r == null) {
+                        rWasNul = true;
+                        r = Register.getR(9);
+                        compiler.addInstruction(new PUSH(r));
+                    }
                     expr.evalueExpr(compiler, r);
                     compiler.addInstruction(new STORE(r, varName.getExpDefinition().getOperand()));
-                    r.setInUse(false);
+                    if(rWasNul){
+                        compiler.addInstruction(new POP(r));
+                    }else{
+                        r.setInUse(false);
+                    }
                 }
             }
         }
@@ -249,20 +313,40 @@ public class DeclVar extends AbstractDeclVar {
 
             for (int i = 0; i < firstDimensionSize; i++) {
                 GPRegister rSubArray = GestionRegistre.obtainFreeRegister();
+                boolean rSubArrayWasNul = false;
+                if (rSubArray == null) {
+                    rSubArrayWasNul = true;
+                    rSubArray = Register.getR(7);
+                    compiler.addInstruction(new PUSH(rSubArray));
+                }
                 allocateSubArray(compiler, subDimensions, rSubArray);
 
                 compiler.addInstruction(new STORE(rSubArray, new RegisterOffset(i, rBase)));
 
-                rSubArray.setInUse(false);
+                if(rSubArrayWasNul){
+                    compiler.addInstruction(new POP(rSubArray));
+                }else{
+                    rSubArray.setInUse(false);
+                }
             }
         } else {
             // Si c'est un tableau unidimensionnel, initialiser à zéro
             GPRegister rTemp = GestionRegistre.obtainFreeRegister();
+            boolean rTempwasNul = false;
+            if (rTemp == null) {
+                rTempwasNul = true;
+                rTemp = Register.getR(8);
+                compiler.addInstruction(new PUSH(rTemp));
+            }
             compiler.addInstruction(new LOAD(new ImmediateInteger(0), rTemp));
             for (int offset = 0; offset < firstDimensionSize; offset++) {
                 compiler.addInstruction(new STORE(rTemp, new RegisterOffset(offset, rBase)));
             }
-            rTemp.setInUse(false);
+            if(rTempwasNul){
+                compiler.addInstruction(new POP(rTemp));
+            }else{
+                rTemp.setInUse(false);
+            }
         }
     }
 
@@ -291,6 +375,12 @@ public class DeclVar extends AbstractDeclVar {
                     int subSize = getArraySize(coeffCourant);
                     // b) Allouer un bloc pour ce sous-tableau
                     GPRegister subReg = GestionRegistre.obtainFreeRegister();
+                    boolean subRegWasNul = false;
+                    if (subReg == null) {
+                        subRegWasNul = true;
+                        subReg = Register.getR(8);
+                        compiler.addInstruction(new PUSH(subReg));
+                    }
                     compiler.addInstruction(new NEW(subSize, subReg));
                     // c) Stocker la référence dans baseReg[i]
                     compiler.addInstruction(
@@ -299,10 +389,20 @@ public class DeclVar extends AbstractDeclVar {
 
                     // d) Remplir récursivement
                     remplissageRecursif(compiler, coeffCourant, subReg);
-                    subReg.setInUse(false);
+                    if(subRegWasNul){
+                        compiler.addInstruction(new POP(subReg));
+                    }else{
+                        subReg.setInUse(false);
+                    }
                 }
                 else if (coeffCourant == null) {
                     GPRegister r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNull = false;
+                    if(r==null){
+                        rWasNull = true;
+                        r = Register.getR(4);
+                        compiler.addInstruction(new PUSH(r));
+                    }
                     // Initialisation suivant le type
                     if(((Array) element).getType().isInt() || ((Array) element).getType().isBoolean() ) {
                         compiler.addInstruction(new LOAD(new ImmediateInteger(0), r));
@@ -316,29 +416,59 @@ public class DeclVar extends AbstractDeclVar {
                     compiler.addInstruction(
                             new STORE(r, new RegisterOffset(i, baseReg))
                     );
-                    r.setInUse(false);
+                    if(rWasNull){
+                        compiler.addInstruction(new POP(r));
+                    }else{
+                        r.setInUse(false);
+                    }
                 }
                 else if (coeffCourant instanceof IntLiteral) {
                     int val = ((IntLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNull = false;
+                    if(r==null){
+                        rWasNull = true;
+                        r = Register.getR(4);
+                        compiler.addInstruction(new PUSH(r));
+                    }
                     compiler.addInstruction(new LOAD(new ImmediateInteger(val), r));
                     compiler.addInstruction(
                             new STORE(r, new RegisterOffset(i, baseReg))
                     );
-                    r.setInUse(false);
+                    if(rWasNull){
+                        compiler.addInstruction(new POP(r));
+                    }else{
+                        r.setInUse(false);
+                    }
                 }
                 else if(coeffCourant instanceof FloatLiteral) {
                     float val = ((FloatLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNull = false;
+                    if(r==null){
+                        rWasNull = true;
+                        r = Register.getR(4);
+                        compiler.addInstruction(new PUSH(r));
+                    }
                     compiler.addInstruction(new LOAD(new ImmediateFloat(val), r));
                     compiler.addInstruction(
                             new STORE(r, new RegisterOffset(i, baseReg))
                     );
-                    r.setInUse(false);
+                    if(rWasNull){
+                        compiler.addInstruction(new POP(r));
+                    }else{
+                        r.setInUse(false);
+                    }
                 }
                 else if(coeffCourant instanceof BooleanLiteral) {
                     boolean val = ((BooleanLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNull = false;
+                    if(r==null){
+                        rWasNull = true;
+                        r = Register.getR(4);
+                        compiler.addInstruction(new PUSH(r));
+                    }
                     if(val){
                         compiler.addInstruction(new LOAD(new ImmediateInteger(1), r));
                     }
@@ -349,7 +479,11 @@ public class DeclVar extends AbstractDeclVar {
                     compiler.addInstruction(
                             new STORE(r, new RegisterOffset(i, baseReg))
                     );
-                    r.setInUse(false);
+                    if(rWasNull){
+                        compiler.addInstruction(new POP(r));
+                    }else{
+                        r.setInUse(false);
+                    }
                 }
                 else {
                     throw new IllegalArgumentException("Pas encore implémenté les objets de classe");
