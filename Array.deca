@@ -1,13 +1,4 @@
 class Array {
-    int[] tab;
-
-    void setTab(int[] tab){
-        this.tab = tab;
-    }
-
-    int[] getTab() {
-        return this.tab;
-    }
 
     int sum(int[] tab, int len) {
         int i=0;
@@ -18,18 +9,110 @@ class Array {
         }
         return total;
     }
+
+    int[] add(int[] tab1, int[] tab2, int len1, int len2){
+        int[] tabIf; // pour return un tableau vide
+        int i = 0;
+        int somme = 0;
+        if(len1 != len2){
+            println("Les tableaux ne sont pas de la même taille !");
+            return tabIf;
+        }
+        else {
+            while(i<len1){
+                tab1[i] = tab1[i] + tab2[i];
+                i = i+1;
+            }
+        }
+        return tab1;
+    }
+
+    int[] sub(int[] tab1, int[] tab2, int len1, int len2){
+        int[] tabIf; // pour return un tableau vide
+        int i = 0;
+        int somme = 0;
+        if(len1 != len2){
+            println("Les tableaux ne sont pas de la même taille !");
+            return tabIf;
+        }
+        else {
+            while(i<len1){
+                tab1[i] = tab1[i] - tab2[i];
+                i = i+1;
+            }
+        }
+        return tab1;
+    }
+
+    int[] scalarMult(int[] tab, int lenTab, int scal){
+        int[] tabIf; // pour return un tableau vide
+        int i = 0;
+            while(i<lenTab){
+                tab[i] = scal * tab[i];
+                i = i+1;
+            }
+        return tab;
+    }
+
+    int[] sort(int[] tab, int lenTab){
+        int i = 0;
+        int j;
+        int temp;
+        while (i < lenTab - 1) {
+            j = 0;
+            while (j < lenTab - i - 1) {
+                if (tab[j] > tab[j + 1]) {
+                    temp = tab[j];
+                    tab[j] = tab[j + 1];
+                    tab[j + 1] = temp;
+            }
+            j = j+1;
+        }
+        i = i+1;
+    }
+    return tab;
+    }
+
+    void toString(int[] tab, int len) {
+        int i = 0;
+        print("[");
+        while (i < len){
+            print(tab[i]);
+            if(i < (len -1)){
+                print(",");
+            }
+            i = i +1;
+        }
+        print("]");
+    }
+
+    int ps(int[] x, int[] y, int lenx, int leny) {
+        int i = 0;
+        int res = 0;
+        if(lenx != leny){
+            println("Erreur, les tableaux ne sont pas de la même taille !");
+            return 0;
+        }
+        while (i < lenx){
+            res = res + (x[i]*y[i]);
+            i = i+1;
+        }
+        return res;
+    }
 }
 
 
 // Script pour utiliser la bibliothèque
 {
     Array array = new Array();
-    int[] tab;
-    int len;
-    int [] x = {9,1,6,5,7,8,9,7}; //Exemple
-    len = x.length; 
-    array.setTab(x);
-    tab = array.getTab();
+    int[] x = {9,1,6,5,7,8,9,7};
+    int[] y = {9,8,5,3,4,5,3,7}; 
+    int ps;
+
+    int lenx = x.length;
+    int leny = y.length;
+
+    ps = array.ps(x,y,lenx,leny);
+    println(ps);
     
-    println(array.sum(tab, len)); // J'aurai pu enlever len des parametres mais le codegen ne le gère pas
 }
