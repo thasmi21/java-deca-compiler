@@ -303,7 +303,16 @@ public class Assign extends AbstractBinaryExpr {
                 throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
             }
 
-        }else{
+        }
+        else if(getLeftOperand() instanceof GetArray){
+            GPRegister reg = GestionRegistre.obtainFreeRegister();
+            getRightOperand().evalueExprEnd(compiler, reg);
+            DAddr idAdresse=((GetArray) getLeftOperand()).codeGenAddressOfEnd(compiler);
+            compiler.addInstructionEnd(new STORE(reg, idAdresse));
+            reg.setInUse(false);
+            return;
+        }
+        else{
             ident = (AbstractIdentifier)getLeftOperand();
         }
         GPRegister reg = GestionRegistre.obtainFreeRegister();

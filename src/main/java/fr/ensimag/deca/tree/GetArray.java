@@ -180,11 +180,39 @@ public class GetArray extends AbstractLValue {
     }
 
 
+    public DAddr codeGenAddressOfEnd(DecacCompiler compiler) {
+        GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        identifier.evalueExprEnd(compiler, rBase);
+
+        int nbDims = this.listIndex.size();
+        for (int dim = 0; dim < nbDims; dim++) {
+            // a) Récupérer l’indice
+            AbstractExpr indexExpr = listIndex.get(dim);
+            if (!(indexExpr instanceof IntLiteral)) {
+                GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                listIndex.get(dim).evalueExprEnd(compiler, rIndex);
+                compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                //compiler.addInstruction(new LOAD(new RegisterOffset(0, rBase), rBase));
+                rIndex.setInUse(false);
+            }
+            else {
+                int offset = ((IntLiteral) indexExpr).getValue();
+                compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
+            }
+            boolean isLastDim = (dim == nbDims - 1);
+            if (!isLastDim) {
+                //rBase = contenu de [rBase] (pointeur vers le sous-bloc)
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
+            }
+        }
+        DAddr finalAddr = new RegisterOffset(0, rBase);
+        return finalAddr;
+    }
 
     public DAddr codeGenAddressOf(DecacCompiler compiler) {
-        DAddr xAddr = this.identifier.getExpDefinition().getOperand();
         GPRegister rBase = GestionRegistre.obtainFreeRegister();
-        compiler.addInstruction(new LOAD(xAddr, rBase));
+        identifier.evalueExprEnd(compiler, rBase);
+
         int nbDims = this.listIndex.size();
         for (int dim = 0; dim < nbDims; dim++) {
             // a) Récupérer l’indice
@@ -209,8 +237,6 @@ public class GetArray extends AbstractLValue {
         DAddr finalAddr = new RegisterOffset(0, rBase);
         return finalAddr;
     }
-
-
 
     @Override
     public void codeGenPrint(DecacCompiler compiler) {
@@ -243,6 +269,43 @@ public class GetArray extends AbstractLValue {
             compiler.addInstruction(new WINT());
         } else if (this.getType().isFloat()) {
             compiler.addInstruction(new WFLOAT());
+        }
+        else if(this.getType().isBoolean()){
+            // a compléter
+        }
+        else{
+            throw new UnsupportedOperationException("On ne peut print qu'un entier ou un float ou un boolean");
+        }
+        rBase.setInUse(false);
+    }
+
+    @Override
+    public void codeGenPrintMethod(DecacCompiler compiler) {
+        GPRegister rBase = GestionRegistre.obtainFreeRegister();
+        identifier.evalueExprEnd(compiler, rBase);
+        int nbDims = listIndex.size();
+        for (int dim = 0; dim < nbDims; dim++) {
+            // a) Vérification si l’indice est un littéral int (ou on gère autrement)
+            if (!(listIndex.get(dim) instanceof IntLiteral)) {
+                // ça fonctionne
+                GPRegister rIndex = GestionRegistre.obtainFreeRegister();
+                listIndex.get(dim).evalueExprEnd(compiler, rIndex);
+                compiler.addInstructionEnd(new LEA(new RegisterIndirect(rBase, rIndex), rBase));
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
+                rIndex.setInUse(false);
+            }
+            else {
+                // ça fonctionne
+                int offset = ((IntLiteral) listIndex.get(dim)).getValue();
+                compiler.addInstructionEnd(new LEA(new RegisterOffset(offset, rBase), rBase));
+                compiler.addInstructionEnd(new LOAD(new RegisterOffset(0, rBase), rBase));
+            }
+        }
+        compiler.addInstructionEnd(new LOAD(rBase, Register.R1));
+        if (this.getType().isInt()) {
+            compiler.addInstructionEnd(new WINT());
+        } else if (this.getType().isFloat()) {
+            compiler.addInstructionEnd(new WFLOAT());
         }
         else if(this.getType().isBoolean()){
             // a compléter
