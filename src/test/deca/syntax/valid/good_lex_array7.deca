@@ -1,0 +1,22 @@
+//programme deca pour bien vérifier
+//que le lexer sait gérer les priorités de reconnaissance entre les tokens
+
+{
+    int[] x={2,9};
+}
+
+//doit reconnaitre le type int[]
+/*sortie attendu:
+   good_lex1.deca:
+   OBRACE: [@0,0:0='{',<15>,1:0]
+   IDENT: [@1,6:10='int[]',<31>,2:4]
+   IDENT: [@2,12:12='x',<31>,2:10]
+   EQUALS: [@3,13:13='=',<35>,2:11]
+   OBRACE: [@4,14:14='{',<15>,2:12]
+   INT: [@5,15:15='2',<33>,2:13]
+   COMMA: [@6,16:16=',',<52>,2:14]
+   INT: [@7,17:17='9',<33>,2:15]
+   CBRACE: [@8,18:18='}',<27>,2:16]
+   SEMI: [@9,19:19=';',<28>,2:17]
+   CBRACE: [@10,21:21='}',<27>,3:0]
+*/

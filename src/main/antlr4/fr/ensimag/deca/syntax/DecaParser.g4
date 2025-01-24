@@ -73,38 +73,11 @@ list_decl returns[ListDeclVar tree]
     : decl_var_set[$tree]*
     ;
 
+
 decl_var_set[ListDeclVar l]
-    : (type list_decl_var[$l,$type.tree] SEMI
-    |  type OCROCHET INT CCROCHET list_decl_array[$l,$type.tree] SEMI
-    |  type OCROCHET CCROCHET list_decl_array[$l,$type.tree] SEMI
-    |  type list_decl_array[$l,$type.tree] OCROCHET INT CCROCHET SEMI
-    |  type list_decl_array[$l,$type.tree] OCROCHET CCROCHET SEMI
-    )
+    :type list_decl_var[$l,$type.tree] SEMI
     ;
 
-list_decl_array[ListDeclVar l, AbstractIdentifier t]
-    :dv1=decl_array[$t]{
-    $l.add($dv1.tree);
-            } (COMMA dv2=decl_array[$t] {
-                $l.add($dv2.tree);
-            }
-            )*
-    ;
-
-decl_array [AbstractIdentifier t] returns[AbstractDeclVar tree]
-    @init{
-    }
-    : i=ident
-    (EQUALS e=expr {
-                $tree = new DeclVar($t, $i.tree, new Initialization($e.tree)) ;
-                setLocation($tree, $EQUALS);
-            }
-         | {
-                $tree = new DeclVar($t, $i.tree, new NoInitialization()) ;
-                setLocation($tree, $i.start);
-            }
-         )
-    ;
 
 list_decl_var[ListDeclVar l, AbstractIdentifier t]
     : dv1=decl_var[$t] {
@@ -120,7 +93,9 @@ decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
     }
     : i=ident
       (EQUALS e=expr {
-            $tree = new DeclVar($t, $i.tree, new Initialization($e.tree)) ;
+            AbstractInitialization init = new Initialization($e.tree);
+            setLocation(init, $EQUALS);
+            $tree = new DeclVar($t, $i.tree, init) ;
             setLocation($tree, $EQUALS);
         }
      | {
@@ -245,12 +220,14 @@ expr returns[AbstractExpr tree]
     ;
 
 assign_expr returns[AbstractExpr tree]
+
     : e=or_expr (
         /* condition: expression e must be a "LVALUE" */ {
             if (! ($e.tree instanceof AbstractLValue)) {
                 throw new InvalidLValue(this, $ctx);
             }
             assert($e.tree != null);
+
             $tree = $e.tree;
         }
         EQUALS e2=assign_expr {
@@ -415,6 +392,7 @@ select_expr returns[AbstractExpr tree]
     : e=primary_expr {
             assert($e.tree != null);
             $tree = $e.tree;
+
         }
     | e1=select_expr DOT i=ident {
             assert($e1.tree != null);
@@ -438,6 +416,7 @@ primary_expr returns[AbstractExpr tree]
     : ident {
             assert($ident.tree != null);
             $tree = $ident.tree;
+
         }
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);
@@ -461,9 +440,9 @@ primary_expr returns[AbstractExpr tree]
             $tree=new New($ident.tree);
             setLocation($tree,$NEW);
         }
-    | NEW ident OCROCHET INT CCROCHET {
-            assert($ident.tree !=null);
-            $tree = new Array(Integer.parseInt($INT.text), $ident.tree);
+    | NEW array {
+            assert($array.tree !=null);
+            $tree=$array.tree;
             setLocation($tree, $NEW);
     }
     | cast=OPARENT type CPARENT OPARENT expr CPARENT {
@@ -475,6 +454,41 @@ primary_expr returns[AbstractExpr tree]
             assert($literal.tree != null);
             $tree=$literal.tree;
         }
+    | get_array {
+            assert($get_array.tree != null);
+            $tree=$get_array.tree;
+    }
+    | ident DOT LENGTH {
+            assert($ident.tree != null);
+            $tree= new LengthArray($ident.tree);
+            setLocation($tree, $ident.start);
+    }
+    ;
+
+get_array returns[AbstractExpr tree]
+    :ident (OCROCHET list_int+=expr CCROCHET)+ {
+          $tree = new GetArray($ident.tree, $list_int);
+          setLocation($tree, $ident.start);
+    }
+    ;
+
+array returns[AbstractExpr tree]
+    : IDENT (OCROCHET indices+=expr CCROCHET)+ {
+        $tree = new ArrayNoInit($ctx.getText(), $indices);
+        setLocation($tree, $IDENT);
+    }
+    | IDENT (OCROCHET CCROCHET)+ array_literal {
+        $tree = new ArrayLiteral($ctx.getText(), $array_literal.exp);
+        setLocation($tree, $IDENT);
+    }
+    ;
+
+array_literal returns [AbstractExpr tree,  List<ExprContext> exp]
+    : OBRACE (exp_list+=expr (COMMA exp_list+=expr)*)? CBRACE {
+        $exp = $exp_list;
+        $tree = new ArrayLiteral($ctx.getText(), $exp_list);
+        setLocation($tree, $OBRACE);
+    }
     ;
 
 type returns[AbstractIdentifier tree]
@@ -521,22 +535,20 @@ literal returns[AbstractExpr tree]
         $tree = new Null();
         setLocation($tree,$NULL);
         }
+    | array_literal {
+        assert($array_literal.tree != null);
+        $tree= $array_literal.tree;
+    }
     ;
 
 ident returns[AbstractIdentifier tree]
     :
-     IDENT OCROCHET CCROCHET {
-             $tree = new Identifier(getDecacCompiler().createSymbol($IDENT.text+$OCROCHET.text+$CCROCHET.text));
-             setLocation($tree, $IDENT);
-           }
-     |
-     IDENT  {
-        $tree = new Identifier(getDecacCompiler().createSymbol($IDENT.text));
+     IDENT (OCROCHET CCROCHET)* {
+        $tree = new Identifier(getDecacCompiler().createSymbol($ctx.getText()));
         setLocation($tree,$IDENT);
         }
-
-
     ;
+
 
 /****     Class related rules     ****/
 

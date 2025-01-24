@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+
+import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.Location;
 
@@ -116,8 +118,20 @@ public class EnvironmentType {
     }
 
     public TypeDefinition defOfType(Symbol s) {
-
         return envTypes.get(s);
+    }
+
+    /**
+     * Ajoute un type dynamique dans l'environnement.
+     * @param s Le symbole du type
+     * @param typeDef La définition du type
+     * @throws IllegalArgumentException si le type existe déjà
+     */
+    public void setTypeDefinition(Symbol s, TypeDefinition typeDef) {
+        if (envTypes.containsKey(s)) {
+            return;
+        }
+        envTypes.put(s, typeDef);
     }
 
     public final VoidType    VOID;

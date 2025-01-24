@@ -24,4 +24,5 @@ public class GPRegister extends Register {
         super(name);
         this.number = number;
     }
+
 }

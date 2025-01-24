@@ -20,6 +20,7 @@ public class RegisterOffset extends DAddr {
         this.offset = offset;
         this.register = register;
     }
+
     @Override
     public String toString() {
         return offset + "(" + register + ")";

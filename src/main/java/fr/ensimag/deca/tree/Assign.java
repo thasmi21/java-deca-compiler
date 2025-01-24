@@ -8,6 +8,10 @@ import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.*;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.REM;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 /**
  * Assignment, i.e. lvalue = expr.
@@ -33,37 +37,42 @@ public class Assign extends AbstractBinaryExpr {
             ClassDefinition currentClass) throws ContextualError {
         Type type;
         Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-        Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if(typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isClassOrNull())) {
-            if(typeRight.sameType(typeLeft)){
-                this.setType(typeLeft);
-                return typeLeft;
-            }
-            if(typeRight.isClass()){
-                ClassType classType1 = (ClassType)typeLeft;
-                ClassType classType2 = (ClassType)typeRight;
-                if(!classType1.sameType(classType2) && !classType2.isSubClassOf(classType1)){
-                    throw new ContextualError("la class n'est pas la même class ni une sous class" ,getLocation());
-                }
-                this.setType(typeLeft);
-                return typeLeft;
-            }
-            this.setType(compiler.environmentType.FLOAT);
-            if(typeLeft.isFloat()){
-                type=typeLeft;
-            }
-            else{
-                type=typeRight;
-            }
-            //Pour ajouter l'enrichissement Convfloat
-            if(!typeRight.isFloat()){
-                setRightOperand(new ConvFloat(getRightOperand()));
-                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-            }
-            return type;
+        if(getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
+            getRightOperand().setType(typeLeft);
+            getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            return typeLeft;
         }
-        else{
-            throw new ContextualError("Les deux opérandes ne sont pas du même type : "+ typeLeft+" "+ typeRight, getLocation());
+        else {
+            Type typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt()) || (typeLeft.isClass() && typeRight.isClassOrNull())) {
+                if (typeRight.sameType(typeLeft)) {
+                    this.setType(typeLeft);
+                    return typeLeft;
+                }
+                if (typeRight.isClass()) {
+                    ClassType classType1 = (ClassType) typeLeft;
+                    ClassType classType2 = (ClassType) typeRight;
+                    if (!classType1.sameType(classType2) && !classType2.isSubClassOf(classType1)) {
+                        throw new ContextualError("la class n'est pas la même class ni une sous class", getLocation());
+                    }
+                    this.setType(typeLeft);
+                    return typeLeft;
+                }
+                this.setType(compiler.environmentType.FLOAT);
+                if (typeLeft.isFloat()) {
+                    type = typeLeft;
+                } else {
+                    type = typeRight;
+                }
+                //Pour ajouter l'enrichissement Convfloat
+                if (!typeRight.isFloat()) {
+                    setRightOperand(new ConvFloat(getRightOperand()));
+                    getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+                }
+                return type;
+            } else {
+                throw new ContextualError("Les deux opérandes ne sont pas du même type : " + typeLeft + " " + typeRight, getLocation());
+            }
         }
     }
 
@@ -92,6 +101,35 @@ public class Assign extends AbstractBinaryExpr {
         //compiler.addInstruction(new WINT());
         getLeftOperand().codeGenPrint(compiler);
     }
+//        @Override
+//        public void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
+//                ClassDefinition currentClass, Type returnType) throws ContextualError {
+//            // Vérifie le type de l'affectation
+//            Type typeLeft = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+//            Type typeRight;
+//            if (getRightOperand() instanceof ArrayLiteral && ((ArrayLiteral) getRightOperand()).implicitDeclaration()) {
+//                getRightOperand().setType(typeLeft);
+//                getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+//                this.setType(typeLeft);
+//            } else {
+//                typeRight = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+//                // Vérifie la compatibilité des types
+//                if (typeRight.sameType(typeLeft) || (typeLeft.isFloat() && typeRight.isInt())) {
+//                    if (typeLeft.isFloat() && typeRight.isInt()) {
+//                        // Promotion implicite de int vers float
+//                        setRightOperand(new ConvFloat(getRightOperand()));
+//                    }
+//                    this.setType(typeLeft);
+//                } else {
+//                    throw new ContextualError(
+//                            "Erreur de type : impossible d'affecter une expression de type " +
+//                                    typeRight + " à une variable de type " + typeLeft,
+//                            getLocation()
+//                    );
+//                }
+//            }
+//        }
+
 
     @Override
     protected String getOperatorName() {
@@ -113,7 +151,16 @@ public class Assign extends AbstractBinaryExpr {
                 throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
             }
 
-        }else{
+        }
+        else if(getLeftOperand() instanceof GetArray){
+            GPRegister reg = GestionRegistre.obtainFreeRegister();
+            getRightOperand().evalueExpr(compiler, reg);
+            DAddr idAdresse=((GetArray) getLeftOperand()).codeGenAddressOf(compiler);
+            compiler.addInstruction(new STORE(reg, idAdresse));
+            reg.setInUse(false);
+            return;
+        }
+        else{
             ident = (AbstractIdentifier)getLeftOperand();
         }
         DAddr regAdresse = ident.getExpDefinition().getOperand();
@@ -256,7 +303,16 @@ public class Assign extends AbstractBinaryExpr {
                 throw new IllegalArgumentException("Vous ne pouvez pas faire un assign avec cet element");
             }
 
-        }else{
+        }
+        else if(getLeftOperand() instanceof GetArray){
+            GPRegister reg = GestionRegistre.obtainFreeRegister();
+            getRightOperand().evalueExprEnd(compiler, reg);
+            DAddr idAdresse=((GetArray) getLeftOperand()).codeGenAddressOfEnd(compiler);
+            compiler.addInstructionEnd(new STORE(reg, idAdresse));
+            reg.setInUse(false);
+            return;
+        }
+        else{
             ident = (AbstractIdentifier)getLeftOperand();
         }
         GPRegister reg = GestionRegistre.obtainFreeRegister();

@@ -17,6 +17,7 @@ options {
 
 fragment STRING_CAR: ~ ('"' | '\\' );
 
+
 ASM : 'asm';
 
 CLASS : 'class';
@@ -77,7 +78,6 @@ OPARENT : '(' ;
 CPARENT : ')' ;
 
 OCROCHET : '[';
-
 CCROCHET : ']';
 
 CBRACE : '}' ;
@@ -85,13 +85,15 @@ CBRACE : '}' ;
 SEMI : ';' ;
 READINT : 'readInt' ;
 STRING : '"' (STRING_CAR | '\\"' | '\\\\')* '"';
-ARRAY : 'Array';
+LENGTH : 'length';
 // suivi de la convention de fragment expliqué dans le poly
 // pour ajouter les priorités
 fragment LETTER : [a-zA-Z] ;
 fragment DIGIT : [0-9] ;
 fragment POSITIVE_DIGIT : '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9';
-IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )* ;
+fragment FILENAME : (LETTER | DIGIT | '.' | '-' | '_')+;
+
+IDENT : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_' )*;
 INT : '0' | POSITIVE_DIGIT DIGIT* ;
 
 fragment NUM: DIGIT+;
@@ -148,22 +150,6 @@ COMMA : ',';
 
 MULTI_LINE_STRING: '"' (STRING_CAR | EOL | '\\"' | '\\\\')* '"';
 
-INCLUDE : '#include' (' ')* '"' (LETTER | DIGIT | '.' | '-' | '_')+ '"' {
-    doInclude(getText().substring(9).trim());
+INCLUDE : '#include' (' ')* '"' FILENAME '"'{
+    doInclude(getText());
 };
-
-// méthodes pour le calcul matriciel
-
-SORT : 'sort';
-
-TRANSPOSE : 'transpose' ;
-
-SCALARMULT : 'scalarmult';
-
-SCALARDIV : 'scalardiv';
-
-TRACE : 'trace';
-
-DET : 'det';
-
-ISINVERSIBLE : 'isInversible';
