@@ -1,0 +1,103 @@
+class Array {
+
+    int sum(int[] tab, int len) {
+        int i=0;
+        int total = 0;
+        while (i < len) {
+            total = total + tab[i];
+            i = i + 1;
+        }
+        return total;
+    }
+
+    int[] add(int[] tab1, int[] tab2, int len1, int len2){
+        int[] tab = new int[len1];
+        int i = 0;
+        int somme = 0;
+        if(len1 != len2){
+            println("Les tableaux ne sont pas de la même taille !");
+            return tab;
+        }
+        else {
+            while(i<len1){
+                tab[i] = tab1[i] + tab2[i];
+                i = i+1;
+            }
+        }
+        return tab;
+    }
+
+    int[] sub(int[] tab1, int[] tab2, int len3, int len4){
+        int[] tabSous = new int[len3];
+        int i = 0;
+        int somme = 0;
+        if(len3 != len4){
+            println("Les tableaux ne sont pas de la même taille !");
+            return tabSous;
+        }
+        else {
+            while(i<len3){
+                tabSous[i] = tab1[i] - tab2[i];
+                i = i+1;
+            }
+        }
+        return tabSous;
+    }
+
+    int[] scalarMult(int[] tab, int lenTab, int scal){
+        int[] tabMult = new int[lenTab];
+        int i = 0;
+            while(i<lenTab){
+                tabMult[i] = scal * tab[i];
+                i = i+1;
+            }
+        return tabMult;
+    }
+
+    void sort(int[] tab, int lenTab){
+        int i = 0;
+        int j;
+        int temp;
+        while (i < lenTab - 1) {
+            j = 0;
+            while (j < lenTab - i - 1) {
+                if (tab[j] > tab[j + 1]) {
+                    temp = tab[j];
+                    tab[j] = tab[j + 1];
+                    tab[j + 1] = temp;
+            }
+            j = j+1;
+        }
+        i = i+1;
+    }
+    }
+
+    void toString(int[] tab, int len) {
+        int i = 0;
+        print("[");
+        while (i < len){
+            print(tab[i]);
+            if(i < (len -1)){
+                print(",");
+            }
+            i = i +1;
+        }
+        println("]");
+    }
+
+    int ps(int[] x, int[] y, int lenx, int leny) {
+        int i = 0;
+        int res = 0;
+        if(lenx != leny){
+            println("Erreur, les tableaux ne sont pas de la même taille !");
+            return 0;
+        }
+        while (i < lenx){
+            res = res + (x[i]*y[i]);
+            i = i+1;
+        }
+        return res;
+    }
+
+
+}
