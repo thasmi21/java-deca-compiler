@@ -288,14 +288,20 @@ public class DeclVar extends AbstractDeclVar {
      * @param dimensions La liste des dimensions (chacune est une AbstractExpr).
      * @param rBase      Le registre dans lequel l'adresse du tableau est placée.
      */
-    public static void allocateSubArray(DecacCompiler compiler,
+    public void allocateSubArray(DecacCompiler compiler,
                                         List<AbstractExpr> dimensions,
                                         GPRegister rBase) {
         // 1) Vérifier s'il reste des dimensions à traiter
         if (dimensions.isEmpty()) {
             return;
         }
-
+        boolean rBaseWasNull = false;
+        if (rBase == null) {
+            rBaseWasNull = true;
+            rBase = Register.getR(5);
+            // On pousse le registre pour sauvegarder son contenu actuel
+            compiler.addInstruction(new PUSH(rBase));
+        }
         // 2) Récupérer la première dimension : constante ou dynamique ?
         AbstractExpr firstDimExpr = dimensions.get(0);
         boolean isFirstDimLiteral = (firstDimExpr instanceof IntLiteral);
@@ -307,13 +313,27 @@ public class DeclVar extends AbstractDeclVar {
             // a) Dimension connue à la compilation
             firstDimensionSize = ((IntLiteral) firstDimExpr).getValue();
             compiler.addInstruction(new NEW(firstDimensionSize, rBase));
-            // (Facultatif : gérer un BOV si vous gérez le débordement de tas)
         } else {
-            // b) Dimension dynamique : on évalue l'expression
+            // b) Dimension dynamique
             rSize = GestionRegistre.obtainFreeRegister();
+            boolean rSizeWasNull = false;
+            if (rSize == null) {
+                rSizeWasNull = true;
+                rSize = Register.getR(4);
+                compiler.addInstruction(new PUSH(rSize));
+            }
+
+            // On évalue l'expression pour obtenir la taille
             firstDimExpr.evalueExpr(compiler, rSize);
             compiler.addInstruction(new NEW(rSize, rBase));
-            // (Facultatif : BOV pour le débordement)
+            // (Facultatif: BOV pour overflow)
+
+            // Libération / restauration éventuelle de rSize
+            if (rSizeWasNull) {
+                compiler.addInstruction(new POP(rSize));
+            } else {
+                rSize.setInUse(false);
+            }
         }
 
         // 4) Vérifier s'il reste d'autres dimensions (tableau multidimensionnel)
@@ -322,17 +342,27 @@ public class DeclVar extends AbstractDeclVar {
             List<AbstractExpr> subDimensions = dimensions.subList(1, dimensions.size());
 
             if (isFirstDimLiteral) {
-                // a) Boucle "classique" en Java (pour dimension constante)
                 for (int i = 0; i < firstDimensionSize; i++) {
                     GPRegister rSub = GestionRegistre.obtainFreeRegister();
-                    // Appel récursif pour allouer le sous-tableau
-                    allocateSubArray(compiler, subDimensions, rSub);
+                    boolean rSubWasNull = false;
+                    if (rSub == null) {
+                        rSubWasNull = true;
+                        rSub = Register.getR(6);
+                        compiler.addInstruction(new PUSH(rSub));
+                    }
 
-                    // Stocker l'adresse du sous-tableau dans la case i
+                    allocateSubArray(compiler, subDimensions, rSub);
+                    // Stocker le sous-tableau
                     compiler.addInstruction(new STORE(rSub, new RegisterOffset(i, rBase)));
-                    rSub.setInUse(false);
+
+                    if (rSubWasNull) {
+                        compiler.addInstruction(new POP(rSub));
+                    } else {
+                        rSub.setInUse(false);
+                    }
                 }
-            } else {
+            }
+            else {
                 // b) Dimension dynamique => générer une boucle assembleur
                 Label loopStart = new Label("alloc_subarray_start");
                 Label loopEnd = new Label("alloc_subarray_end");
@@ -368,8 +398,19 @@ public class DeclVar extends AbstractDeclVar {
         } else {
             // 5) S'il n'y a plus qu'une dimension, on initialise les éléments à 0
             GPRegister rZero = GestionRegistre.obtainFreeRegister();
-            compiler.addInstruction(new LOAD(new ImmediateInteger(0), rZero));
-
+            boolean rZerowasNull = false;
+            if (rZero == null) {
+                rZerowasNull = true;
+                rZero = GestionRegistre.obtainFreeRegister();
+                // On pousse le registre pour sauvegarder son contenu actuel
+                compiler.addInstruction(new PUSH(rBase));
+            }
+            if(this.varName.getType().isInt()){
+                compiler.addInstruction(new LOAD(new ImmediateInteger(0), rZero));
+            }
+            else{
+                compiler.addInstruction(new LOAD(new ImmediateFloat(0.0F), rZero));
+            }
             if (isFirstDimLiteral) {
                 // a) Taille constante => simple boucle "for"
                 for (int offset = 0; offset < firstDimensionSize; offset++) {
@@ -400,12 +441,22 @@ public class DeclVar extends AbstractDeclVar {
                 compiler.addLabel(initLoopEnd);
                 rCounter.setInUse(false);
             }
-            rZero.setInUse(false);
+
+            if (rZerowasNull) {
+                compiler.addInstruction(new POP(rZero));
+            } else {
+                rZero.setInUse(false);
+            }
         }
 
         // 6) Libérer le registre ayant servi pour la taille dynamique s'il existe
         if (rSize != null) {
             rSize.setInUse(false);
+        }
+        if (rBaseWasNull) {
+            compiler.addInstruction(new POP(rBase));
+        } else {
+            rBase.setInUse(false);
         }
     }
 
@@ -479,7 +530,26 @@ public class DeclVar extends AbstractDeclVar {
                     } else {
                         r.setInUse(false);
                     }
-                } else if (coeffCourant instanceof IntLiteral) {
+                }
+//                else {
+//                    GPRegister r = GestionRegistre.obtainFreeRegister();
+//                    boolean rWasNull = false;
+//                    if (r == null) {
+//                        rWasNull = true;
+//                        r = Register.getR(4);
+//                        compiler.addInstruction(new PUSH(r));
+//                    }
+//                    coeffCourant.evalueExpr(compiler,r);
+//                    compiler.addInstruction(
+//                            new STORE(r, new RegisterOffset(i, baseReg))
+//                    );
+//                    if (rWasNull) {
+//                        compiler.addInstruction(new POP(r));
+//                    } else {
+//                        r.setInUse(false);
+//                    }
+//                }
+                else if (coeffCourant instanceof IntLiteral) {
                     int val = ((IntLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
                     boolean rWasNull = false;
@@ -515,7 +585,28 @@ public class DeclVar extends AbstractDeclVar {
                     } else {
                         r.setInUse(false);
                     }
-                } else if (coeffCourant instanceof BooleanLiteral) {
+                }
+                else if(coeffCourant instanceof ConvFloat) {
+                    //float val = ((ConvFloat) coeffCourant);
+                    GPRegister r = GestionRegistre.obtainFreeRegister();
+                    boolean rWasNull = false;
+                    if (r == null) {
+                        rWasNull = true;
+                        r = Register.getR(4);
+                        compiler.addInstruction(new PUSH(r));
+                    }
+                    //compiler.addInstruction(new LOAD(new ImmediateFloat(val), r));
+                    coeffCourant.evalueExpr(compiler,r);
+                    compiler.addInstruction(
+                            new STORE(r, new RegisterOffset(i, baseReg))
+                    );
+                    if (rWasNull) {
+                        compiler.addInstruction(new POP(r));
+                    } else {
+                        r.setInUse(false);
+                    }
+                }
+                else if (coeffCourant instanceof BooleanLiteral) {
                     boolean val = ((BooleanLiteral) coeffCourant).getValue();
                     GPRegister r = GestionRegistre.obtainFreeRegister();
                     boolean rWasNull = false;

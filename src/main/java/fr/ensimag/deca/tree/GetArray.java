@@ -306,7 +306,7 @@ public class GetArray extends AbstractLValue {
         }
         compiler.addInstruction(new LOAD(rBase, Register.R1));
         if (this.getType().isInt()) {
-            compiler.addInstruction(new WINT());
+            compiler.addInstruction(new WFLOAT());
         } else if (this.getType().isFloat()) {
             compiler.addInstruction(new WFLOAT());
         }

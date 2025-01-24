@@ -74,30 +74,83 @@ public class Array extends AbstractExpr{
     }
 
     @Override
-    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
-        EnvironmentType envType = compiler.getEnvironmentType();
-        String name=getType().getName().getName();
-        Type type = envType.defOfType(compiler.createSymbol(name)).getType();
-        if(type.sameType(getBaseType(compiler,type))){
-           throw new ContextualError("L'array n'est pas de la bonne dimension !", coefficients[0].getLocation() );
+    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
+            throws ContextualError {
+
+        // 1) On récupère le type global du tableau (ex: "float[]")
+        String name = getType().getName().getName();
+        Type arrayType = compiler.getEnvironmentType()
+                .defOfType(compiler.createSymbol(name))
+                .getType();
+
+        // 2) Vérification que c'est bien un tableau,
+        //    et qu'il a la dimension attendue (le code "getBaseType" est hypothétique)
+        if (arrayType.sameType(getBaseType(compiler, arrayType))) {
+            throw new ContextualError(
+                    "ArrayLiteral : l'array n'est pas de la bonne dimension !",
+                    this.getLocation()
+            );
         }
-        Type typeChild = envType.defOfType(compiler.createSymbol(name.substring(0, name.length() - 2))).getType();
-        // Vérification que tous les coefficients sont du bon type
-        for (AbstractExpr coefficient : coefficients) {
-            if (coefficient != null) {
-                coefficient.setType(typeChild);
-                if(coefficient instanceof ArrayLiteral || coefficient instanceof Array){
-                    coefficient.verifyExpr(compiler, localEnv, currentClass);
-                }
-                else{
-                    Type typeCoeff = coefficient.verifyExpr(compiler, localEnv, currentClass);
-                    if(! typeChild.sameType(typeCoeff)){
-                        throw new ContextualError("Le coefficient n'est pas du type souhaité. Type voulu : "+typeChild+". Type reçu : "+typeCoeff, coefficient.getLocation());
+
+        // 3) Déterminer le type des coefficients = "typeChild"
+        //    Par ex, si name = "float[]", alors nameChild = "float"
+        String nameChild = name.substring(0, name.length() - 2);
+        Type typeChild = compiler.getEnvironmentType()
+                .defOfType(compiler.createSymbol(nameChild))
+                .getType();
+
+        // 4) Vérifier chaque coefficient
+        for (int i = 0; i < coefficients.length; i++) {
+            AbstractExpr coeff = coefficients[i];
+
+            // S'il y a un coefficient (pas null)
+            if (coeff != null) {
+                // a) Vérifier son type
+                Type coeffType = coeff.verifyExpr(compiler, localEnv, currentClass);
+
+                // b) Si c'est un sous-tableau, on laisse faire la récursivité
+                //    (Array ou ArrayLiteral => déjà géré par verifyExpr)
+                //    Sinon, on compare au typeChild
+                if (!(coeff instanceof Array)) {
+                    // si le type ne matche pas
+                    if (!typeChild.sameType(coeffType)) {
+
+                        // c) Cas autorisé : typeChild = float, coeffType = int => on cast via ConvFloat
+                        if (typeChild.isInt() && coeffType.isFloat()) {
+                            // On crée le nœud ConvFloat
+                            ConvFloat conv = new ConvFloat(coeff);
+                            conv.setLocation(coeff.getLocation());
+                            conv.setType(compiler.environmentType.FLOAT);
+
+                            // On remplace l'ancien coefficient dans le tableau
+                            coefficients[i] = conv;
+
+                            // On re-vérifie pour mettre à jour le type
+                            Type newType = conv.verifyExpr(compiler, localEnv, currentClass);
+
+                            // Contrôle : on attend float désormais
+                            if (!typeChild.sameType(newType)) {
+                                throw new ContextualError(
+                                        "Impossible de convertir l'élément en float",
+                                        conv.getLocation()
+                                );
+                            }
+                        }
+                        else {
+                            // d) Sinon, on lève une erreur
+                            throw new ContextualError(
+                                    "Le coefficient n'est pas du type souhaité. "
+                                            + "Type voulu : " + typeChild + ", reçu : " + coeffType,
+                                    coeff.getLocation()
+                            );
+                        }
                     }
                 }
             }
         }
-        return type;
+
+        // 5) On retourne le type global (ex: "float[]")
+        return arrayType;
     }
 
         public static String removeIntegers(String input) {
