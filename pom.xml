@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>8</java-version>
-        <jacoco.skip>true</jacoco.skip>
+        <jacoco.skip>false</jacoco.skip>
         <jacoco.report_dir>${project.build.directory}/site/jacoco</jacoco.report_dir>
     </properties>
 
@@ -252,6 +252,36 @@
                         <id>basic-decac</id>
                         <configuration>
                             <executable>./src/test/script/basic-decac.sh</executable>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-Codegen</id>
+                        <configuration>
+                            <executable>./src/test/script/test-Codegen.sh</executable>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-cont</id>
+                        <configuration>
+                            <executable>./src/test/script/test-cont.sh</executable>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-synt</id>
+                        <configuration>
+                            <executable>./src/test/script/test-synt.sh</executable>
                         </configuration>
                         <phase>test</phase>
                         <goals>
