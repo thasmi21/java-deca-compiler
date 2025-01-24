@@ -1,0 +1,53 @@
+; start main program
+	TSTO #3
+	BOV pile_pleine
+	ADDSP #3
+; --------------------------------------------------
+;        Construction des tables des methodes       
+; --------------------------------------------------
+; Construction de la table des methodes de Object
+	LOAD #null, R0
+	STORE R0, 1(GB)
+	LOAD code.Object.equals, R0
+	STORE R0, 2(GB)
+; Main program
+; Debut declaration des variables
+	NEW #2, R3
+	NEW #2, R4
+	LOAD #0, R5
+	STORE R5, 0(R4)
+	STORE R5, 1(R4)
+	STORE R4, 0(R3)
+	NEW #2, R4
+	LOAD #0, R5
+	STORE R5, 0(R4)
+	STORE R5, 1(R4)
+	STORE R4, 1(R3)
+	STORE R3, 3(GB)
+; Beginning of main instructions:
+	HALT
+; end main program
+pile_pleine:
+	WSTR "Erreur: La pile est pleine"
+	WNL
+	ERROR
+tas_plein:
+	WSTR "Erreur: Le tas est plein"
+	WNL
+	ERROR
+dereferencement.null:
+	WSTR "Erreur: dereferencement de null"
+	WNL
+	ERROR
+code.Object.equals:
+	LOAD -3(LB), R2
+	LOAD -2(LB), R3
+	CMP R2, R3
+	BEQ code.Object.equals.true
+	LOAD #0, R0
+	RTS
+code.Object.equals.true:
+	LOAD #1, R0
+	RTS
+; debut initialisation des Champs des classes
+; fin initialisation des Champs et methodes des classes

@@ -1,0 +1,287 @@
+; start main program
+	TSTO #3
+	BOV pile_pleine
+	ADDSP #3
+; --------------------------------------------------
+;        Construction des tables des methodes       
+; --------------------------------------------------
+; Construction de la table des methodes de Object
+	LOAD #null, R0
+	STORE R0, 1(GB)
+	LOAD code.Object.equals, R0
+	STORE R0, 2(GB)
+; Main program
+; Debut declaration des variables
+	NEW #2, R3
+	NEW #2, R4
+	NEW #3, R5
+	LOAD #0x0.0p0, R6
+	STORE R6, 0(R5)
+	STORE R6, 1(R5)
+	STORE R6, 2(R5)
+	STORE R5, 0(R4)
+	NEW #3, R5
+	LOAD #0x0.0p0, R6
+	STORE R6, 0(R5)
+	STORE R6, 1(R5)
+	STORE R6, 2(R5)
+	STORE R5, 1(R4)
+	STORE R4, 0(R3)
+	NEW #2, R4
+	NEW #3, R5
+	LOAD #0x0.0p0, R6
+	STORE R6, 0(R5)
+	STORE R6, 1(R5)
+	STORE R6, 2(R5)
+	STORE R5, 0(R4)
+	NEW #3, R5
+	LOAD #0x0.0p0, R6
+	STORE R6, 0(R5)
+	STORE R6, 1(R5)
+	STORE R6, 2(R5)
+	STORE R5, 1(R4)
+	STORE R4, 1(R3)
+	STORE R3, 3(GB)
+; Beginning of main instructions:
+	LOAD #1, R3
+	LOAD 3(GB), R4
+	LEA 0(R4), R4
+	LOAD 0(R4), R4
+	LEA 0(R4), R4
+	LOAD 0(R4), R4
+	LEA 0(R4), R4
+	STORE R3, 0(R4)
+	LOAD #2, R3
+	LOAD 3(GB), R5
+	LEA 0(R5), R5
+	LOAD 0(R5), R5
+	LEA 0(R5), R5
+	LOAD 0(R5), R5
+	LEA 1(R5), R5
+	STORE R3, 0(R5)
+	LOAD #3, R3
+	LOAD 3(GB), R6
+	LEA 0(R6), R6
+	LOAD 0(R6), R6
+	LEA 0(R6), R6
+	LOAD 0(R6), R6
+	LEA 2(R6), R6
+	STORE R3, 0(R6)
+	LOAD #1, R3
+	LOAD 3(GB), R7
+	LEA 0(R7), R7
+	LOAD 0(R7), R7
+	LEA 1(R7), R7
+	LOAD 0(R7), R7
+	LEA 0(R7), R7
+	STORE R3, 0(R7)
+	LOAD #5, R3
+	LOAD 3(GB), R8
+	LEA 0(R8), R8
+	LOAD 0(R8), R8
+	LEA 1(R8), R8
+	LOAD 0(R8), R8
+	LEA 1(R8), R8
+	STORE R3, 0(R8)
+	LOAD #6, R3
+	LOAD 3(GB), R9
+	LEA 0(R9), R9
+	LOAD 0(R9), R9
+	LEA 1(R9), R9
+	LOAD 0(R9), R9
+	LEA 2(R9), R9
+	STORE R3, 0(R9)
+	LOAD #1, R3
+	LOAD 3(GB), R10
+	LEA 1(R10), R10
+	LOAD 0(R10), R10
+	LEA 0(R10), R10
+	LOAD 0(R10), R10
+	LEA 0(R10), R10
+	STORE R3, 0(R10)
+	LOAD #2, R3
+	LOAD 3(GB), R11
+	LEA 1(R11), R11
+	LOAD 0(R11), R11
+	LEA 0(R11), R11
+	LOAD 0(R11), R11
+	LEA 1(R11), R11
+	STORE R3, 0(R11)
+	LOAD #3, R3
+	LOAD 3(GB), R12
+	LEA 1(R12), R12
+	LOAD 0(R12), R12
+	LEA 0(R12), R12
+	LOAD 0(R12), R12
+	LEA 2(R12), R12
+	STORE R3, 0(R12)
+	LOAD #1, R3
+	LOAD 3(GB), R13
+	LEA 1(R13), R13
+	LOAD 0(R13), R13
+	LEA 1(R13), R13
+	LOAD 0(R13), R13
+	LEA 0(R13), R13
+	STORE R3, 0(R13)
+	LOAD #5, R3
+	LOAD 3(GB), R14
+	LEA 1(R14), R14
+	LOAD 0(R14), R14
+	LEA 1(R14), R14
+	LOAD 0(R14), R14
+	LEA 1(R14), R14
+	STORE R3, 0(R14)
+	LOAD #6, R3
+	LOAD 3(GB), R15
+	LEA 1(R15), R15
+	LOAD 0(R15), R15
+	LEA 1(R15), R15
+	LOAD 0(R15), R15
+	LEA 2(R15), R15
+	STORE R3, 0(R15)
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 2(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 2(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LEA 2(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 0(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	LOAD 3(GB), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 1(R3), R3
+	LOAD 0(R3), R3
+	LEA 2(R3), R3
+	LOAD 0(R3), R3
+	LOAD R3, R1
+	WINT
+	WNL
+	HALT
+; end main program
+pile_pleine:
+	WSTR "Erreur: La pile est pleine"
+	WNL
+	ERROR
+tas_plein:
+	WSTR "Erreur: Le tas est plein"
+	WNL
+	ERROR
+dereferencement.null:
+	WSTR "Erreur: dereferencement de null"
+	WNL
+	ERROR
+code.Object.equals:
+	LOAD -3(LB), R2
+	LOAD -2(LB), R3
+	CMP R2, R3
+	BEQ code.Object.equals.true
+	LOAD #0, R0
+	RTS
+code.Object.equals.true:
+	LOAD #1, R0
+	RTS
+; debut initialisation des Champs des classes
+; fin initialisation des Champs et methodes des classes
