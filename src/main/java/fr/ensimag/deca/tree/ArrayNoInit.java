@@ -7,6 +7,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tree.DeclVar;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import org.apache.commons.lang.Validate;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class ArrayNoInit extends AbstractExpr{
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         EnvironmentType envType = compiler.getEnvironmentType();
         //String name=getType().getName().getName();
-        Type type = envType.defOfType(compiler.createSymbol(removeIntegers(name))).getType();
+        Type type = envType.defOfType(compiler.createSymbol(removeInsideBrackets(name))).getType();
         if(type.sameType(getBaseType(compiler,type))){
             throw new ContextualError("L'array n'est pas de la bonne dimension !", getLocation());
         }
@@ -49,8 +50,8 @@ public class ArrayNoInit extends AbstractExpr{
         return type;
     }
 
-    public static String removeIntegers(String input) {
-        return input.replaceAll("\\d", ""); // Remplace tous les chiffres par une chaîne vide
+    public static String removeInsideBrackets(String input) {
+        return input.replaceAll("(?<=\\[)[^\\]]*(?=\\])", "");
     }
 
     // méthode qui récupère le type de base, par ex(int[][][] -> int)
@@ -87,5 +88,8 @@ public class ArrayNoInit extends AbstractExpr{
     @Override
     protected void iterChildren(TreeFunction f) {
 
+    }
+
+    public void evalueExprEnd(DecacCompiler compiler, GPRegister register ){
     }
 }
