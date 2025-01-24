@@ -1,0 +1,19 @@
+
+// Description :
+//      Test des tableaux deca
+//      avec initialisation explicite
+//     et assignation d'un entier à un float: 
+//      il doit faire convfloat
+// Resultats :
+//     8.0
+
+
+
+
+{
+    float[] x = {1.0, 2.0};
+    x[0] = 8;
+    println("x[0] vaut: ", x[0]); 
+}
+
+

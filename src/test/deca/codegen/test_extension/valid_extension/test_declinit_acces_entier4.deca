@@ -1,0 +1,37 @@
+// Description :
+//      Test des tableaux deca
+//      avec initialisation explicite
+//     et utilisation de boucle while
+// Resultats :
+//      afficher les carré des entiers de 1 à 7
+
+
+
+{
+    int i;
+    int[] x = {1,2,3,4,5,6,7};
+    println("Avant la boucle while: ");
+    
+    i=0;
+    while(i<x.length){
+        println("x[",i,"] vaut: ", x[i]); 
+        i=i+1;
+    }
+    println();
+    println("TRAITEMENT DU WHILE (MISE AU carré)");
+    i=0;
+    while(i<7){
+        x[i] = x[i]*x[i];
+        i=i+1;
+    }
+    println();
+
+    println("Après la boucle while: ");
+    i=0;
+    while(i<7){
+        println("x[",i,"] vaut: ", x[i]);
+        i=i+1; 
+    }
+
+}
+

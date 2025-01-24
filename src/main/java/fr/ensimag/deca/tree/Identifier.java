@@ -11,8 +11,11 @@ import java.io.PrintStream;
 
 import fr.ensimag.ima.pseudocode.*;
 import fr.ensimag.ima.pseudocode.instructions.*;
+import static fr.ensimag.deca.tree.DeclVar.countArrayDimensions;
+
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+
 
 /**
  * Deca Identifier
@@ -176,6 +179,10 @@ public class Identifier extends AbstractIdentifier {
 
     private Symbol name;
 
+    public void setName(Symbol name) {
+        this.name = name;
+    }
+
     public Identifier(Symbol name) {
         Validate.notNull(name);
         this.name = name;
@@ -183,15 +190,28 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
-            ClassDefinition currentClass) throws ContextualError {
+                           ClassDefinition currentClass) throws ContextualError {
         EnvironmentExp env = localEnv;
         ExpDefinition def;
-        while(env != null) {
-            def= env.get(name);
+        while (env != null) {
+            def = env.get(name);
             if (def != null) {
                 this.setDefinition(def);
                 this.setType(def.getType());
                 return def.getType();
+            }
+            TypeDefinition typeDef = compiler.getEnvironmentType().defOfType(name);
+            if (typeDef != null) {
+                ExpDefinition newDef = new VariableDefinition(typeDef.getType(), getLocation());
+                // Ajoute la définition du type dans `localEnv`
+                try {
+                    localEnv.declare(getName(), newDef);
+                    this.setDefinition(def);
+                    this.setType(def.getType());
+                } catch(EnvironmentExp.DoubleDefException e) {
+                    throw new ContextualError("La variable "+getName()+" est déjà définie !",this.getLocation());
+                }
+                return typeDef.getType();
             }
             env=env.getParentEnvironment();
         }
@@ -441,18 +461,60 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyType(DecacCompiler compiler) throws ContextualError {
         EnvironmentType env = compiler.getEnvironmentType();
-        TypeDefinition typeDef = env.defOfType(name);
-        if (typeDef == null) {
-            throw new ContextualError("Type '" + name.getName() + "' is not defined", getLocation());
+        String fullName = getName().getName();
+        String baseName = WithoutBrackets(fullName);
+        int dim = countArrayDimensions(fullName);
+        // Vérifie que le type de base (sans crochets) est défini
+        Symbol baseSymbol = compiler.createSymbol(baseName);
+        //setName(baseSymbol);
+        TypeDefinition baseTypeDef = env.defOfType(baseSymbol);
+        if (baseTypeDef == null) {
+            throw new ContextualError("Base type '" + baseName + "' is not defined", getLocation());
         }
-        setDefinition(typeDef);
-        return typeDef.getType();
+
+        // Récupération du type de base
+        Type baseType = baseTypeDef.getType();
+        Type currentType = baseType;
+        String currentName = baseName;
+        // Construction progressive des types tableaux
+        for (int i = 0; i < dim; i++) {
+            currentName += "[]";
+            SymbolTable.Symbol arraySymbol = compiler.createSymbol(currentName);
+            currentType = new ArrayType(arraySymbol,baseType,i+1);
+            // Ajouter le type tableau dans l'environnement global s'il n'existe pas déjà
+            if (env.defOfType(arraySymbol) == null) {
+                compiler.getEnvironmentType().setTypeDefinition(arraySymbol, new TypeDefinition(currentType, getLocation()));
+            }
+        }
+
+        // Associez le dernier type tableau à l'identifiant
+        setDefinition(new TypeDefinition(currentType, getLocation()));
+        return currentType;
     }
-    
-    
+
+    public String getNameWithoutBrackets() {
+        String fullName = getName().getName();
+        return WithoutBrackets(fullName);
+    }
+
+    public String WithoutBrackets(String fullName) {
+        int bracketIndex = fullName.indexOf('[');
+        if (bracketIndex == -1) {
+            return fullName; // Pas de crochets, le type est directement le type de base
+        }
+        return fullName.substring(0, bracketIndex);
+    }
     private Definition definition;
 
-
+    public int getDimensions(){
+        int dimensions = 0;
+        for (char caractere : name.getName().toCharArray()) {
+            if (caractere == '[') {
+                dimensions += 1;
+            }
+        }
+        return dimensions;
+    }
     @Override
     protected void iterChildren(TreeFunction f) {
         // leaf node => nothing to do

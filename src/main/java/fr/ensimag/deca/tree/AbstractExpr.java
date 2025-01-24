@@ -203,4 +203,7 @@ public abstract class AbstractExpr extends AbstractInst {
             s.println();
         }
     }
+    public void doOpArray(DecacCompiler Compiler){
+        throw new UnsupportedOperationException("L'opération n'est pas encore implémentée !");
+    }
 }

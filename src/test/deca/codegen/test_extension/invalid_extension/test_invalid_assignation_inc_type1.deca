@@ -1,0 +1,17 @@
+
+// Description :
+//      Test des tableaux deca
+//      avec initialisation explicite
+//     et assignation d'un flottant 
+// Resultats :
+//     impossible d'affecter une expression de type float à une variable de type int
+
+
+
+{
+    int[] x = {1, 2};
+    x[0] = 8.0;
+    println("x[0] vaut: ", x[0]); 
+}
+
+

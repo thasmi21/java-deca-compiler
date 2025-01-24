@@ -5,6 +5,8 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.Location;
 
+import static fr.ensimag.deca.tree.DeclVar.extractBaseType;
+
 /**
  * Deca Type (internal representation of the compiler)
  *
@@ -31,6 +33,9 @@ public abstract class Type {
         return name;
     }
 
+    public int getDimensions(){
+        return 0;
+    }
     @Override
     public String toString() {
         return getName().toString();
@@ -77,7 +82,11 @@ public abstract class Type {
     }
 
     public boolean isSubTypeOf(Type otherType) {
-        return false;
+        if (!(otherType instanceof ArrayType)) {
+            return false;
+        }
+        ArrayType type = (ArrayType)otherType;
+        return this.sameType(type.getDataType());
     }
 
     public boolean isClassOrNull() {

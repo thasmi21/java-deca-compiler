@@ -1,0 +1,17 @@
+
+// Description :
+//      Test des tableaux deca
+//      avec initialisation explicite
+//     et utilisation d'un floattant comme indice 
+// Resultats :
+//      Au moins un indice n'est pas un entier
+
+
+
+{
+    int[] x = {1, 2};
+    x[0.0] = 8;
+    println("x[0] vaut: ", x[0]); 
+}
+
+

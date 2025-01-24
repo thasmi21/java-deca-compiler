@@ -1,0 +1,25 @@
+//programme deca pour bien vérifier
+//que le lexer sait gérer les priorités de reconnaissance entre les tokens
+
+{
+    float[] x,y,z,a,b;
+}
+
+//doit reconnaitre le type float[]
+/*sortie attendu:
+   good_lex1.deca:
+   OBRACE: [@0,0:0='{',<15>,1:0]
+   IDENT: [@1,6:12='float[]',<31>,2:4]
+   IDENT: [@2,14:14='x',<31>,2:12]
+   COMMA: [@3,15:15=',',<52>,2:13]
+   IDENT: [@4,16:16='y',<31>,2:14]
+   COMMA: [@5,17:17=',',<52>,2:15]
+   IDENT: [@6,18:18='z',<31>,2:16]
+   COMMA: [@7,19:19=',',<52>,2:17]
+   IDENT: [@8,20:20='a',<31>,2:18]
+   COMMA: [@9,21:21=',',<52>,2:19]
+   IDENT: [@10,22:22='b',<31>,2:20]
+   SEMI: [@11,23:23=';',<28>,2:21]
+   CBRACE: [@12,25:25='}',<27>,3:0]
+
+*/

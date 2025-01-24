@@ -1,0 +1,16 @@
+//programme deca pour bien vérifier
+//que le lexer sait gérer les priorités de reconnaissance entre les tokens
+
+{
+    int[] x;
+}
+
+//doit reconnaitre le type int[]
+/*sortie attendu:
+   good_lex1.deca:
+   OBRACE: [@0,0:0='{',<15>,1:0]
+   IDENT: [@1,6:10='int[]',<31>,2:4]
+   IDENT: [@2,12:12='x',<31>,2:10]
+   SEMI: [@3,13:13=';',<28>,2:11]
+   CBRACE: [@4,15:15='}',<27>,3:0]
+*/
