@@ -106,7 +106,7 @@ public abstract class AbstractDecaLexer extends Lexer {
      *            Either empty (read from stdin), or 1-element array (the file
      *            to read from)
      * @return The lexer built from args
-     * @throws IOException
+     * @throws IOException 
      */
     public static DecaLexer createLexerFromArgs(String[] args)
             throws IOException {
